@@ -22,26 +22,27 @@ percent_TARN_cases_reported_ISS_o16 <- 1
 percent_TARN_cases_reported_ISS_o9_u16 <- 1
 population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
 
-setwd("C:\\Users\\Dan\\Documents\\Matts - Model")
-param_data <- read.csv("parameters.csv", row.names=1)
-life_tabs <- read.csv("ONSlifetables.csv")
-future_costs <- read.csv("lifetime-healthcare-costs.csv")
+file_location <- "~/Work from Home/Matts - Model/"
+
+param_data <- read.csv(paste(file_location,"parameters.csv", sep=""), row.names=1)
+life_tabs <- read.csv(paste(file_location,"ONSlifetables.csv", sep=""))
+future_costs <- read.csv(paste(file_location,"lifetime-healthcare-costs.csv", sep=""))
 
 if(population_source=="UK"){
-  means <- as.matrix(read.csv("means.csv",row.names=1))
-  covariance <- as.matrix(read.csv("covariance.csv", row.names=1))
-  age_tab <- read.csv("age_tab.csv",row.names=1)
-  gen_tab <- read.csv("gen_tab.csv",row.names=1)
-  ISS_tab <- read.csv("ISS_tab.csv",row.names=1)
-  GCS_tab <- read.csv("GCS_tab.csv",row.names=1)
+  means <- as.matrix(read.csv(paste(file_location,"means.csv", sep=""),row.names=1))
+  covariance <- as.matrix(read.csv(paste(file_location,"covariance.csv", sep=""), row.names=1))
+  age_tab <- read.csv(paste(file_location,"age_tab.csv", sep=""),row.names=1)
+  gen_tab <- read.csv(paste(file_location,"gen_tab.csv", sep=""),row.names=1)
+  ISS_tab <- read.csv(paste(file_location,"ISS_tab.csv", sep=""),row.names=1)
+  GCS_tab <- read.csv(paste(file_location,"GCS_tab.csv", sep=""),row.names=1)
 }else{
-  means <- as.matrix(read.csv("means_dutch.csv",row.names=1))
-  covariance <- as.matrix(read.csv("covariance_dutch.csv", row.names=1))
-  age_tab <- read.csv("age_tab_dutch.csv",row.names=1)
-  gen_tab <- read.csv("male_tab_dutch.csv",row.names=1)
-  ISS_tab <- read.csv("ISS_tab_dutch.csv",row.names=1)
-  GCS_tab <- read.csv("GCS_tab_dutch.csv",row.names=1)
-  blunt_tab <- read.csv("blunt_tab_dutch.csv",row.names=1)
+  means <- as.matrix(read.csv(paste(file_location,"means_dutch.csv", sep=""),row.names=1))
+  covariance <- as.matrix(read.csv(paste(file_location,"covariance_dutch.csv", sep=""), row.names=1))
+  age_tab <- read.csv(paste(file_location,"age_tab_dutch.csv", sep=""),row.names=1)
+  gen_tab <- read.csv(paste(file_location,"male_tab_dutch.csv", sep=""),row.names=1)
+  ISS_tab <- read.csv(paste(file_location,"ISS_tab_dutch.csv", sep=""),row.names=1)
+  GCS_tab <- read.csv(paste(file_location,"GCS_tab_dutch.csv", sep=""),row.names=1)
+  blunt_tab <- read.csv(paste(file_location,"blunt_tab_dutch.csv", sep=""),row.names=1)
 }
 
 
