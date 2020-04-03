@@ -1133,16 +1133,17 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   p_death_hosp_ISSo8_u16_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*mod_RR_MTC_ISS_o8_u16)
   p_death_hosp_ISSo8_u16_nMTC <- p_death_hosp_ISSo8_u16_MTC * mod_RR_MTC_ISS_o8_u16
-  } else{
+  }else{
     #For patients with an ISS 16 or over
-    p_death_hosp_ISSo15_MTC <- p_death_TARN*parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]
+    #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
+    p_death_hosp_ISSo15_MTC <- p_death_TARN*(1/parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
     p_death_hosp_ISSo15_nMTC <- p_death_TARN
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
     mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
-    
-    p_death_hosp_ISSo8_u16_MTC <- p_death_TARN*mod_RR_MTC_ISS_o8_u16
+    #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
+    p_death_hosp_ISSo8_u16_MTC <- p_death_TARN*(1/mod_RR_MTC_ISS_o8_u16)
     p_death_hosp_ISSo8_u16_nMTC <- p_death_TARN
     
   }
@@ -1579,58 +1580,58 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 ##########################################################
 ##Check number of patients
 #if you want to rerun this code, recomment
-#sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.998, 0.025,0)
-#sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.948, 0.187,0)
-#sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.904, 0.584,0)
-#sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.875, 0.628,0)
-#sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.746, 0.657,0)
-#sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.698, 0.701,0)
-#sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.642, 0.761,0)
-#sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.57, 0.8,0)
-#sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.284, 0.886,0)
+sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.998, 0.025,0)
+sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.948, 0.187,0)
+sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.904, 0.584,0)
+sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.875, 0.628,0)
+sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.746, 0.657,0)
+sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.698, 0.701,0)
+sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.642, 0.761,0)
+sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.57, 0.8,0)
+sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.284, 0.886,0)
 
-#write.csv(sens_100_spec_3, "pat char check\\sens_100_spec_3.csv")
-#write.csv(sens_95_spec_19, "pat char check\\sens_95_spec_19.csv")
-#write.csv(sens_90_spec_58, "pat char check\\sens_90_spec_58.csv")
-#write.csv(sens_88_spec_63, "pat char check\\sens_88_spec_63.csv")
-#write.csv(sens_75_spec_66, "pat char check\\sens_75_spec_66.csv")
-#write.csv(sens_70_spec_70, "pat char check\\sens_70_spec_70.csv")
-#write.csv(sens_64_spec_76, "pat char check\\sens_64_spec_76.csv")
-#write.csv(sens_57_spec_80, "pat char check\\sens_57_spec_80.csv")
-#write.csv(sens_28_spec_89, "pat char check\\sens_28_spec_89.csv")
+write.csv(sens_100_spec_3, paste(file_location,"pat char check\\sens_100_spec_3.csv", sep=""))
+write.csv(sens_95_spec_19, paste(file_location,"pat char check\\sens_95_spec_19.csv", sep=""))
+write.csv(sens_90_spec_58, paste(file_location,"pat char check\\sens_90_spec_58.csv", sep=""))
+write.csv(sens_88_spec_63, paste(file_location,"pat char check\\sens_88_spec_63.csv", sep=""))
+write.csv(sens_75_spec_66, paste(file_location,"pat char check\\sens_75_spec_66.csv", sep=""))
+write.csv(sens_70_spec_70, paste(file_location,"pat char check\\sens_70_spec_70.csv", sep=""))
+write.csv(sens_64_spec_76, paste(file_location,"pat char check\\sens_64_spec_76.csv", sep=""))
+write.csv(sens_57_spec_80, paste(file_location,"pat char check\\sens_57_spec_80.csv", sep=""))
+write.csv(sens_28_spec_89, paste(file_location,"pat char check\\sens_28_spec_89.csv", sep=""))
 
-#with 7,500 patients the results are stable in the base case
+#with 20,000 patients the results are stable in the base case
 
-sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.998, 0.025,1)
-sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.948, 0.187,1)
-sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.904, 0.584,1)
-sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.875, 0.628,1)
-sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.746, 0.657,1)
-sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.698, 0.701,1)
-sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.642, 0.761,1)
-sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.57, 0.8,1)
-sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.284, 0.886,1)
+#sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.998, 0.025,1)
+#sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.948, 0.187,1)
+#sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.904, 0.584,1)
+#sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.875, 0.628,1)
+#sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.746, 0.657,1)
+#sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.698, 0.701,1)
+#sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.642, 0.761,1)
+#sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.57, 0.8,1)
+#sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, 7500, "manual", 0.284, 0.886,1)
 
 #create a matrix to store all runs
-det_analyses <- matrix (nrow = 9, ncol =12)
+#det_analyses <- matrix (nrow = 9, ncol =12)
 #name the columns to make analysis easier
-colnames(det_analyses) <- c("Sens_DR","Spec_DR", "Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year", "Years_lived",
-                             "undiscounted_QALYs", "discounted_QALYs", "undiscounted_Costs", "discounted_Costs", "proportion_ISS_over_16", "proportion_ISS_over_8_under_16")
+#colnames(det_analyses) <- c("Sens_DR","Spec_DR", "Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year", "Years_lived",
+#                             "undiscounted_QALYs", "discounted_QALYs", "undiscounted_Costs", "discounted_Costs", "proportion_ISS_over_16", "proportion_ISS_over_8_under_16")
 #name the rows with the appropiate strategy
-rownames(det_analyses) <- c("sens_100_spec_3", "sens_95_spec_19", "sens_90_spec_58", "sens_88_spec_63", "sens_75_spec_66",
-"sens_70_spec_70", "sens_64_spec_76", "sens_57_spec_80", "sens_28_spec_89")
+#rownames(det_analyses) <- c("sens_100_spec_3", "sens_95_spec_19", "sens_90_spec_58", "sens_88_spec_63", "sens_75_spec_66",
+#"sens_70_spec_70", "sens_64_spec_76", "sens_57_spec_80", "sens_28_spec_89")
 
-det_analyses["sens_100_spec_3", ]<- sens_100_spec_3
-det_analyses["sens_95_spec_19", ]<- sens_95_spec_19
-det_analyses["sens_90_spec_58", ]<- sens_90_spec_58
-det_analyses["sens_88_spec_63", ]<- sens_88_spec_63
-det_analyses["sens_75_spec_66", ]<- sens_75_spec_66
-det_analyses["sens_70_spec_70", ]<- sens_70_spec_70
-det_analyses["sens_64_spec_76", ]<- sens_64_spec_76
-det_analyses["sens_57_spec_80", ]<- sens_57_spec_80
-det_analyses["sens_28_spec_89", ]<- sens_28_spec_89
+#det_analyses["sens_100_spec_3", ]<- sens_100_spec_3
+#det_analyses["sens_95_spec_19", ]<- sens_95_spec_19
+#det_analyses["sens_90_spec_58", ]<- sens_90_spec_58
+#det_analyses["sens_88_spec_63", ]<- sens_88_spec_63
+#det_analyses["sens_75_spec_66", ]<- sens_75_spec_66
+#det_analyses["sens_70_spec_70", ]<- sens_70_spec_70
+#det_analyses["sens_64_spec_76", ]<- sens_64_spec_76
+#det_analyses["sens_57_spec_80", ]<- sens_57_spec_80
+#det_analyses["sens_28_spec_89", ]<- sens_28_spec_89
 
-write.csv(det_analyses,"base case.csv")
+#write.csv(det_analyses,"base case.csv")
 
 
 #sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.998, 0.025,1)
@@ -1663,20 +1664,20 @@ write.csv(det_analyses,"base case.csv")
 #use_params_sens_70_spec_70_PSA <- read.csv("parameter_outputs.csv")
 #write.csv(use_params_sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70_PSA_params.csv")
 
-sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.642, 0.761,1)
-write.csv(sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76.csv")
-use_params_sens_64_spec_76 <- read.csv("parameter_outputs.csv")
-write.csv(use_params_sens_64_spec_76, "PSA results\\sens_90_spec_58_PSA_params.csv")
+#sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.642, 0.761,1)
+#write.csv(sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76.csv")
+#use_params_sens_64_spec_76 <- read.csv("parameter_outputs.csv")
+#write.csv(use_params_sens_64_spec_76, "PSA results\\sens_90_spec_58_PSA_params.csv")
 
-sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.57, 0.8,1)
-write.csv(sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80.csv")
-use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
-write.csv(use_params_sens_57_spec_80_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
+#sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.57, 0.8,1)
+#write.csv(sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80.csv")
+#use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
+#write.csv(use_params_sens_57_spec_80_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
 
-sens_28_spec_89_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.284, 0.886,1)
-write.csv(sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89.csv")
-use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
-write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA_params.csv")
+#sens_28_spec_89_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.284, 0.886,1)
+#write.csv(sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89.csv")
+#use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
+#write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA_params.csv")
 
 #Sensitivity analysis, TARN tariff costs
 
