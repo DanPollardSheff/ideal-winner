@@ -1601,7 +1601,7 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 #write.csv(sens_28_spec_89, paste(file_location,"pat char check\\sens_28_spec_89.csv", sep=""))
 
 #with 20,000 patients the results are stable in the base case
-
+if(PSA_switch==0){
 sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.998, 0.025,1)
 sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.948, 0.187,1)
 sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.904, 0.584,1)
@@ -1632,11 +1632,57 @@ det_analyses["sens_57_spec_80", ]<- sens_57_spec_80
 det_analyses["sens_28_spec_89", ]<- sens_28_spec_89
 
 write.csv(det_analyses,"base case.csv")
-
+}
+if(PSA_switch==1){
+  sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.998, 0.025,1)
+  write.csv(sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA.csv")
+  use_params_sens_100_spec_3_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA_params.csv")
+  
+  sens_95_spec_19_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.948, 0.187,1)
+  write.csv(sens_95_spec_19_PSA, "PSA results\\sens_95_spec_19_PSA.csv")
+  use_params_sens_95_spec_19_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_95_spec_19_PSA, "PSA results\\sens_95_spec_19_PSA_params.csv")
+  
+  sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.904, 0.584,1)
+  write.csv(sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA.csv")
+  use_params_sens_90_spec_58_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
+  
+  sens_88_spec_63_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.875, 0.628,1)
+  write.csv(sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA.csv")
+  use_params_sens_88_spec_63_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA_params.csv")
+  
+  sens_75_spec_66_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.746, 0.657,1)
+  write.csv(sens_75_spec_66_PSA, "PSA results\\sens_75_spec_66.csv")
+  use_params_sens_75_spec_66_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_75_spec_66_PSA, "PSA results\\sens_75_spec_66_PSA_params.csv")
+  
+  sens_70_spec_70_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.698, 0.701,1)
+  write.csv(sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70.csv")
+  use_params_sens_70_spec_70_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70_PSA_params.csv")
+  
+  sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.642, 0.761,1)
+  write.csv(sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76.csv")
+  use_params_sens_64_spec_76 <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_64_spec_76, "PSA results\\sens_90_spec_58_PSA_params.csv")
+  
+  sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.57, 0.8,1)
+  write.csv(sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80.csv")
+  use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_57_spec_80_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
+  
+  sens_28_spec_89_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.284, 0.886,1)
+  write.csv(sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89.csv")
+  use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
+  write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA_params.csv")
+}
 #Use the newer TARN mortality equation
 TARN_mort_eq <- "New" 
 MTCs_in_mort_risk <- "Yes"
-
+if(PSA_switch==0){
 sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.998, 0.025,1)
 sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.948, 0.187,1)
 sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.904, 0.584,1)
@@ -1667,168 +1713,6 @@ det_analyses["sens_57_spec_80", ]<- sens_57_spec_80
 det_analyses["sens_28_spec_89", ]<- sens_28_spec_89
 
 write.csv(det_analyses,"new TARN equations.csv")
-
-#sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.998, 0.025,1)
-#write.csv(sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA.csv")
-#use_params_sens_100_spec_3_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA_params.csv")
-
-#sens_95_spec_19_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.948, 0.187,1)
-#write.csv(sens_95_spec_19_PSA, "PSA results\\sens_95_spec_19_PSA.csv")
-#use_params_sens_95_spec_19_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_95_spec_19_PSA, "PSA results\\sens_95_spec_19_PSA_params.csv")
-
-#sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.904, 0.584,1)
-#write.csv(sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA.csv")
-#use_params_sens_90_spec_58_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
-
-#sens_88_spec_63_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.875, 0.628,1)
-#write.csv(sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA.csv")
-#use_params_sens_88_spec_63_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA_params.csv")
-
-#sens_75_spec_66_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.746, 0.657,1)
-#write.csv(sens_75_spec_66_PSA, "PSA results\\sens_75_spec_66.csv")
-#use_params_sens_75_spec_66_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_75_spec_66_PSA, "PSA results\\sens_75_spec_66_PSA_params.csv")
-
-#sens_70_spec_70_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.698, 0.701,1)
-#write.csv(sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70.csv")
-#use_params_sens_70_spec_70_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70_PSA_params.csv")
-
-#sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.642, 0.761,1)
-#write.csv(sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76.csv")
-#use_params_sens_64_spec_76 <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_64_spec_76, "PSA results\\sens_90_spec_58_PSA_params.csv")
-
-#sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.57, 0.8,1)
-#write.csv(sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80.csv")
-#use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_57_spec_80_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
-
-#sens_28_spec_89_PSA <- run_simulation(param_data_bc, 1, 1000, 7500, "manual", 0.284, 0.886,1)
-#write.csv(sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89.csv")
-#use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA_params.csv")
-
-#Sensitivity analysis, TARN tariff costs
-
-#SA_MTCTARNtariff_sens_100_spec_3 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.998, 0.025,1)
-#SA_MTCTARNtariff_sens_95_spec_19 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.948, 0.187,1)
-#SA_MTCTARNtariff_sens_90_spec_58 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.904, 0.584,1)
-#SA_MTCTARNtariff_sens_88_spec_63 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.875, 0.628,1)
-#SA_MTCTARNtariff_sens_75_spec_66 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.746, 0.657,1)
-#SA_MTCTARNtariff_sens_70_spec_70 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.698, 0.701,1)
-#SA_MTCTARNtariff_sens_64_spec_76 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.642, 0.761,1)
-#SA_MTCTARNtariff_sens_57_spec_80 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.57, 0.8,1)
-#SA_MTCTARNtariff_sens_28_spec_89 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.284, 0.886,1)
+}
 
 
-#create a matrix to store all runs
-#sens_analysis_MTCTARNtariff <- matrix (nrow = 9, ncol =12)
-#name the columns to make analysis easier
-#colnames(sens_analysis_MTCTARNtariff) <- c("Sens_DR","Spec_DR", "Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year", "Years_lived",
-#                              "undiscounted_QALYs", "discounted_QALYs", "undiscounted_Costs", "discounted_Costs", "proportion_ISS_over_16", "proportion_ISS_over_8_under_16")
-#name the rows with the appropiate strategy
-#rownames(sens_analysis_MTCTARNtariff) <- c("sens_analysis_MTCTARNtariff_sens_100_spec_3", "sens_analysis_MTCTARNtariff_sens_95_spec_19", "sens_analysis_MTCTARNtariff_sens_90_spec_58", 
-#                              "sens_analysis_MTCTARNtariff_sens_88_spec_63", "sens_analysis_MTCTARNtariff_sens_75_spec_66", "sens_analysis_MTCTARNtariff_sens_70_spec_70", 
-#                              "sens_analysis_MTCTARNtariff_sens_64_spec_76", "sens_analysis_MTCTARNtariff_sens_57_spec_80", "sens_analysis_MTCTARNtariff_sens_28_spec_89")
-
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_100_spec_3", ]<- SA_MTCTARNtariff_sens_100_spec_3
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_95_spec_19", ]<- SA_MTCTARNtariff_sens_95_spec_19
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_90_spec_58", ]<- SA_MTCTARNtariff_sens_90_spec_58
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_88_spec_63", ]<- SA_MTCTARNtariff_sens_88_spec_63
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_75_spec_66", ]<- SA_MTCTARNtariff_sens_75_spec_66
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_70_spec_70", ]<- SA_MTCTARNtariff_sens_70_spec_70
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_64_spec_76", ]<- SA_MTCTARNtariff_sens_64_spec_76
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_57_spec_80", ]<- SA_MTCTARNtariff_sens_57_spec_80
-#sens_analysis_MTCTARNtariff["sens_analysis_MTCTARNtariff_sens_28_spec_89", ]<- SA_MTCTARNtariff_sens_28_spec_89
-
-#write.csv(sens_analysis_MTCTARNtariff, "SA MTC tariffs.csv")
-
-#scenario analysis: give full benefit of MTC care to people with an ISS between 9 and 16 and tarriff costs applied
-#Proportion_RR_MTC_ISS_o8_u16 <- 0.5
-
-#SA_MTC_ben_ISS_u9_sens_100_spec_3 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.998, 0.025,1)
-#SA_MTC_ben_ISS_u9_sens_95_spec_19 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.948, 0.187,1)
-#SA_MTC_ben_ISS_u9_sens_90_spec_58 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.904, 0.584,1)
-#SA_MTC_ben_ISS_u9_sens_88_spec_63 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.875, 0.628,1)
-#SA_MTC_ben_ISS_u9_sens_75_spec_66 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.746, 0.657,1)
-#SA_MTC_ben_ISS_u9_sens_70_spec_70 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.698, 0.701,1)
-#SA_MTC_ben_ISS_u9_sens_64_spec_76 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.642, 0.761,1)
-#SA_MTC_ben_ISS_u9_sens_57_spec_80 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.57, 0.8,1)
-#SA_MTC_ben_ISS_u9_sens_28_spec_89 <- run_simulation(param_data, 0, 1, 8000, "manual", 0.284, 0.886,1)
-
-#reset the benefit associated with MTC care for patients with an ISS between 9 and 16
-#Proportion_RR_MTC_ISS_o8_u16 <- 0
-
-#create a matrix to store all runs
-#SA_MTCben_ISSo9u16_tarriff <- matrix (nrow = 9, ncol =12)
-#name the columns to make analysis easier
-#colnames(SA_MTCben_ISSo9u16_tarriff) <- c("Sens_DR","Spec_DR", "Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year", "Years_lived",
-#                            "undiscounted_QALYs", "discounted_QALYs", "undiscounted_Costs", "discounted_Costs", "proportion_ISS_over_16", "proportion_ISS_over_8_under_16")
-#name the rows with the appropiate strategy
-#rownames(SA_MTCben_ISSo9u16_tarriff) <- c("SA_MTC_ben_ISS_u9_sens_100_spec_3", "SA_MTC_ben_ISS_u9_sens_95_spec_19", "SA_MTC_ben_ISS_u9_sens_90_spec_58", 
-#                            "SA_MTC_ben_ISS_u9_sens_88_spec_63", "SA_MTC_ben_ISS_u9_sens_75_spec_66", "SA_MTC_ben_ISS_u9_sens_70_spec_70", 
-#                            "SA_MTC_ben_ISS_u9_sens_64_spec_76", "SA_MTC_ben_ISS_u9_sens_57_spec_80", "SA_MTC_ben_ISS_u9_sens_28_spec_89")
-
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_100_spec_3", ]<- SA_MTC_ben_ISS_u9_sens_100_spec_3
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_95_spec_19", ]<- SA_MTC_ben_ISS_u9_sens_95_spec_19
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_90_spec_58", ]<- SA_MTC_ben_ISS_u9_sens_90_spec_58
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_88_spec_63", ]<- SA_MTC_ben_ISS_u9_sens_88_spec_63
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_75_spec_66", ]<- SA_MTC_ben_ISS_u9_sens_75_spec_66
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_70_spec_70", ]<- SA_MTC_ben_ISS_u9_sens_70_spec_70
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_64_spec_76", ]<- SA_MTC_ben_ISS_u9_sens_64_spec_76
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_57_spec_80", ]<- SA_MTC_ben_ISS_u9_sens_57_spec_80
-#SA_MTCben_ISSo9u16_tarriff["SA_MTC_ben_ISS_u9_sens_28_spec_89", ]<- SA_MTC_ben_ISS_u9_sens_28_spec_89
-
-#write.csv(SA_MTCben_ISSo9u16_tarriff, "SA TARN tarriffs MTC benefit for people with an ISS between 9 and 16.csv")
-
-#sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.998, 0.025,1)
-#write.csv(sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA.csv")
-#use_params_sens_100_spec_3_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA_PSAparams.csv")
-
-
-#sens_95_spec_19_PSA <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.948, 0.187,1)
-#write.csv(sens_95_spec_19_PSA, "PSA results\\sens_100_spec_3_PSA.csv")
-#use_params_sens_95_spec_19_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_95_spec_19_PSA, "PSA results\\sens_100_spec_3_PSA_PSAparams.csv")
-
-#sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.904, 0.584,1)
-#write.csv(sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA.csv")
-#use_params_sens_90_spec_58_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSAparams.csv")
-
-#sens_88_spec_63_PSA <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.875, 0.628,1)
-#write.csv(sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA.csv")
-#use_params_sens_88_spec_63_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSAparams.csv")
-
-#sens_75_spec_66_PSA <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.746, 0.657,1)
-#write.csv(sens_75_spec_66_PSA, "PSA results\\sens_88_spec_63_PSA.csv")
-#use_params_sens_75_spec_66_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_75_spec_66_PSA, "PSA results\\sens_75_spec_66_PSAparams.csv")
-
-
-#sens_70_spec_70_PSA <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.698, 0.701,1)
-#write.csv(sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70_PSA.csv")
-#use_params_sens_70_spec_70_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70_PSAparams.csv")
-
-#sens_64_spec_76 <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.642, 0.761,1)
-#write.csv(sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76_PSA.csv")
-#use_params_sens_64_spec_76_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76_PSAparams.csv")
-
-#sens_57_spec_80 <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.57, 0.8,1)
-#write.csv(sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80_PSA.csv")
-#use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80_PSAparams.csv")
-
-#sens_28_spec_89 <- run_simulation(param_data_bc, 1, 500, 8000, "manual", 0.284, 0.886,1)
-#write.csv(sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA.csv")
-#use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
-#write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSAparams.csv")
