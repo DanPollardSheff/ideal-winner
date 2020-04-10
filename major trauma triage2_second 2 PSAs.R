@@ -1644,15 +1644,15 @@ if(PSA_switch==1){
   #use_params_sens_95_spec_19_PSA <- read.csv("parameter_outputs.csv")
   #write.csv(use_params_sens_95_spec_19_PSA, "PSA results\\sens_95_spec_19_PSA_params.csv")
   
-  sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.904, 0.584,1)
-  write.csv(sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA.csv")
+  #sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.904, 0.584,1)
+  write.csv(sens_90_spec_58_PSA, "sens_90_spec_58_PSA.csv")
   use_params_sens_90_spec_58_PSA <- read.csv("parameter_outputs.csv")
-  write.csv(use_params_sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
+  write.csv(use_params_sens_90_spec_58_PSA, "sens_90_spec_58_PSA_params.csv")
   
   sens_88_spec_63_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.875, 0.628,1)
-  write.csv(sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA.csv")
+  write.csv(sens_88_spec_63_PSA, "sens_88_spec_63_PSA.csv")
   use_params_sens_88_spec_63_PSA <- read.csv("parameter_outputs.csv")
-  write.csv(use_params_sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA_params.csv")
+  write.csv(use_params_sens_88_spec_63_PSA, "sens_88_spec_63_PSA_params.csv")
   
   #sens_75_spec_66_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.746, 0.657,1)
   #write.csv(sens_75_spec_66_PSA, "PSA results\\sens_75_spec_66.csv")

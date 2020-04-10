@@ -1664,20 +1664,20 @@ if(PSA_switch==1){
   #use_params_sens_70_spec_70_PSA <- read.csv("parameter_outputs.csv")
   #write.csv(use_params_sens_70_spec_70_PSA, "PSA results\\sens_70_spec_70_PSA_params.csv")
   
-  sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.642, 0.761,1)
-  write.csv(sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76.csv")
-  use_params_sens_64_spec_76 <- read.csv("parameter_outputs.csv")
-  write.csv(use_params_sens_64_spec_76, "PSA results\\sens_90_spec_58_PSA_params.csv")
+  #sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.642, 0.761,1)
+  #write.csv(sens_64_spec_76_PSA, "sens_64_spec_76.csv")
+  #use_params_sens_64_spec_76 <- read.csv("parameter_outputs.csv")
+  #write.csv(use_params_sens_64_spec_76, "sens_90_spec_58_PSA_params.csv")
   
-  sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.57, 0.8,1)
-  write.csv(sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80.csv")
-  use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
-  write.csv(use_params_sens_57_spec_80_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
+  #sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.57, 0.8,1)
+  #write.csv(sens_57_spec_80_PSA, "sens_57_spec_80.csv")
+  #use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
+  #write.csv(use_params_sens_57_spec_80_PSA, "sens_90_spec_58_PSA_params.csv")
   
   sens_28_spec_89_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.284, 0.886,1)
-  write.csv(sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89.csv")
+  write.csv(sens_28_spec_89_PSA, "sens_28_spec_89.csv")
   use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
-  write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA_params.csv")
+  write.csv(use_params_sens_28_spec_89_PSA, "sens_28_spec_89_PSA_params.csv")
 }
 #Use the newer TARN mortality equation
 TARN_mort_eq <- "New" 
