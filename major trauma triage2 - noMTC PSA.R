@@ -1817,13 +1817,13 @@ write.csv(det_analyses, "MTC v no MTC.csv")
 }
 
 if(PSA_switch==1){
-  sens_100_spec_10_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 1, 0.1,1)
-  write.csv(sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA.csv")
-  use_params_sens_100_spec_10_PSA <- read.csv("parameter_outputs.csv")
-  write.csv(use_params_sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA_params.csv")
+  #sens_100_spec_10_PSA <- run_simulation(param_data_MTCs, 1, 500, 10000, "manual", 1, 0.1,1)
+  #write.csv(sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA.csv")
+  #use_params_sens_100_spec_10_PSA <- read.csv("parameter_outputs.csv")
+  #write.csv(use_params_sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA_params.csv")
   
-  sens_0_spec_90_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0, 0.9,1)
-  write.csv(sens_0_spec_90_PSA, "PSA results\\sens_0_spec_90_PSA.csv")
+  sens_0_spec_90_PSA <- run_simulation(param_data_MTCs, 1, 500, 10000, "manual", 0, 0.9,1)
+  write.csv(sens_0_spec_90_PSA, "sens_0_spec_90_PSA.csv")
   use_params_sens_0_spec_90_PSA<- read.csv("parameter_outputs.csv")
-  write.csv(use_params_sens_0_spec_90_PSA, "PSA results\\sens_0_spec_90_PSA_params.csv")
+  write.csv(use_params_sens_0_spec_90_PSA, "sens_0_spec_90_PSA_params.csv")
 }
