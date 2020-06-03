@@ -361,7 +361,7 @@ if(population_source=="UK"){
   test2[,"ID"] <- 1:nrow(test2)
   test2[,"ISS"] <- test[,"ISS"]
   test2[,"Age"] <- test[,"Age"]
-  test2[,"Gender"] <- test[,"Gender"]
+  test2[,"Gender"] <- ifelse(test[,"Gender"]==1,0,1)
   test2[,"GCS"] <- test[,"GCS"]
   test2[,"Blunt_trauma"] <- test[,"Blunt_trauma"]
   

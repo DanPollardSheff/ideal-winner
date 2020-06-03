@@ -1,0 +1,3 @@
+"","Sens_DR","Spec_DR","Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year","Years_lived","undiscounted_QALYs","discounted_QALYs","undiscounted_Costs","discounted_Costs","proportion_ISS_over_16","proportion_ISS_over_8_under_16"
+"All_MTC",1,NA,1,0.14365,0.0262,18.2989175807711,13.1418644211783,8.01645014400282,190114.647061125,114528.028772514,1,0
+"No_MTC",0,NA,0,0.1768,0.04155,17.5576209380825,12.6189871876956,7.68412109005303,182011.518246313,109518.337548108,1,0
