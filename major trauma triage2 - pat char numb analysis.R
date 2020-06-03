@@ -1619,6 +1619,29 @@ write.csv(sens_70_spec_70, paste(file_location,"Patient Characteristic Check\\se
 write.csv(sens_64_spec_76, paste(file_location,"Patient Characteristic Check\\sens_64_spec_76.csv", sep=""))
 write.csv(sens_57_spec_80, paste(file_location,"Patient Characteristic Check\\sens_57_spec_80.csv", sep=""))
 write.csv(sens_28_spec_89, paste(file_location,"Patient Characteristic Check\\sens_28_spec_89.csv", sep=""))
+
+
+#run them normally as summaries too for error checking
+sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.998, 0.025,1)
+sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,1)
+sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.904, 0.584,1)
+sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.875, 0.628,1)
+sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.746, 0.657,1)
+sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.698, 0.701,1)
+sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.642, 0.761,1)
+sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.57, 0.8,1)
+sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.284, 0.886,1)
+
+write.csv(sens_100_spec_3, paste(file_location,"Patient Characteristic Check\\sens_100_spec_3_ec.csv", sep=""))
+write.csv(sens_95_spec_19, paste(file_location,"Patient Characteristic Check\\sens_95_spec_19_ec.csv", sep=""))
+write.csv(sens_90_spec_58, paste(file_location,"Patient Characteristic Check\\sens_90_spec_58_ec.csv", sep=""))
+write.csv(sens_88_spec_63, paste(file_location,"Patient Characteristic Check\\sens_88_spec_63_ec.csv", sep=""))
+write.csv(sens_75_spec_66, paste(file_location,"Patient Characteristic Check\\sens_75_spec_66_ec.csv", sep=""))
+write.csv(sens_70_spec_70, paste(file_location,"Patient Characteristic Check\\sens_70_spec_70_ec.csv", sep=""))
+write.csv(sens_64_spec_76, paste(file_location,"Patient Characteristic Check\\sens_64_spec_76_ec.csv", sep=""))
+write.csv(sens_57_spec_80, paste(file_location,"Patient Characteristic Check\\sens_57_spec_80_ec.csv", sep=""))
+write.csv(sens_28_spec_89, paste(file_location,"Patient Characteristic Check\\sens_28_spec_89_ec.csv", sep=""))
+
 }else{ #if we aren't testing the stability of the results wrt to the number of patients run normal analyses
   
   
