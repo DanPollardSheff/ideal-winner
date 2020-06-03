@@ -5,8 +5,8 @@ library(MASS)
 
 #Global variables
 PSA_switch <- 0
-PSA_numb <- 1
-pat_numb <- 50000
+PSA_numb <- 500
+pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
 time_horizon <- 100
@@ -23,7 +23,7 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
 population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
 
-test_pat_chars <- "Yes" #Change this to Yes if you only want to run the base case analysis with patient level results
+test_pat_chars <- "No" #Change this to Yes if you only want to run the base case analysis with patient level results
 
 #read in files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
@@ -1647,15 +1647,15 @@ write.csv(sens_28_spec_89, paste(file_location,"Patient Characteristic Check\\se
   
 #with 20,000 patients the results are stable in the base case
 if(PSA_switch==0){
-sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.998, 0.025,1)
-sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.948, 0.187,1)
-sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.904, 0.584,1)
-sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.875, 0.628,1)
-sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.746, 0.657,1)
-sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.698, 0.701,1)
-sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.642, 0.761,1)
-sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.57, 0.8,1)
-sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.284, 0.886,1)
+sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.998, 0.025,1)
+sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,1)
+sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.904, 0.584,1)
+sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.875, 0.628,1)
+sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.746, 0.657,1)
+sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.698, 0.701,1)
+sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.642, 0.761,1)
+sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.57, 0.8,1)
+sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.284, 0.886,1)
 
 #create a matrix to store all runs
 det_analyses <- matrix (nrow = 9, ncol =12)
@@ -1679,47 +1679,47 @@ det_analyses["sens_28_spec_89", ]<- sens_28_spec_89
 write.csv(det_analyses,"base case.csv")
 }
 if(PSA_switch==1){
-  sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.998, 0.025,1)
+  sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.998, 0.025,1)
   write.csv(sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA.csv")
   use_params_sens_100_spec_3_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA_params.csv")
   
-  sens_95_spec_19_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.948, 0.187,1)
+  sens_95_spec_19_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.948, 0.187,1)
   write.csv(sens_95_spec_19_PSA, "PSA results\\sens_95_spec_19_PSA.csv")
   use_params_sens_95_spec_19_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_95_spec_19_PSA, "PSA results\\sens_95_spec_19_PSA_params.csv")
   
-  sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.904, 0.584,1)
+  sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.904, 0.584,1)
   write.csv(sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA.csv")
   use_params_sens_90_spec_58_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_90_spec_58_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
   
-  sens_88_spec_63_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.875, 0.628,1)
+  sens_88_spec_63_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.875, 0.628,1)
   write.csv(sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA.csv")
   use_params_sens_88_spec_63_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA_params.csv")
   
-  sens_75_spec_66_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.746, 0.657,1)
+  sens_75_spec_66_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.746, 0.657,1)
   write.csv(sens_75_spec_66_PSA, "sens_75_spec_66.csv")
   use_params_sens_75_spec_66_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_75_spec_66_PSA, "sens_75_spec_66_PSA_params.csv")
   
-  sens_70_spec_70_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.698, 0.701,1)
+  sens_70_spec_70_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.698, 0.701,1)
   write.csv(sens_70_spec_70_PSA, "sens_70_spec_70.csv")
   use_params_sens_70_spec_70_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_70_spec_70_PSA, "sens_70_spec_70_PSA_params.csv")
   
-  sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.642, 0.761,1)
+  sens_64_spec_76_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.642, 0.761,1)
   write.csv(sens_64_spec_76_PSA, "PSA results\\sens_64_spec_76.csv")
   use_params_sens_64_spec_76 <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_64_spec_76, "PSA results\\sens_90_spec_58_PSA_params.csv")
   
-  sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.57, 0.8,1)
+  sens_57_spec_80_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.57, 0.8,1)
   write.csv(sens_57_spec_80_PSA, "PSA results\\sens_57_spec_80.csv")
   use_params_sens_57_spec_80_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_57_spec_80_PSA, "PSA results\\sens_90_spec_58_PSA_params.csv")
   
-  sens_28_spec_89_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0.284, 0.886,1)
+  sens_28_spec_89_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.284, 0.886,1)
   write.csv(sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89.csv")
   use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA_params.csv")
@@ -1728,15 +1728,15 @@ if(PSA_switch==1){
 TARN_mort_eq <- "New" 
 MTCs_in_mort_risk <- "Yes"
 if(PSA_switch==0){
-sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.998, 0.025,1)
-sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.948, 0.187,1)
-sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.904, 0.584,1)
-sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.875, 0.628,1)
-sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.746, 0.657,1)
-sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.698, 0.701,1)
-sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.642, 0.761,1)
-sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.57, 0.8,1)
-sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.284, 0.886,1)
+sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.998, 0.025,1)
+sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,1)
+sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.904, 0.584,1)
+sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.875, 0.628,1)
+sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.746, 0.657,1)
+sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.698, 0.701,1)
+sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.642, 0.761,1)
+sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.57, 0.8,1)
+sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.284, 0.886,1)
 
 #create a matrix to store all runs
 det_analyses <- matrix (nrow = 9, ncol =12)
@@ -1770,15 +1770,15 @@ percent_TARN_cases_reported_ISS_o16 <- 1
 percent_TARN_cases_reported_ISS_o9_u16 <- 1
 
 if(PSA_switch==0){
-  sens_100_spec_3 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.998, 0.025,1)
-  sens_95_spec_19 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.948, 0.187,1)
-  sens_90_spec_58 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.904, 0.584,1)
-  sens_88_spec_63 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.875, 0.628,1)
-  sens_75_spec_66 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.746, 0.657,1)
-  sens_70_spec_70 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.698, 0.701,1)
-  sens_64_spec_76 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.642, 0.761,1)
-  sens_57_spec_80 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.57, 0.8,1)
-  sens_28_spec_89 <- run_simulation(param_data_SA2, 0, 1, 20000, "manual", 0.284, 0.886,1)
+  sens_100_spec_3 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.998, 0.025,1)
+  sens_95_spec_19 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.948, 0.187,1)
+  sens_90_spec_58 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.904, 0.584,1)
+  sens_88_spec_63 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.875, 0.628,1)
+  sens_75_spec_66 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.746, 0.657,1)
+  sens_70_spec_70 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.698, 0.701,1)
+  sens_64_spec_76 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.642, 0.761,1)
+  sens_57_spec_80 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.57, 0.8,1)
+  sens_28_spec_89 <- run_simulation(param_data_SA2, 0, 1, pat_numb, "manual", 0.284, 0.886,1)
   
   #create a matrix to store all runs
   det_analyses <- matrix (nrow = 9, ncol =12)
@@ -1826,8 +1826,8 @@ MTCs_in_mort_risk <- "No"
 population_ISS_over16_only <- "Yes"
 if(PSA_switch ==0) {
 
-sens_100_spec_10 <- run_simulation(param_data_MTCs, 0, 1, 20000, "manual", 1, 0.1,1)
-sens_0_spec_90 <- run_simulation(param_data_MTCs, 0, 1, 20000, "manual", 0, 0.9,1)
+sens_100_spec_10 <- run_simulation(param_data_MTCs, 0, 1, pat_numb, "manual", 1, 0.1,1)
+sens_0_spec_90 <- run_simulation(param_data_MTCs, 0, 1, pat_numb, "manual", 0, 0.9,1)
 
 #create a matrix to store all runs
 det_analyses <- matrix (nrow = 2, ncol =12)
@@ -1844,12 +1844,12 @@ write.csv(det_analyses, "MTC v no MTC.csv")
 }
 
 if(PSA_switch==1){
-  sens_100_spec_10_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 1, 0.1,1)
+  sens_100_spec_10_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.1,1)
   write.csv(sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA.csv")
   use_params_sens_100_spec_10_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA_params.csv")
   
-  sens_0_spec_90_PSA <- run_simulation(param_data_bc, 1, 500, 10000, "manual", 0, 0.9,1)
+  sens_0_spec_90_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0, 0.9,1)
   write.csv(sens_0_spec_90_PSA, "PSA results\\sens_0_spec_90_PSA.csv")
   use_params_sens_0_spec_90_PSA<- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_0_spec_90_PSA, "PSA results\\sens_0_spec_90_PSA_params.csv")
