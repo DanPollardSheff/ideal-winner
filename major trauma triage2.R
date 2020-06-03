@@ -1600,25 +1600,25 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 ##########################################################
 ##Check number of patients
 if(test_pat_chars=="Yes"){
-sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.998, 0.025,0)
-sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.948, 0.187,0)
-sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.904, 0.584,0)
-sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.875, 0.628,0)
-sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.746, 0.657,0)
-sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.698, 0.701,0)
-sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.642, 0.761,0)
-sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.57, 0.8,0)
-sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, 20000, "manual", 0.284, 0.886,0)
+sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.998, 0.025,0)
+sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,0)
+sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.904, 0.584,0)
+sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.875, 0.628,0)
+sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.746, 0.657,0)
+sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.698, 0.701,0)
+sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.642, 0.761,0)
+sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.57, 0.8,0)
+sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.284, 0.886,0)
 
-write.csv(sens_100_spec_3, paste(file_location,"pat char check\\sens_100_spec_3.csv", sep=""))
-write.csv(sens_95_spec_19, paste(file_location,"pat char check\\sens_95_spec_19.csv", sep=""))
-write.csv(sens_90_spec_58, paste(file_location,"pat char check\\sens_90_spec_58.csv", sep=""))
-write.csv(sens_88_spec_63, paste(file_location,"pat char check\\sens_88_spec_63.csv", sep=""))
-write.csv(sens_75_spec_66, paste(file_location,"pat char check\\sens_75_spec_66.csv", sep=""))
-write.csv(sens_70_spec_70, paste(file_location,"pat char check\\sens_70_spec_70.csv", sep=""))
-write.csv(sens_64_spec_76, paste(file_location,"pat char check\\sens_64_spec_76.csv", sep=""))
-write.csv(sens_57_spec_80, paste(file_location,"pat char check\\sens_57_spec_80.csv", sep=""))
-write.csv(sens_28_spec_89, paste(file_location,"pat char check\\sens_28_spec_89.csv", sep=""))
+write.csv(sens_100_spec_3, paste(file_location,"Patient Characteristic Check\\sens_100_spec_3.csv", sep=""))
+write.csv(sens_95_spec_19, paste(file_location,"Patient Characteristic Check\\sens_95_spec_19.csv", sep=""))
+write.csv(sens_90_spec_58, paste(file_location,"Patient Characteristic Check\\sens_90_spec_58.csv", sep=""))
+write.csv(sens_88_spec_63, paste(file_location,"Patient Characteristic Check\\sens_88_spec_63.csv", sep=""))
+write.csv(sens_75_spec_66, paste(file_location,"Patient Characteristic Check\\sens_75_spec_66.csv", sep=""))
+write.csv(sens_70_spec_70, paste(file_location,"Patient Characteristic Check\\sens_70_spec_70.csv", sep=""))
+write.csv(sens_64_spec_76, paste(file_location,"Patient Characteristic Check\\sens_64_spec_76.csv", sep=""))
+write.csv(sens_57_spec_80, paste(file_location,"Patient Characteristic Check\\sens_57_spec_80.csv", sep=""))
+write.csv(sens_28_spec_89, paste(file_location,"Patient Characteristic Check\\sens_28_spec_89.csv", sep=""))
 }else{ #if we aren't testing the stability of the results wrt to the number of patients run normal analyses
   
   
