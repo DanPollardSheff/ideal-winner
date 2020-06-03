@@ -23,8 +23,8 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
 population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
 
-
-file_location <- "~/Work from Home/Matts - Model/"
+#read in files from the X drive (note not on Git due to confidentiality reasons)
+file_location <- "\\\\uosfstore.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
 
 param_data <- read.csv(paste(file_location,"parameters.csv", sep=""), row.names=1)
 life_tabs <- read.csv(paste(file_location,"ONSlifetables.csv", sep=""))
@@ -38,13 +38,13 @@ if(population_source=="UK"){
   ISS_tab <- read.csv(paste(file_location,"ISS_tab.csv", sep=""),row.names=1)
   GCS_tab <- read.csv(paste(file_location,"GCS_tab.csv", sep=""),row.names=1)
 }else{
-  means <- as.matrix(read.csv(paste(file_location,"means_dutch.csv", sep=""),row.names=1))
-  covariance <- as.matrix(read.csv(paste(file_location,"covariance_dutch.csv", sep=""), row.names=1))
-  age_tab <- read.csv(paste(file_location,"age_tab_dutch.csv", sep=""),row.names=1)
-  gen_tab <- read.csv(paste(file_location,"male_tab_dutch.csv", sep=""),row.names=1)
-  ISS_tab <- read.csv(paste(file_location,"ISS_tab_dutch.csv", sep=""),row.names=1)
-  GCS_tab <- read.csv(paste(file_location,"GCS_tab_dutch.csv", sep=""),row.names=1)
-  blunt_tab <- read.csv(paste(file_location,"blunt_tab_dutch.csv", sep=""),row.names=1)
+  means <- as.matrix(read.csv(paste(file_location,"means_dutch_v2.csv", sep=""),row.names=1))
+  covariance <- as.matrix(read.csv(paste(file_location,"covariance_dutch_v2.csv", sep=""), row.names=1))
+  age_tab <- read.csv(paste(file_location,"age_tab_dutch_v2.csv", sep=""),row.names=1)
+  gen_tab <- read.csv(paste(file_location,"male_tab_dutch_v2.csv", sep=""),row.names=1)
+  ISS_tab <- read.csv(paste(file_location,"ISS_tab_dutch_v2.csv", sep=""),row.names=1)
+  GCS_tab <- read.csv(paste(file_location,"GCS_tab_dutch_v2.csv", sep=""),row.names=1)
+  blunt_tab <- read.csv(paste(file_location,"blunt_tab_dutch_v2.csv", sep=""),row.names=1)
 }
 
 
