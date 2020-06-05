@@ -4,7 +4,7 @@ library(devtools)
 library(MASS)
 
 #Global variables
-PSA_switch <- 0
+PSA_switch <- 1
 PSA_numb <- 500
 pat_numb <- 25000
 days_to_discharge <- 30
@@ -1858,13 +1858,13 @@ write.csv(det_analyses, "MTC v no MTC.csv")
 
 if(PSA_switch==1){
   if(PSA_strat == "MTC"){
-  sens_100_spec_10_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.1,1)
+  sens_100_spec_10_PSA <- run_simulation(param_data_MTCs, 1, PSA_numb, pat_numb, "manual", 1, 0.1,1)
   write.csv(sens_100_spec_10_PSA, paste(file_location,"PSA results\\sens_100_spec_10_PSA.csv", sep=""))
   use_params_sens_100_spec_10_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA_params.csv")
   }
   if(PSA_strat == "nMTC"){
-  sens_0_spec_90_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0, 0.9,1)
+  sens_0_spec_90_PSA <- run_simulation(param_data_MTCs, 1, PSA_numb, pat_numb, "manual", 0, 0.9,1)
   write.csv(sens_0_spec_90_PSA, paste(file_location,"PSA results\\sens_0_spec_90_PSA.csv", sep=""))
   use_params_sens_0_spec_90_PSA<- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_0_spec_90_PSA, "PSA results\\sens_0_spec_90_PSA_params.csv")
