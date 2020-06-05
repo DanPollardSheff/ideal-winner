@@ -1702,13 +1702,13 @@ if(PSA_switch==1){
   }
   if(PSA_strat == "S88"){
   sens_88_spec_63_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.875, 0.628,1)
-  write.csv(sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA.csv")
+  write.csv(sens_88_spec_63_PSA, paste(file_location,"PSA results\\sens_88_spec_63_PSA.csv", sep=""))
   use_params_sens_88_spec_63_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_88_spec_63_PSA, "PSA results\\sens_88_spec_63_PSA_params.csv")
   }
   if(PSA_strat == "S75"){
   sens_75_spec_66_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.746, 0.657,1)
-  write.csv(sens_75_spec_66_PSA, "sens_75_spec_66.csv")
+  write.csv(sens_75_spec_66_PSA,  "sens_75_spec_66.csv")
   use_params_sens_75_spec_66_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_75_spec_66_PSA, "sens_75_spec_66_PSA_params.csv")
   }

@@ -1714,7 +1714,7 @@ if(PSA_switch==1){
   }
   if(PSA_strat == "S70"){
   sens_70_spec_70_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.698, 0.701,1)
-  write.csv(sens_70_spec_70_PSA, "sens_70_spec_70.csv")
+  write.csv(sens_70_spec_70_PSA, paste(file_location,"PSA results\\sens_70_spec_70.csv", sep=""))
   use_params_sens_70_spec_70_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_70_spec_70_PSA, "sens_70_spec_70_PSA_params.csv")
   }

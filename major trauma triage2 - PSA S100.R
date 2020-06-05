@@ -4,7 +4,7 @@ library(devtools)
 library(MASS)
 
 #Global variables
-PSA_switch <- 0
+PSA_switch <- 1
 PSA_numb <- 500
 pat_numb <- 25000
 days_to_discharge <- 30
@@ -1684,7 +1684,7 @@ write.csv(det_analyses,"base case.csv")
 if(PSA_switch==1){
   if(PSA_strat == "S100"){
   sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.998, 0.025,1)
-  write.csv(sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA.csv")
+  write.csv(sens_100_spec_3_PSA, paste(file_location,"PSA results\\sens_100_spec_3_PSA.csv", sep=""))
   use_params_sens_100_spec_3_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_100_spec_3_PSA, "PSA results\\sens_100_spec_3_PSA_params.csv")
   }

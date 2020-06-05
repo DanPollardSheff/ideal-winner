@@ -1859,7 +1859,7 @@ write.csv(det_analyses, "MTC v no MTC.csv")
 if(PSA_switch==1){
   if(PSA_strat == "MTC"){
   sens_100_spec_10_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.1,1)
-  write.csv(sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA.csv")
+  write.csv(sens_100_spec_10_PSA, paste(file_location,"PSA results\\sens_100_spec_10_PSA.csv", sep=""))
   use_params_sens_100_spec_10_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_100_spec_10_PSA, "PSA results\\sens_100_spec_10_PSA_params.csv")
   }
