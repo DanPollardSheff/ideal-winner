@@ -5,7 +5,7 @@ library(MASS)
 
 #Global variables
 PSA_switch <- 1
-PSA_numb <- 500
+PSA_numb <- 750
 pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
@@ -27,6 +27,9 @@ test_pat_chars <- "No" #Change this to Yes if you only want to run the base case
 
 PSA_strat <- "S100" #Option to make sure that each instance only runs one set of PSAs, as it is computationally intensive
 #Options are: S100, S95, S90, S88, S75, S70, S64, S57, S28, MTC, nMTC
+
+PSA_rand_no <-  1346 #random number to determine PSA parameters
+#settings for MATTS phase 1 where first 500 runs 26090100 (after generating pat chars), next 750 runs (ten diagnostic strategies only) 1346 
 
 #read in files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
@@ -1544,6 +1547,8 @@ run_simulation <- function(param_inputs, PSA_switch, PSA_numb, pat_numb, strat_n
   set.seed(26090100)
   #Generate pat chars to be 
   pat_chars <- gen_pat_chars(pat_numb, means, covariance, age_tab, gen_tab, ISS_tab, GCS_tab)
+  #set the random number seed
+  set.seed(PSA_rand_no)
   #generate the parameters
   parameters <- gen_parameters(PSA_switch,PSA_numb, param_inputs)
   #As the utility parameters for people with an ISS > 9 are all the same set all the utility samples to be the same 
