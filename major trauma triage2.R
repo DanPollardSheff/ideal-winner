@@ -28,7 +28,7 @@ test_pat_chars <- "No" #Change this to Yes if you only want to run the base case
 PSA_strat <- "S100" #Option to make sure that each instance only runs one set of PSAs, as it is computationally intensive
 #Options are: S100, S95, S90, S88, S75, S70, S64, S57, S28, MTC, nMTC
 
-PSA_rand_no <-  330413 #random number to determine PSA parameters
+PSA_rand_no <-  330413 #random number to determine PSA parameters. #if -99 this will not change the seed after randomly determining the number of patients to run through the model. 
 #settings for MATTS phase 1 where first 500 runs 26090100 (after generating pat chars), next 750 runs (ten diagnostic strategies only) 1346, next 750 runs (ten diagnostic strategies only) 330413 
 
 date <- "20200616" #date to append to saved files 
@@ -1549,8 +1549,10 @@ run_simulation <- function(param_inputs, PSA_switch, PSA_numb, pat_numb, strat_n
   set.seed(26090100)
   #Generate pat chars to be 
   pat_chars <- gen_pat_chars(pat_numb, means, covariance, age_tab, gen_tab, ISS_tab, GCS_tab)
-  #set the random number seed
+  #set the random number seed for, if required. -99 value for the random number seed indicates that a change is not required. 
+  if(PSA_rand_no != -99){
   set.seed(PSA_rand_no)
+  }
   #generate the parameters
   parameters <- gen_parameters(PSA_switch,PSA_numb, param_inputs)
   #As the utility parameters for people with an ISS > 9 are all the same set all the utility samples to be the same 
