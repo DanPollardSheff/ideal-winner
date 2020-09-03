@@ -4,7 +4,7 @@ library(devtools)
 library(MASS)
 
 #Global variables
-PSA_switch <- 1
+PSA_switch <- 0
 PSA_numb <- 500
 pat_numb <- 25000
 days_to_discharge <- 30
@@ -22,6 +22,7 @@ percent_TARN_cases_reported_ISS_o16 <- 1
 percent_TARN_cases_reported_ISS_o9_u16 <- 1
 population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
 population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
+efficent_life_expectancy <- "No" #Options are Yes or No. Default is yes
 
 test_pat_chars <- "No" #Change this to Yes if you only want to run the base case analysis with patient level results
 
@@ -229,6 +230,58 @@ life_expectancy_ONS <- function(age, gender, life_tables){
   }
     return(all_cause_death)
   }
+
+life_expectancy_ONS2 <- function(pat_chars, life_tables){
+  
+  #loop over ages and determine whether the patients died in each year. 
+  for (i in 1:100){
+  
+  
+  #create a vector indcating whether or not the patient has died, by gender
+  
+  
+  #In the first loop only replace the all cause death date by -99 if the patient is alive in the model
+  if(i==1){
+    #create an alive vector for all patients
+    alive <- pat_chars[,"Age"]> 0 
+    pat_chars[,"D_1yr_plus"][alive] <- -99
+  } else{
+    alive <- pat_chars[,"D_1yr_plus"] == -99
+  }
+  #Susbset the alive vector by gender
+  alive_m <- alive & pat_chars[,"Gender"] == 0
+  alive_f <- alive & pat_chars[,"Gender"] == 1
+  #create a vector indicating if the patient is 100 or more
+  alive_m_under_100 <- alive_m & (pat_chars[,"Age"]+i)<= 100
+  alive_m_over_100 <- alive_m &(pat_chars[,"Age"]+i) > 100
+  alive_f_under_100 <- alive_f & (pat_chars[,"Age"]+i)<= 100
+  alive_f_over_100 <- alive_f &(pat_chars[,"Age"]+i) > 100
+  alive_under_100 <- alive&(pat_chars[,"Age"]+i)<= 100
+  
+  #record the probability of deaths
+  
+  #men
+  age_temp_m <- (pat_chars[,"Age"]+i)[alive_m_under_100]
+  p_death_m <- life_tables[age_temp_m,2]
+  #store their probability of death in temporarily in the pat chars matrix
+  pat_chars[,"D_1yr_plus"][alive_m_under_100] <- p_death_m
+  #for the men aged 100 or more, give them the life expectancy of someone aged 100
+  pat_chars[,"D_1yr_plus"][alive_m_over_100] <- 103.02
+  
+  #Women
+  age_temp_f <- (pat_chars[,"Age"]+i)[alive_f_under_100]
+  p_death_f <- life_tables[age_temp_f,3]
+  #store their probability of death in temporarily in the pat chars matrix
+  pat_chars[,"D_1yr_plus"][alive_f_under_100] <- p_death_f
+  #for the women aged 100 or more, give them the life expectancy of someone aged 100
+  pat_chars[,"D_1yr_plus"][alive_f_over_100] <- 103.32
+  
+  rands <- runif(length(pat_chars[,1][alive_under_100]))
+  
+  pat_chars[,"D_1yr_plus"][alive_under_100] <- ifelse(rands < pat_chars[,"D_1yr_plus"][alive_under_100], pat_chars[,"Age"][alive_under_100]+i+0.5, -99)
+  }
+  return(pat_chars[,"D_1yr_plus"])
+}
 
 ###
   
@@ -1257,9 +1310,15 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
  
  #estimate the time of death for each patient, as though their ISS is over 15
  #Note this is plus one, because their characteristic is age at baseline and these patients have survived to one year
+ if(efficent_life_expectancy =="No"){
  Age_at_death_ISS_o15 <-  life_expectancy_ONS(pat_chars[,"Age"]+1,pat_chars[,"Gender"], Life_table_ISS_o_15)
  #estimate the time of death for each patient, as though their ISS is under 16
  Age_at_death_ISS_u16 <-  life_expectancy_ONS(pat_chars[,"Age"]+1,pat_chars[,"Gender"], Life_table_ISS_u_16)
+ } else{
+   Age_at_death_ISS_o15 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_o_15)
+   #estimate the time of death for each patient, as though their ISS is under 16
+   Age_at_death_ISS_u16 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_u_16)
+ }
  #Note is age +1 in these calculations, as they must be alive one year after their major trauma to have their long term
  #life expectancy estimated
  
@@ -1608,6 +1667,18 @@ MTCs_in_mort_risk <- "No"
 population_source <- "Dutch" 
 percent_TARN_cases_reported_ISS_o16 <- 1
 percent_TARN_cases_reported_ISS_o9_u16 <- 1
+
+######
+start_old_LE <- Sys.time()
+test_old_LE_est <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,1)
+finish_old_LE <- Sys.time()
+time_old_LE <- finish_old_LE - start_old_LE
+
+efficent_life_expectancy <- "Yes"
+start_new_LE <- Sys.time()
+test_new_LE_est <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,1)
+finish_new_LE <- Sys.time()
+time_new_LE <- finish_new_LE - start_new_LE
 
 ##########################################################
 ##Check number of patients
