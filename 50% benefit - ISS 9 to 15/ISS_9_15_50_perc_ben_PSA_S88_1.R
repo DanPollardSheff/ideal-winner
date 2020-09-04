@@ -5,16 +5,16 @@ library(MASS)
 
 #Global variables
 PSA_switch <- 0
-PSA_numb <- 500
-pat_numb <- 50000
+PSA_numb <- 1000
+pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
 time_horizon <- 100
 discount_rate_QALYs <- 0.035
 discount_rate_costs <- 0.035
 Param_export <- 1
-Proportion_RR_MTC_ISS_o8_u16_hosp <- 0
-Proportion_RR_MTC_ISS_o8_u16_1yr <- 0
+Proportion_RR_MTC_ISS_o8_u16_hosp <- 0.5
+Proportion_RR_MTC_ISS_o8_u16_1yr <- 0.5
 TARN_mort_eq <- "Old" # options are new or old. Default is old
 MTCs_in_mort_risk <- "No" #options are Yes or no. Relates to whether the mort eq is a composite risk score for a 
 #population who has / has not been to an MTC or a population who hasn't gone to an MTC. Default is no, as the
@@ -25,15 +25,15 @@ population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
 population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
 efficent_life_expectancy <- "Yes" #Options are Yes or No. Default is yes
 
-test_pat_chars <- "Yes" #Change this to Yes if you only want to run the base case analysis with patient level results
+test_pat_chars <- "No" #Change this to Yes if you only want to run the base case analysis with patient level results
 
-PSA_strat <- "S100_S1" #Option to make sure that each instance only runs one set of PSAs, as it is computationally intensive
+PSA_strat <- "S88" #Option to make sure that each instance only runs one set of PSAs, as it is computationally intensive
 #Options are: S100, S95, S90, S88, S75, S70, S64, S57, S28, MTC, nMTC, S100_S1, S95_S1, S90_S1, S88_S1, S75_S1, S70_S1, S64_S1, S57_S1, S28_S1
 
 PSA_rand_no <-  -99 #random number to determine PSA parameters. #if -99 this will not change the seed after randomly determining the number of patients to run through the model. 
-#settings for MATTS phase 1 where first 500 runs 26090100 (after generating pat chars), next 750 runs (ten diagnostic strategies only) 1346, next 750 runs (ten diagnostic strategies only) 330413 
+#settings for MATTS phase 1 where first 500 runs 26090100 (after generating pat chars), next 1000 runs (ten diagnostic strategies only) 1346
 
-date <- "20200616" #date to append to saved files 
+date <- "_1" #name to append to saved files 
 
 #read in files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
@@ -72,51 +72,6 @@ source("Functions.R")
 param_data_bc <- param_data
 
 ##########################################################
-##Check number of patients
-if(test_pat_chars=="Yes"){
-sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.998, 0.025,0)
-sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,0)
-sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.904, 0.584,0)
-sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.875, 0.628,0)
-sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.746, 0.657,0)
-sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.698, 0.701,0)
-sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.642, 0.761,0)
-sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.57, 0.8,0)
-sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.284, 0.886,0)
-
-write.csv(sens_100_spec_3, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_100_spec_3.csv", sep=""))
-write.csv(sens_95_spec_19, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_95_spec_19.csv", sep=""))
-write.csv(sens_90_spec_58, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_90_spec_58.csv", sep=""))
-write.csv(sens_88_spec_63, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_88_spec_63.csv", sep=""))
-write.csv(sens_75_spec_66, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_75_spec_66.csv", sep=""))
-write.csv(sens_70_spec_70, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_70_spec_70.csv", sep=""))
-write.csv(sens_64_spec_76, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_64_spec_76.csv", sep=""))
-write.csv(sens_57_spec_80, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_57_spec_80.csv", sep=""))
-write.csv(sens_28_spec_89, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_28_spec_89.csv", sep=""))
-
-
-#run them normally as summaries too for error checking
-sens_100_spec_3 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.998, 0.025,1)
-sens_95_spec_19 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.948, 0.187,1)
-sens_90_spec_58 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.904, 0.584,1)
-sens_88_spec_63 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.875, 0.628,1)
-sens_75_spec_66 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.746, 0.657,1)
-sens_70_spec_70 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.698, 0.701,1)
-sens_64_spec_76 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.642, 0.761,1)
-sens_57_spec_80 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.57, 0.8,1)
-sens_28_spec_89 <- run_simulation(param_data_bc, 0, 1, pat_numb, "manual", 0.284, 0.886,1)
-
-write.csv(sens_100_spec_3, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_100_spec_3_ec.csv", sep=""))
-write.csv(sens_95_spec_19, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_95_spec_19_ec.csv", sep=""))
-write.csv(sens_90_spec_58, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_90_spec_58_ec.csv", sep=""))
-write.csv(sens_88_spec_63, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_88_spec_63_ec.csv", sep=""))
-write.csv(sens_75_spec_66, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_75_spec_66_ec.csv", sep=""))
-write.csv(sens_70_spec_70, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_70_spec_70_ec.csv", sep=""))
-write.csv(sens_64_spec_76, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_64_spec_76_ec.csv", sep=""))
-write.csv(sens_57_spec_80, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_57_spec_80_ec.csv", sep=""))
-write.csv(sens_28_spec_89, paste(file_location,"Patient Characteristic Check\\new acmf\\sens_28_spec_89_ec.csv", sep=""))
-
-}else{ #if we aren't testing the stability of the results wrt to the number of patients run normal analyses
   
   
 #with 20,000 patients the results are stable in the base case
@@ -207,7 +162,6 @@ if(PSA_switch==1){
   use_params_sens_28_spec_89_PSA <- read.csv("parameter_outputs.csv")
   write.csv(use_params_sens_28_spec_89_PSA, "PSA results\\sens_28_spec_89_PSA_params.csv")
   }
-}
 #Use the newer TARN mortality equation
 TARN_mort_eq <- "New" 
 MTCs_in_mort_risk <- "Yes"
