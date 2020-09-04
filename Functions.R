@@ -171,7 +171,7 @@ life_expectancy_ONS <- function(age, gender, life_tables){
 life_expectancy_ONS2 <- function(pat_chars, life_tables){
   
   #loop over ages and determine whether the patients died in each year. 
-  for (i in 1:100){
+  for (i in 1:85){
     
     
     #create a vector indcating whether or not the patient has died, by gender
@@ -186,8 +186,8 @@ life_expectancy_ONS2 <- function(pat_chars, life_tables){
       alive <- pat_chars[,"D_1yr_plus"] == -99
     }
     #Susbset the alive vector by gender
-    alive_m <- alive & pat_chars[,"Gender"] == 0
-    alive_f <- alive & pat_chars[,"Gender"] == 1
+    alive_m <- alive & pat_chars[,"Gender"] == 1
+    alive_f <- alive & pat_chars[,"Gender"] == 0
     #create a vector indicating if the patient is 100 or more
     alive_m_under_100 <- alive_m & (pat_chars[,"Age"]+i)<= 100
     alive_m_over_100 <- alive_m &(pat_chars[,"Age"]+i) > 100
@@ -198,7 +198,9 @@ life_expectancy_ONS2 <- function(pat_chars, life_tables){
     #record the probability of deaths
     
     #men
-    age_temp_m <- (pat_chars[,"Age"]+i)[alive_m_under_100]
+    #note the +1 is to offset the rwo by 1 to adjust for the fact that ONS life
+    #tables start at age 0
+    age_temp_m <- (pat_chars[,"Age"]+i+1)[alive_m_under_100]
     p_death_m <- life_tables[age_temp_m,2]
     #store their probability of death in temporarily in the pat chars matrix
     pat_chars[,"D_1yr_plus"][alive_m_under_100] <- p_death_m
@@ -206,16 +208,18 @@ life_expectancy_ONS2 <- function(pat_chars, life_tables){
     pat_chars[,"D_1yr_plus"][alive_m_over_100] <- 103.02
     
     #Women
-    age_temp_f <- (pat_chars[,"Age"]+i)[alive_f_under_100]
+    age_temp_f <- (pat_chars[,"Age"]+i+1)[alive_f_under_100]
     p_death_f <- life_tables[age_temp_f,3]
     #store their probability of death in temporarily in the pat chars matrix
     pat_chars[,"D_1yr_plus"][alive_f_under_100] <- p_death_f
     #for the women aged 100 or more, give them the life expectancy of someone aged 100
     pat_chars[,"D_1yr_plus"][alive_f_over_100] <- 103.32
     
-    rands <- runif(length(pat_chars[,1][alive_under_100]))
+    #Generate the random numbers 
+    rands <- runif(length(pat_chars[,1][alive_under_100])) #set to determine whether or not an event has occured
+    rands2 <- runif(length(pat_chars[,1][alive_under_100])) #if an event has occured within the next year, exactly how far into the year does it occur
     
-    pat_chars[,"D_1yr_plus"][alive_under_100] <- ifelse(rands < pat_chars[,"D_1yr_plus"][alive_under_100], pat_chars[,"Age"][alive_under_100]+i+0.5, -99)
+    pat_chars[,"D_1yr_plus"][alive_under_100] <- ifelse(rands < pat_chars[,"D_1yr_plus"][alive_under_100], pat_chars[,"Age"][alive_under_100]+i+rands2, -99)
   }
   return(pat_chars[,"D_1yr_plus"])
 }
@@ -361,7 +365,7 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   test2[,"ID"] <- 1:nrow(test2)
   test2[,"ISS"] <- test[,"ISS"]
   test2[,"Age"] <- test[,"Age"]
-  test2[,"Gender"] <- ifelse(test[,"Gender"]==1,0,1)
+  test2[,"Gender"] <- test[,"Gender"]
   test2[,"GCS"] <- test[,"GCS"]
   test2[,"Blunt_trauma"] <- test[,"Blunt_trauma"]
   
@@ -1147,7 +1151,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
-    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
+    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
     
     p_death_hosp_ISSo8_u16_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*mod_RR_MTC_ISS_o8_u16)
     p_death_hosp_ISSo8_u16_nMTC <- p_death_hosp_ISSo8_u16_MTC * mod_RR_MTC_ISS_o8_u16
@@ -1159,7 +1163,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
-    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
+    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
     #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
     p_death_hosp_ISSo8_u16_MTC <- p_death_TARN*(1/mod_RR_MTC_ISS_o8_u16)
     p_death_hosp_ISSo8_u16_nMTC <- p_death_TARN
@@ -1195,7 +1199,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   p_death_disch_1yr_ISSo15_nMTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"] * parameters[SOUR,"RR_p_death_y1_nMTC"]
   
   #alter the relative risk by global proportion in the model
-  mod_RR_MTC_ISS_o8_u16 <- 1 + (Proportion_RR_MTC_ISS_o8_u16*(parameters[SOUR,"RR_p_death_y1_nMTC"]-1))
+  mod_RR_MTC_ISS_o8_u16 <- 1 + (Proportion_RR_MTC_ISS_o8_u16_1yr*(parameters[SOUR,"RR_p_death_y1_nMTC"]-1))
   
   p_death_disch_1yr_ISSo8_u16_MTC <- parameters[SOUR,"p_death_y1_ISSu16"]
   p_death_disch_1yr_ISSo8_u16_nMTC <- parameters[SOUR,"p_death_y1_ISSu16"] * mod_RR_MTC_ISS_o8_u16
