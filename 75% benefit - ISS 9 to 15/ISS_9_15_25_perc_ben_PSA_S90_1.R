@@ -4,13 +4,8 @@ library(devtools)
 library(MASS)
 
 #Global variables
-<<<<<<< HEAD
-PSA_switch <- 1
-PSA_numb <- 500
-=======
 PSA_switch <- 0
 PSA_numb <- 1000
->>>>>>> 6215f24aea83a3aaa7e82735f2eeab73efde4171
 pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
@@ -18,8 +13,8 @@ time_horizon <- 100
 discount_rate_QALYs <- 0.035
 discount_rate_costs <- 0.035
 Param_export <- 1
-Proportion_RR_MTC_ISS_o8_u16_hosp <- 0
-Proportion_RR_MTC_ISS_o8_u16_1yr <- 0
+Proportion_RR_MTC_ISS_o8_u16_hosp <- 0.5
+Proportion_RR_MTC_ISS_o8_u16_1yr <- 0.5
 TARN_mort_eq <- "Old" # options are new or old. Default is old
 MTCs_in_mort_risk <- "No" #options are Yes or no. Relates to whether the mort eq is a composite risk score for a 
 #population who has / has not been to an MTC or a population who hasn't gone to an MTC. Default is no, as the
@@ -32,7 +27,7 @@ efficent_life_expectancy <- "Yes" #Options are Yes or No. Default is yes
 
 test_pat_chars <- "No" #Change this to Yes if you only want to run the base case analysis with patient level results
 
-PSA_strat <- "S95" #Option to make sure that each instance only runs one set of PSAs, as it is computationally intensive
+PSA_strat <- "S90" #Option to make sure that each instance only runs one set of PSAs, as it is computationally intensive
 #Options are: S100, S95, S90, S88, S75, S70, S64, S57, S28, MTC, nMTC, S100_S1, S95_S1, S90_S1, S88_S1, S75_S1, S70_S1, S64_S1, S57_S1, S28_S1
 
 PSA_rand_no <-  -99 #random number to determine PSA parameters. #if -99 this will not change the seed after randomly determining the number of patients to run through the model. 

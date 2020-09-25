@@ -4,13 +4,8 @@ library(devtools)
 library(MASS)
 
 #Global variables
-<<<<<<< HEAD
-PSA_switch <- 1
-PSA_numb <- 500
-=======
 PSA_switch <- 0
 PSA_numb <- 1000
->>>>>>> 6215f24aea83a3aaa7e82735f2eeab73efde4171
 pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
@@ -18,8 +13,8 @@ time_horizon <- 100
 discount_rate_QALYs <- 0.035
 discount_rate_costs <- 0.035
 Param_export <- 1
-Proportion_RR_MTC_ISS_o8_u16_hosp <- 0
-Proportion_RR_MTC_ISS_o8_u16_1yr <- 0
+Proportion_RR_MTC_ISS_o8_u16_hosp <- 0.75
+Proportion_RR_MTC_ISS_o8_u16_1yr <- 0.75
 TARN_mort_eq <- "Old" # options are new or old. Default is old
 MTCs_in_mort_risk <- "No" #options are Yes or no. Relates to whether the mort eq is a composite risk score for a 
 #population who has / has not been to an MTC or a population who hasn't gone to an MTC. Default is no, as the
