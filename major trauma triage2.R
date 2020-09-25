@@ -6,7 +6,7 @@ library(MASS)
 #Global variables
 PSA_switch <- 0
 PSA_numb <- 500
-pat_numb <- 25000
+pat_numb <- 50000
 days_to_discharge <- 30
 days_in_year <- 365.25
 time_horizon <- 100

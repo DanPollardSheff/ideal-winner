@@ -5,7 +5,11 @@ library(MASS)
 
 #Global variables
 PSA_switch <- 0
+<<<<<<< HEAD
 PSA_numb <- 750
+=======
+PSA_numb <- 1000
+>>>>>>> 6215f24aea83a3aaa7e82735f2eeab73efde4171
 pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
@@ -31,7 +35,11 @@ PSA_strat <- "nMTC" #Option to make sure that each instance only runs one set of
 #Options are: S100, S95, S90, S88, S75, S70, S64, S57, S28, MTC, nMTC, S100_S1, S95_S1, S90_S1, S88_S1, S75_S1, S70_S1, S64_S1, S57_S1, S28_S1
 
 PSA_rand_no <-  1346 #random number to determine PSA parameters. #if -99 this will not change the seed after randomly determining the number of patients to run through the model. 
+<<<<<<< HEAD
 #settings for MATTS phase 1 where first 500 runs 26090100 (after generating pat chars), next 750 runs (ten diagnostic strategies only) 1346
+=======
+#settings for MATTS phase 1 where first 500 runs 26090100 (after generating pat chars), next 1000 runs (ten diagnostic strategies only) 1346
+>>>>>>> 6215f24aea83a3aaa7e82735f2eeab73efde4171
 
 date <- "_2" #name to append to saved files 
 

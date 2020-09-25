@@ -5,7 +5,11 @@ library(MASS)
 
 #Global variables
 PSA_switch <- 0
+<<<<<<< HEAD
 PSA_numb <- 750
+=======
+PSA_numb <- 1000
+>>>>>>> 6215f24aea83a3aaa7e82735f2eeab73efde4171
 pat_numb <- 50000
 days_to_discharge <- 30
 days_in_year <- 365.25
