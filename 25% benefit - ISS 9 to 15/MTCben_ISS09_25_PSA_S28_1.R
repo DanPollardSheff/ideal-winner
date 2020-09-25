@@ -4,8 +4,8 @@ library(devtools)
 library(MASS)
 
 #Global variables
-PSA_switch <- 0
-PSA_numb <- 1000
+PSA_switch <- 1
+PSA_numb <- 500
 pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
@@ -33,7 +33,7 @@ PSA_strat <- "S28" #Option to make sure that each instance only runs one set of 
 PSA_rand_no <-  -99 #random number to determine PSA parameters. #if -99 this will not change the seed after randomly determining the number of patients to run through the model. 
 #settings for MATTS phase 1 where first 500 runs 26090100 (after generating pat chars), next 1000 runs (ten diagnostic strategies only) 1346
 
-date <- "_1" #name to append to saved files 
+date <- "_1_25_ben_ISS_u9" #name to append to saved files 
 
 #read in files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
