@@ -4,8 +4,8 @@ library(devtools)
 library(MASS)
 
 #Global variables
-PSA_switch <- 0
-PSA_numb <- 1000
+PSA_switch <- 1
+PSA_numb <- 500
 pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
