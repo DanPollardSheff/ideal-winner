@@ -250,6 +250,13 @@ cont_disc <- function(yearly_val, time_start, time_end, discount_rate){
 ## Function to set all baseline patient characteristics
 gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab, GCS_tab){
   
+  #If the global option is set to read in the pre-generated pat_chars call it them in
+  if(predefined_pop_PSA =="Yes"){
+    test2 <- read.csv("Simulated Patients.csv")
+  }else{
+  
+  #otherwise generate the characteristics by doing the simulations yourself
+  
   #Create a matrix for all patient characteristics
   test2 = matrix(nrow = pat_numb, ncol = 21)  
   colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr")  
@@ -371,7 +378,7 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   
   #As we have no data on mCCI, set everyone to have a missing mCCI
   test2[,"CCI"] <- -99
-  
+  }
   return(test2)
 }
 
@@ -380,7 +387,9 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
 #Parameter 1 is a switch variable to determine whether or not a PSA is being run
 #Second parameter is 
 gen_parameters <- function(PSA_switch,PSA_numb, parameters){
-  
+  if(predefined_pop_PSA =="Yes"){
+    param_matrix <- read.csv("Simulated_parameters.csv")
+  }else{
   #Set up a matrix to store all parameter values
   param_matrix <- matrix(nrow = ifelse(PSA_switch==1,PSA_numb,1), ncol = nrow(parameters))
   
@@ -969,7 +978,7 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   TARN_old_constant <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
   #Step 3, record the parameter value
   param_matrix[,t] <- TARN_old_constant
-  
+  }
   return(param_matrix)
   
 }

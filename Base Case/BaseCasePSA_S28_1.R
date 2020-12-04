@@ -67,7 +67,16 @@ if(population_source=="UK"){
 #Call in all functions
 source("Functions.R")
 
+#Do you want to the use pre-simluated population and PSA?
+predefined_pop_PSA <- "No"  # Option to use the pre-simulated population and PSA parameters
+#Set to "Yes" if using the publicly shared version of the model
+# In the predefined population we have merged some ISS and age categories for potential
+#identifiability reasons
 
+#Change PSA number to 2000 if using the predefined population
+if(predefined_pop_PSA=="Yes"){
+  PSA_numb <- 2000
+}
 
 
 #Analysis###################
