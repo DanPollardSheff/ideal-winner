@@ -250,10 +250,8 @@ cont_disc <- function(yearly_val, time_start, time_end, discount_rate){
 ## Function to set all baseline patient characteristics
 gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab, GCS_tab){
   
-  #If the global option is set to read in the pre-generated pat_chars call it them in
-  if(predefined_pop_PSA =="Yes"){
-    test2 <- read.csv("Simulated Patients.csv")
-  }else{
+ 
+  
   
   #otherwise generate the characteristics by doing the simulations yourself
   
@@ -263,6 +261,11 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   
   #test sampling
   test <- mvrnorm (n = as.numeric(pat_numb), means, covariance)
+  
+  #If the global option is set to read in the pre-generated pat_chars call it them in after sampling (ensure RN streams are correct for the PSA)
+  if(predefined_pop_PSA =="Yes"){
+    test2 <- read.csv("Simulated Patients.csv")
+  }else{
   
   #if we are checking whether each patient has an ISS of 16 or above, resample any patients with an ISS value that 
   #would be equal to 16
@@ -387,9 +390,7 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
 #Parameter 1 is a switch variable to determine whether or not a PSA is being run
 #Second parameter is 
 gen_parameters <- function(PSA_switch,PSA_numb, parameters){
-  if(predefined_pop_PSA =="Yes"){
-    param_matrix <- read.csv("Simulated_parameters.csv")
-  }else{
+  
   #Set up a matrix to store all parameter values
   param_matrix <- matrix(nrow = ifelse(PSA_switch==1,PSA_numb,1), ncol = nrow(parameters))
   
@@ -978,7 +979,7 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   TARN_old_constant <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
   #Step 3, record the parameter value
   param_matrix[,t] <- TARN_old_constant
-  }
+
   return(param_matrix)
   
 }
