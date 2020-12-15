@@ -72,13 +72,6 @@ predefined_pop_PSA <- "No"  # Option to use the pre-simulated population and PSA
 #Set to "Yes" if using the publicly shared version of the model
 # In the predefined population we have merged some ISS and age categories for potential
 #identifiability reasons
-
-#Change PSA number to 2000 if using the predefined population
-if(predefined_pop_PSA=="Yes"){
-  PSA_numb <- 2000
-}
-
-
 #Analysis###################
 param_data_bc <- param_data
 
