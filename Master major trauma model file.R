@@ -21,7 +21,7 @@ MTCs_in_mort_risk <- "No" #options are Yes or no. Relates to whether the mort eq
 #default for the  mortality equation is the Old TARN equation.
 percent_TARN_cases_reported_ISS_o16 <- 1
 percent_TARN_cases_reported_ISS_o9_u16 <- 1
-population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
+population_source <- "Dutch_simp" # Options are UK, Dutch, Dutch_simp. Dutch is the default
 population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
 efficent_life_expectancy <- "Yes" #Options are Yes or No. Default is yes
 
@@ -49,8 +49,16 @@ if(population_source=="UK"){
   gen_tab <- read.csv(paste(file_location,"gen_tab.csv", sep=""),row.names=1)
   ISS_tab <- read.csv(paste(file_location,"ISS_tab.csv", sep=""),row.names=1)
   GCS_tab <- read.csv(paste(file_location,"GCS_tab.csv", sep=""),row.names=1)
+}else if (population_source== "Dutch_simp"){
+  means <- as.matrix(read.csv("means_dutch_v2.csv",row.names=1))
+  covariance <- as.matrix(read.csv("covariance_dutch_v2.csv", row.names=1))
+  age_tab <- read.csv("age_tab_dutch_v2.csv",row.names=1)
+  gen_tab <- read.csv("male_tab_dutch_v2.csv",row.names=1)
+  ISS_tab <- read.csv("ISS_tab_dutch_v2.csv",row.names=1)
+  GCS_tab <- read.csv("GCS_tab_dutch_v2.csv",row.names=1)
+  blunt_tab <- read.csv("blunt_tab_dutch_v2.csv",row.names=1)
 }else{
-  means <- as.matrix(read.csv(paste(file_location,"means_dutch_v2.csv", sep=""),row.names=1))
+  means <- as.matrix(read.csv(paste(file_location,"means_dutch_v2.csv", sep=""), row.names=1))
   covariance <- as.matrix(read.csv(paste(file_location,"covariance_dutch_v2.csv", sep=""), row.names=1))
   age_tab <- read.csv(paste(file_location,"age_tab_dutch_v2.csv", sep=""),row.names=1)
   gen_tab <- read.csv(paste(file_location,"male_tab_dutch_v2.csv", sep=""),row.names=1)
@@ -59,20 +67,8 @@ if(population_source=="UK"){
   blunt_tab <- read.csv(paste(file_location,"blunt_tab_dutch_v2.csv", sep=""),row.names=1)
 }
 
-
-
-
 #Call in all functions
 source("Functions.R")
-
-#Do you want to the use pre-simluated population and PSA?
-predefined_pop_PSA <- "No"  # Option to use the pre-simulated population and PSA parameters
-#Set to "Yes" if using the publicly shared version of the model
-# In the predefined population we have merged some ISS and age categories for potential
-#identifiability reasons
-
-
-
 
 #Analysis###################
 param_data_bc <- param_data

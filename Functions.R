@@ -262,10 +262,7 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   #test sampling
   test <- mvrnorm (n = as.numeric(pat_numb), means, covariance)
   
-  #If the global option is set to read in the pre-generated pat_chars call it them in after sampling (ensure RN streams are correct for the PSA)
-  if(predefined_pop_PSA =="Yes"){
-    test2 <- read.csv("Simulated Patients.csv")
-  }else{
+
   
   #if we are checking whether each patient has an ISS of 16 or above, resample any patients with an ISS value that 
   #would be equal to 16
@@ -381,7 +378,6 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   
   #As we have no data on mCCI, set everyone to have a missing mCCI
   test2[,"CCI"] <- -99
-  }
   return(test2)
 }
 
