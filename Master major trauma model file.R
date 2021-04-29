@@ -13,8 +13,20 @@ time_horizon <- 100
 discount_rate_QALYs <- 0.035
 discount_rate_costs <- 0.035
 Param_export <- 1
+
+#The proportion of clinical benefit that patients with an ISS of over 8 and under 16 receive
+#compared to people with an ISS of 16 or more
+#Default is no benefit
 Proportion_RR_MTC_ISS_o8_u16_hosp <- 0
 Proportion_RR_MTC_ISS_o8_u16_1yr <- 0
+
+#The proportion of clinical benefit that patients who are initially sent to a non-MTC receive
+#compared to people sent staright to an MTC
+#Default is no benefit
+Proportion_RR_MTC_transfer_hosp <- 0
+Proportion_RR_MTC_ISS_transfer_1yr <- 0
+
+
 TARN_mort_eq <- "Old" # options are new or old. Default is old
 MTCs_in_mort_risk <- "No" #options are Yes or no. Relates to whether the mort eq is a composite risk score for a 
 #population who has / has not been to an MTC or a population who hasn't gone to an MTC. Default is no, as the
