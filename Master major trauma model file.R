@@ -36,8 +36,7 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 population_source <- "Dutch_simp" # Options are UK, Dutch, Dutch_simp. Dutch is the default
 
 population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
-population_ISS_under16_only <- "No" # Options are yes or no. Default is no. Is both this and population_ISS_over16_only are set to yes, this population will be 
-#generated
+population_ISS_under16_only <- "Yes" # Options are yes or no. Default is no. only this or the above can be "Yes". Function will not work otherwise
 
 efficent_life_expectancy <- "Yes" #Options are Yes or No. Default is yes
 
