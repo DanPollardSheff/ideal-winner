@@ -24,7 +24,8 @@ MTCs_in_mort_risk <- "No" #options are Yes or no. Relates to whether the mort eq
 percent_TARN_cases_reported_ISS_o16 <- 1
 percent_TARN_cases_reported_ISS_o9_u16 <- 1
 population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
-population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
+population_ISS_over16_only <- "Yes" # Options are yes or no. Default is no. 
+population_ISS_under16_only <- "No" # Options are yes or no. Default is no. only this or the above can be "Yes". Function will not work otherwise
 efficent_life_expectancy <- "Yes" #Options are Yes or No. Default is yes
 
 test_pat_chars <- "No" #Change this to Yes if you only want to run the base case analysis with patient level results

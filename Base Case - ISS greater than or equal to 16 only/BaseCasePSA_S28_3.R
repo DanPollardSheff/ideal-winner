@@ -5,7 +5,7 @@ library(MASS)
 
 #Global variables
 PSA_switch <- 1
-PSA_numb <- 750
+PSA_numb <- 500
 pat_numb <- 25000
 days_to_discharge <- 30
 days_in_year <- 365.25
@@ -13,16 +13,31 @@ time_horizon <- 100
 discount_rate_QALYs <- 0.035
 discount_rate_costs <- 0.035
 Param_export <- 1
+
+#The proportion of clinical benefit that patients with an ISS of over 8 and under 16 receive
+#compared to people with an ISS of 16 or more
+#Default is no benefit
 Proportion_RR_MTC_ISS_o8_u16_hosp <- 0
 Proportion_RR_MTC_ISS_o8_u16_1yr <- 0
+
+#The proportion of clinical benefit that patients who are initially sent to a non-MTC receive
+#compared to people sent straight to an MTC
+#Default is full benefit
+Proportion_RR_MTC_transfer_hosp <- 1
+Proportion_RR_MTC_ISS_transfer_1yr <- 1
+
+
 TARN_mort_eq <- "Old" # options are new or old. Default is old
 MTCs_in_mort_risk <- "No" #options are Yes or no. Relates to whether the mort eq is a composite risk score for a 
 #population who has / has not been to an MTC or a population who hasn't gone to an MTC. Default is no, as the
 #default for the  mortality equation is the Old TARN equation.
 percent_TARN_cases_reported_ISS_o16 <- 1
 percent_TARN_cases_reported_ISS_o9_u16 <- 1
-population_source <- "Dutch" # Options are UK and Dutch. Dutch is the default
-population_ISS_over16_only <- "No" # Options are yes or no. Default is no. 
+population_source <- "Dutch_simp" # Options are UK, Dutch, Dutch_simp. Dutch is the default
+
+population_ISS_over16_only <- "Yes" # Options are yes or no. Default is no. 
+population_ISS_under16_only <- "No" # Options are yes or no. Default is no. only this or the above can be "Yes". Function will not work otherwise
+
 efficent_life_expectancy <- "Yes" #Options are Yes or No. Default is yes
 
 test_pat_chars <- "No" #Change this to Yes if you only want to run the base case analysis with patient level results
