@@ -281,6 +281,25 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
       }
     }
   }
+  #if we are checking whether each patient has an ISS of 15 or less, resample any patients with an ISS value that 
+  #would be equal to 16
+  #change the lookup value dynamically based on whether it is UK or Dutch
+  if(population_ISS_under16_only=="Yes"){
+    
+    if(population_source=="UK"){
+      lookupvalue <- ISS_tab[13,4]
+    } else{
+      lookupvalue <- ISS_tab[14,4]
+    }
+    
+    for (i in 1:length(test[,1])){
+      while (test[i,"ISS"] > lookupvalue){
+        test[i,] <- mvrnorm(1,means, covariance)
+      }
+    }
+  }
+  
+  
   #Clean the dataset
   #Age
   #for loop to clean to age data
