@@ -1206,13 +1206,15 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   #record the probability of death 
   #step 1: estimate the probability of death between hospital discharge and one year post-hospitilisation using US data
   p_death_disch_1yr_ISSo15_MTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"]
-  p_death_disch_1yr_ISSo15_nMTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"] * parameters[SOUR,"RR_p_death_y1_nMTC"]
+  RR_nMTC_v_MTC_1yr <- ifelse(trans_MTC==0, parameters[SOUR,"RR_p_death_y1_nMTC"], 1 /(1+(Proportion_RR_MTC_transfer_hosp*(parameters[SOUR,"RR_p_death_y1_nMTC"]-1))))
+  p_death_disch_1yr_ISSo15_nMTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"] * RR_nMTC_v_MTC_1yr
   
   #alter the relative risk by global proportion in the model
   mod_RR_MTC_ISS_o8_u16 <- 1 + (Proportion_RR_MTC_ISS_o8_u16_1yr*(parameters[SOUR,"RR_p_death_y1_nMTC"]-1))
+  RR_nMTC_v_MTC_1yr_ISS_o8_u16 <- ifelse(trans_MTC==0, mod_RR_MTC_ISS_o8_u16, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(mod_RR_MTC_ISS_o8_u16-1))))
   
   p_death_disch_1yr_ISSo8_u16_MTC <- parameters[SOUR,"p_death_y1_ISSu16"]
-  p_death_disch_1yr_ISSo8_u16_nMTC <- parameters[SOUR,"p_death_y1_ISSu16"] * mod_RR_MTC_ISS_o8_u16
+  p_death_disch_1yr_ISSo8_u16_nMTC <- parameters[SOUR,"p_death_y1_ISSu16"] * RR_nMTC_v_MTC_1yr_ISS_o8_u16
   
   p_death_disch_1yr_ISSu9 <- parameters[SOUR,"p_death_y1_ISSu16"]
   
