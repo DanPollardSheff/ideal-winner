@@ -1164,12 +1164,16 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   }else{
     #For patients with an ISS 16 or over
     #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
-    p_death_hosp_ISSo15_MTC <- p_death_TARN*(1/parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
+    #create a vector of relative risks by transfer status, determine the benefit of MTCs
+    RR_MTC_v_NMTC <- ifelse(trans_MTC==0, 1/parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"], 1 /(1+(Proportion_RR_MTC_transfer_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1))))
+    p_death_hosp_ISSo15_MTC <- p_death_TARN*RR_MTC_v_NMTC
     p_death_hosp_ISSo15_nMTC <- p_death_TARN
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
     mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
+    RR_MTC_v_NMT_CISS_o8_u16 <- ifelse(trans_MTC==0, 1/mod_RR_MTC_ISS_o8_u16, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(mod_RR_MTC_ISS_o8_u16-1))) )
+    
     #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
     p_death_hosp_ISSo8_u16_MTC <- p_death_TARN*(1/mod_RR_MTC_ISS_o8_u16)
     p_death_hosp_ISSo8_u16_nMTC <- p_death_TARN

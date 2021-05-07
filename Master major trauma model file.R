@@ -22,9 +22,9 @@ Proportion_RR_MTC_ISS_o8_u16_1yr <- 0
 
 #The proportion of clinical benefit that patients who are initially sent to a non-MTC receive
 #compared to people sent staright to an MTC
-#Default is no benefit
-Proportion_RR_MTC_transfer_hosp <- 0
-Proportion_RR_MTC_ISS_transfer_1yr <- 0
+#Default is full benefit
+Proportion_RR_MTC_transfer_hosp <- 1
+Proportion_RR_MTC_ISS_transfer_1yr <- 1
 
 
 TARN_mort_eq <- "Old" # options are new or old. Default is old
