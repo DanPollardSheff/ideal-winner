@@ -45,7 +45,7 @@ PSA_rand_no <-  -99 #random number to determine PSA parameters. #if -99 this wil
 date <- "_1" #name to append to saved files 
 
 #read in files from the X drive (note not on Git due to confidentiality reasons)
-file_location <- "\\\\uosfstore.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
+file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
 
 param_data <- read.csv("parameters.csv", row.names=1)
 life_tabs <- read.csv("ONSlifetables.csv")

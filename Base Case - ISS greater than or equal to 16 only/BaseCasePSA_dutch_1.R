@@ -45,7 +45,7 @@ PSA_rand_no <-  -99 #random number to determine PSA parameters. #if -99 this wil
 date <- "_1" #name to append to saved files 
 
 #read in files from the X drive (note not on Git due to confidentiality reasons)
-file_location <- "\\\\uosfstore.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
+file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
 
 param_data <- read.csv("parameters.csv", row.names=1)
 life_tabs <- read.csv("ONSlifetables.csv")
@@ -73,12 +73,6 @@ if(population_source=="UK"){
 
 #Call in all functions
 source("Functions.R")
-
-#Do you want to the use pre-simluated population and PSA?
-predefined_pop_PSA <- "No"  # Option to use the pre-simulated population and PSA parameters
-#Set to "Yes" if using the publicly shared version of the model
-# In the predefined population we have merged some ISS and age categories for potential
-#identifiability reasons
 
 
 
