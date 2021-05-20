@@ -88,5 +88,5 @@ param_data_bc <- param_data
 ##########################################################
 
 trauma_score_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.138952, 0.952381,1)
-write.csv(trauma_score_PSA, paste(file_location,"PSA results\\May21\\traumascore",date,".csv", sep=""))
+write.csv(trauma_score_PSA, paste(file_location,"PSA results\\May21\\traumascore_ISSu16",date,".csv", sep=""))
 

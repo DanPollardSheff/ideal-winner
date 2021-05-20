@@ -15,14 +15,14 @@ discount_rate_costs <- 0.035    #discount rate, costs
 Param_export <- 1               #1=save a copy of PSA parameters
 
 #The proportion of clinical benefit that patients with an ISS of over 8 and under 16 receive
-#compared to people with an ISS of 16 or more (0 to 1). Default is no benefit (0)
+#compared to people with an ISS of 16 or more. Default is no benefit
 Proportion_RR_MTC_ISS_o8_u16_hosp <- 0
 Proportion_RR_MTC_ISS_o8_u16_1yr <- 0
 
 #The proportion of clinical benefit that patients who are initially sent to a non-MTC receive
-#compared to people sent straight to an MTC (0 to 1). Default is full benefit (1)
-Proportion_RR_MTC_transfer_hosp <- 1
-Proportion_RR_MTC_ISS_transfer_1yr <- 1
+#compared to people sent straight to an MTC. Default is full benefit
+Proportion_RR_MTC_transfer_hosp <- 0.75
+Proportion_RR_MTC_ISS_transfer_1yr <- 0.75
 
 
 TARN_mort_eq <- "Old"           #options are new or old. Default is old
@@ -44,7 +44,7 @@ test_pat_chars <- "No"              #Change this to Yes if you only want to run 
 
 PSA_rand_no <-  -99                 #random number to determine PSA parameters either -99 (to not reset the seed) or any positive number
 
-date <- "_1_75_ben_ISS_u9"          #name to append to saved files 
+date <- "_1_75_ben_trans"          #name to append to saved files 
 
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
@@ -88,5 +88,6 @@ param_data_bc <- param_data
 
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
-sens_100_spec_3_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.998, 0.025,1)
+sens_90_spec_58_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.904, 0.584,1)
+write.csv(sens_90_spec_58_PSA, paste(file_location,"PSA results\\sens_90_spec_58_PSA",date,".csv", sep=""))
   

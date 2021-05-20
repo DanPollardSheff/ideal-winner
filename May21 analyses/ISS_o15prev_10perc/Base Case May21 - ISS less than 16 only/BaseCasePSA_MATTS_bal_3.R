@@ -88,5 +88,5 @@ param_data_bc <- param_data
 ##########################################################
 
 MATTS_bal_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.770701, 0.545918,1)
-write.csv(MATTS_bal_PSA, paste(file_location,"PSA results\\May21\\MATTSbal",date,".csv", sep=""))
+write.csv(MATTS_bal_PSA, paste(file_location,"PSA results\\May21\\MATTSbal_ISSu16",date,".csv", sep=""))
 

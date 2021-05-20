@@ -88,5 +88,5 @@ param_data_bc <- param_data
 ##########################################################
 
 SWAST_PSA <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 0.517018, 0.785714,1)
-write.csv(SWAST_PSA, paste(file_location,"PSA results\\May21\\SWAST",date,".csv", sep=""))
+write.csv(SWAST_PSA, paste(file_location,"PSA results\\May21\\SWAST_ISSu16",date,".csv", sep=""))
 
