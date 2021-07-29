@@ -9,7 +9,7 @@ numCores <- (detectCores() -1) #Leave 1 Core for OS
 
 #Global variables
 PSA_switch <- 1                 #1=run PSA, 0=deterministic
-PSA_numb <- 7                 #number of PSA runs
+PSA_numb <- 2000                 #number of PSA runs
 pat_numb <- 25000               #number of patients
 days_to_discharge <- 30         #number of days to discharge from hospital
 days_in_year <- 365.25          #number of days in a year
@@ -39,7 +39,7 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 
 population_source <- "Dutch" #Source of simulated population.Options are UK, Dutch, Dutch_simp. Dutch is the default
 
-population_ISS_over16_only <- "No"  #Option for resampling to produce a population with ISS >= 16. Options are "Yes" or "No". Default is no. 
+population_ISS_over16_only <- "Yes"  #Option for resampling to produce a population with ISS >= 16. Options are "Yes" or "No". Default is no. 
 population_ISS_under16_only <- "No" #Option for resampling to produce a population with ISS < 16. Can be "Yes" or "No". Default is no.
 
 efficent_life_expectancy <- "Yes"   #Options are Yes or No. Default is yes
