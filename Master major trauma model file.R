@@ -2,10 +2,14 @@
 
 library(devtools)
 library(MASS)
+library(parallel)
+library(doParallel)
+
+numCores <- (detectCores() -1) #Leave 1 Core for OS
 
 #Global variables
 PSA_switch <- 1                 #1=run PSA, 0=deterministic
-PSA_numb <- 500                 #number of PSA runs
+PSA_numb <- 7                 #number of PSA runs
 pat_numb <- 25000               #number of patients
 days_to_discharge <- 30         #number of days to discharge from hospital
 days_in_year <- 365.25          #number of days in a year

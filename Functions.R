@@ -1601,24 +1601,45 @@ run_simulation <- function(param_inputs, PSA_switch, PSA_numb, pat_numb, strat_n
   colnames(results) <- c("Sens_DR","Spec_DR", "Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year", "Years_lived",
                          "undiscounted_QALYs", "discounted_QALYs", "undiscounted_Costs", "discounted_Costs", "proportion_ISS_over_16", "proportion_ISS_over_8_under_16")
   
-  #set SOUR to 1 to start the simulation
-  SOUR <- 1
-  #define the strategy
+  
   
   #run the simulation, calling the user defined function to run the model once
-  if(pop_report==0){
-    test <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
-    return(test)
-  }else if(PSA_switch==0){
+  if(PSA_switch==0){
     results[SOUR,] <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
   }else{
-    for(SOUR in 1:PSA_numb){
-      results[SOUR,]<- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
-      #make some text appear indicating the current PSA run
-      print(SOUR)
-      #update the screen so you can see the model hasn't crashed during the PSA
-      flush.console()
+    SOUR <- seq(1,PSA_numb)
+      
+    model_run <- function(SOUR){
+    model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
     }
+    cl <- makeCluster(numCores)
+    registerDoParallel(cl)
+    clusterExport(cl, list("parameters", "pat_chars", "apply_costs",
+                           "apply_utils", "cont_disc", "final_dest", "life_expectancy_ONS",
+                           "life_expectancy_ONS2", "TARN_mort_pred", 
+                           "TARN_old_mort_pred", "outcomes", "triage_strategies",
+                           "model_single_run", "SOUR", "life_tabs",
+                           "strat_name", "sensitivity", "specificity",
+                           "pop_report", "model_run", "days_to_discharge",
+                           "days_in_year", "time_horizon", "discount_rate_QALYs",
+                           "discount_rate_costs", "Param_export",
+                           "Proportion_RR_MTC_ISS_o8_u16_hosp",
+                           "Proportion_RR_MTC_ISS_o8_u16_1yr",
+                           "Proportion_RR_MTC_transfer_hosp",
+                           "Proportion_RR_MTC_ISS_transfer_1yr",
+                           "TARN_mort_eq", "MTCs_in_mort_risk",
+                           "percent_TARN_cases_reported_ISS_o16",
+                           "percent_TARN_cases_reported_ISS_o9_u16",
+                           "population_source", "population_ISS_over16_only",
+                           "population_ISS_under16_only",
+                           "efficent_life_expectancy", "test_pat_chars",
+                           "future_costs"))
+    temp <- parLapply(cl = cl, SOUR, model_run)
+    temp2 <- unlist(temp)
+    
+    results<- matrix(temp2, nrow = length(SOUR), byrow=TRUE)
+
+    
     return (results)
   } 
   
