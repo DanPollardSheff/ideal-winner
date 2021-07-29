@@ -46,7 +46,7 @@ efficent_life_expectancy <- "Yes"   #Options are Yes or No. Default is yes
 
 test_pat_chars <- "No"              #Change this to Yes if you only want to run the base case analysis with patient level results
 
-PSA_rand_no <-  -99                 #random number to determine PSA parameters either -99 (to not reset the seed) or any positive number
+PSA_rand_no <-  1477                #random number to determine PSA parameters either -99 (to not reset the seed) or any positive number
 
 date <- "_1_75_ben_ISS_u9"          #name to append to saved files 
 
