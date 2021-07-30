@@ -1614,14 +1614,13 @@ run_simulation <- function(param_inputs, PSA_switch, PSA_numb, pat_numb, strat_n
     }
     cl <- makeCluster(numCores)
     registerDoParallel(cl)
-    clusterExport(cl, list("parameters", "pat_chars", "apply_costs",
+    clusterExport(cl, list("apply_costs",
                            "apply_utils", "cont_disc", "final_dest", "life_expectancy_ONS",
                            "life_expectancy_ONS2", "TARN_mort_pred", 
                            "TARN_old_mort_pred", "outcomes", "triage_strategies",
-                           "model_single_run", "SOUR", "life_tabs",
-                           "strat_name", "sensitivity", "specificity",
-                           "pop_report", "model_run", "days_to_discharge",
-                           "days_in_year", "time_horizon", "discount_rate_QALYs",
+                           "model_single_run", "life_tabs",
+                           "days_to_discharge", "days_in_year",
+                           "time_horizon", "discount_rate_QALYs",
                            "discount_rate_costs", "Param_export",
                            "Proportion_RR_MTC_ISS_o8_u16_hosp",
                            "Proportion_RR_MTC_ISS_o8_u16_1yr",
