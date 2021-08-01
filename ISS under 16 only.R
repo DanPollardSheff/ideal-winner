@@ -93,14 +93,35 @@ param_data_bc <- param_data
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 All <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0,1)
+write.csv(All, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\All_ISSU16.csv")
+
 WMAS_Step4 <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.91,0.25)
+write.csv(WMAS_Step4, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\WMAS_Step4_ISSU16.csv")
+
 MATTS_sens <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.70,0.74)
+write.csv(MATTS_sens, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\MATTS_sens_ISSU16.csv")
+
 MATTS_bal <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.57, 0.85)
+write.csv(MATTS_bal, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\MATTS_bal_ISSU16.csv")
+
 field_triage <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.48, 0.86)
+write.csv(field_triage, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\field_triage_ISSU16.csv")
+
 oregon <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.44, 0.90)
+write.csv(oregon, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\oregon_ISSU16.csv")
+
 MATTS_spec <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.38, 0.94)
+write.csv(MATTS_spec, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\MATTS_spec_ISSU16.csv")
+
 SWAST <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.34, 0.94)
+write.csv(SWAST, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\SWAST_ISSU16.csv")
+
 TTR <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.27, 0.95)
+write.csv(TTR, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\TTR_ISSU16.csv")
+
 pre_hosp_index <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.20, 0.96)
+write.csv(pre_hosp_index, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\pre_hosp_index_ISSU16.csv")
+
 None <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0, 1)
+write.csv(None, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\None_ISSU16.csv")
 
