@@ -40,7 +40,7 @@ percent_TARN_cases_reported_ISS_o9_u16 <- 1
 population_source <- "Dutch" #Source of simulated population.Options are UK, Dutch, Dutch_simp. Dutch is the default
 
 population_ISS_over16_only <- "No"  #Option for resampling to produce a population with ISS >= 16. Options are "Yes" or "No". Default is no. 
-population_ISS_under16_only <- "No" #Option for resampling to produce a population with ISS < 16. Can be "Yes" or "No". Default is no.
+population_ISS_under16_only <- "Yes" #Option for resampling to produce a population with ISS < 16. Can be "Yes" or "No". Default is no.
 
 efficent_life_expectancy <- "Yes"   #Options are Yes or No. Default is yes
 
