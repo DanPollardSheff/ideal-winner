@@ -92,7 +92,7 @@ param_data_bc <- param_data
 
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
-All <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual",0,1, 1)
+All <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual",1,0, 1)
 write.csv(All, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\All_ISSo16.csv")
 WMAS_Step4 <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual",0.91,0.25, 1)
 write.csv(WMAS_Step4, "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\July 21\\WMAS_Step4_ISSo16.csv")
