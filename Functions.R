@@ -1634,6 +1634,8 @@ run_simulation <- function(param_inputs, PSA_switch, PSA_numb, pat_numb, strat_n
                            "efficent_life_expectancy", "test_pat_chars",
                            "future_costs"))
     temp <- parLapply(cl = cl, SOUR, model_run)
+    stopCluster(cl)
+    
     temp2 <- unlist(temp)
     
     results<- matrix(temp2, nrow = length(SOUR), byrow=TRUE)
