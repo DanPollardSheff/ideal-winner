@@ -98,7 +98,7 @@ if(PSA_rand_no != -99){
   set.seed(PSA_rand_no)
 }
 #generate the parameters
-parameters <- gen_parameters(PSA_switch,PSA_numb, param_inputs)
+parameters <- gen_parameters(PSA_switch,PSA_numb, param_data_bc)
 
 #export the parameters, if required (bug checking / SAVI)
 if(Param_export==1){
