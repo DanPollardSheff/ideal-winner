@@ -1576,8 +1576,10 @@ model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_nam
 
 run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitivity, specificity, pop_report){
   
-  #Set a random number seed
-  set.seed(569)
+  
+  
+  pat_chars <- pat_chars
+  parameters <- parameters
   
   parameters[,"U_ISS_o15_nMTC"] <- parameters[,"U_ISS_o15_MTC"]
   parameters[,"U_ISS_u16_o8"] <- parameters[,"U_ISS_o15_MTC"]
@@ -1600,6 +1602,9 @@ run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitiv
     model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
     }
     cl <- makeCluster(numCores)
+    #Set a random number seed
+    clusterEvalQ(cl, set.seed(569))
+    
     registerDoParallel(cl)
     clusterExport(cl, list("apply_costs",
                            "apply_utils", "cont_disc", "final_dest", "life_expectancy_ONS",
@@ -1620,6 +1625,9 @@ run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitiv
                            "population_ISS_under16_only",
                            "efficent_life_expectancy", "test_pat_chars",
                            "future_costs"))
+    
+    
+    
     temp <- parLapply(cl = cl, SOUR, model_run)
     stopCluster(cl)
     

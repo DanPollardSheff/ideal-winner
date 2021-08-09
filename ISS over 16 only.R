@@ -88,6 +88,23 @@ source("Functions.R")
 #Analysis###################
 param_data_bc <- param_data
 
+####Generate patient characteristics
+#set the random number seed
+set.seed(26090100)
+pat_chars <- gen_pat_chars(pat_numb, means, covariance, age_tab, gen_tab, ISS_tab, GCS_tab)
+
+###Generate paramters
+if(PSA_rand_no != -99){
+  set.seed(PSA_rand_no)
+}
+#generate the parameters
+parameters <- gen_parameters(PSA_switch,PSA_numb, param_data_bc)
+
+#export the parameters, if required (bug checking / SAVI)
+if(Param_export==1){
+  write.csv(parameters, file = "parameter_outputs.csv")
+}
+
 ##########################################################
 
 #### add in analysis run here
