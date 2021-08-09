@@ -1574,26 +1574,13 @@ model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_nam
 }
 
 
-run_simulation <- function(param_inputs, PSA_switch, PSA_numb, pat_numb, strat_name, sensitivity, specificity, pop_report){
+run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitivity, specificity, pop_report){
   
-  #set the random number seed
-  set.seed(26090100)
-  #Generate pat chars to be 
-  pat_chars <- gen_pat_chars(pat_numb, means, covariance, age_tab, gen_tab, ISS_tab, GCS_tab)
-  #set the random number seed for, if required. -99 value for the random number seed indicates that a change is not required. 
-  if(PSA_rand_no != -99){
-    set.seed(PSA_rand_no)
-  }
-  #generate the parameters
-  parameters <- gen_parameters(PSA_switch,PSA_numb, param_inputs)
-  #As the utility parameters for people with an ISS > 9 are all the same set all the utility samples to be the same 
+  #Set a random number seed
+  set.seed(569)
+  
   parameters[,"U_ISS_o15_nMTC"] <- parameters[,"U_ISS_o15_MTC"]
   parameters[,"U_ISS_u16_o8"] <- parameters[,"U_ISS_o15_MTC"]
-  
-  #export the parameters, if required (bug checking / SAVI)
-  if(Param_export==1){
-    write.csv(parameters, file = "parameter_outputs.csv")
-  }
   
   #setup the matrix to store results
   results <- matrix (nrow = ifelse(PSA_switch == 1,PSA_numb,1), ncol=12)

@@ -88,19 +88,28 @@ source("Functions.R")
 #Analysis###################
 param_data_bc <- param_data
 
+####Generate patient characteristics
+#set the random number seed
+set.seed(26090100)
+pat_chars <- gen_pat_chars(pat_numb, means, covariance, age_tab, gen_tab, ISS_tab, GCS_tab)
+
+###Generate paramters
+if(PSA_rand_no != -99){
+  set.seed(PSA_rand_no)
+}
+#generate the parameters
+parameters <- gen_parameters(PSA_switch,PSA_numb, param_inputs)
+
+#export the parameters, if required (bug checking / SAVI)
+if(Param_export==1){
+  write.csv(parameters, file = "parameter_outputs.csv")
+}
+
 ##########################################################
 
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
-All <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0,1)
-WMAS_Step4 <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.91,0.25)
-MATTS_sens <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.70,0.74)
-MATTS_bal <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.57, 0.85)
-field_triage <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.48, 0.86)
-oregon <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.44, 0.90)
-MATTS_spec <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.38, 0.94)
-SWAST <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.34, 0.94)
-TTR <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.27, 0.95)
-pre_hosp_index <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0.20, 0.96)
-None <- run_simulation(param_data_bc, 1, PSA_numb, pat_numb, "manual", 1, 0, 1)
+All <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 1, 0,1)
+All2 <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 1, 0,1)
+
 
