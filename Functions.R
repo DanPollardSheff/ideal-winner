@@ -419,7 +419,10 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
                               "p_death_hosp_TARN_cons", "p_MTC_ISS_o15_UK", "C_MTC_ISS_o8_u16", "C_MTC_ISS_o15", "C_bluntt_ISS_U10", "C_bluntt_ISS_U17_O_9", "C_bluntt_ISS_U26_O16", "C_bluntt_ISS_O25", "C_pent_ISS_O0_U10",
                               "C_pent_ISS_O9_U16", "C_pent_ISS_O15_U25", "C_pent_ISS_O24_U34", "C_pent_ISS_O34", "C_disch_6m", "C_additional_ambulance", "Increase_lifetime_cost_ISS_o15", "Increase_lifetime_cost_ISS_u15", "TARN_old_Age_0_5", "TARN_old_Age_6_10", "TARN_old_Age_11_15",
                               "TARN_old_Age_45_54", "TARN_old_Age_55_64", "TARN_old_Age_65_75", "TARN_old_Age_over_75", "TARN_old_GCS_9_12", "TARN_old_GCS_6_8", "TARN_old_GCS_4_5", "TARN_old_GCS_3", "TARN_old_GCS_intubated","TARN_old_ISS_SQRT", "TARN_old_ISS_LN", "TARN_old_female",
-                              "TARN_old_female_age_0_5", "TARN_old_female_age_6_10", "TARN_old_female_age_11_15", "TARN_old_female_age_45_54", "TARN_old_female_age_55_64", "TARN_old_female_age_65_75", "TARN_old_female_age_75_plus", "TARN_old_constant")
+                              "TARN_old_female_age_0_5", "TARN_old_female_age_6_10", "TARN_old_female_age_11_15", "TARN_old_female_age_45_54", "TARN_old_female_age_55_64", "TARN_old_female_age_65_75", "TARN_old_female_age_75_plus", "TARN_old_constant",
+                              "p_death_y1_ISSo15_MTC_age_65_74", "p_death_y1_ISSo15_MTC_age_75_84", "p_death_y1_ISSo15_MTC_age_85_plus", "p_death_y1_ISSu16_age_65_74", "p_death_y1_ISSu16_age_75_84", "p_death_y1_ISSu16_age_85_plus", 
+                              "RR_p_death_lm_ISSo15_age_65_plus", "RR_p_death_lm_ISSu15_age_65_plus", "RR_p_death_hosp_ISSo15_nMTC_age_65_74", "RR_p_death_hosp_ISSo15_nMTC_age_75_84", "RR_p_death_hosp_ISSo15_nMTC_age_85_plus", 
+                              "RR_p_death_y1_nMTC_age_65_plus")
   
   #First parameter, which is the probability of being transfered to an MTC from a non MTC, if the patient's ISS >15 and they have a positive triage rule
   #Step 1, record the name of the parameter in a temproary variable 
@@ -995,6 +998,79 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- TARN_old_constant
 
+  t<- "p_death_y1_ISSo15_MTC_age_65_74"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_65_74
+  
+  t<- "p_death_y1_ISSo15_MTC_age_75_84"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_75_84 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_75_84
+  
+  t<- "p_death_y1_ISSo15_MTC_age_85_plus"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_85_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_85_plus
+  
+  t<- "p_death_y1_ISSu16_age_65_74"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSu16_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSu16_age_65_74
+  
+  t<- "p_death_y1_ISSu16_age_75_84"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSu16_age_75_84 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSu16_age_75_84
+  
+  t<- "p_death_y1_ISSu16_age_85_plus"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSu16_age_85_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSu16_age_85_plus
+  
+  t<- "RR_p_death_lm_ISSo15_age_65_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_lm_ISSo15_age_65_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_lm_ISSo15_age_65_plus
+  
+  t<- "RR_p_death_lm_ISSu15_age_65_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_lm_ISSu15_age_65_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_lm_ISSu15_age_65_plus
+  
+  t<- "RR_p_death_hosp_ISSo15_nMTC_age_65_74"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_65_74
+  
+  t<- "RR_p_death_hosp_ISSo15_nMTC_age_75_84"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_75_84 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_75_84
+  
+  t<- "RR_p_death_hosp_ISSo15_nMTC_age_85_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_85_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_85_plus
+  
+  t<- "RR_p_death_y1_nMTC_age_65_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_y1_nMTC_age_65_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_y1_nMTC_age_65_plus
+  
+  
   return(param_matrix)
   
 }
@@ -1168,15 +1244,30 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   p_death_TARN <- if(TARN_mort_eq == "Old"){
     TARN_old_mort_pred(pat_chars, parameters, SOUR)
   }else{TARN_mort_pred(pat_chars, parameters, SOUR)}
+  
+  #Use age specific RR for inhospital mortality if receiving MTC care & ISS >= 16
+  #There is functionality in the code to revert to Phase 1 and Phase 2 parameterisation
+  if(Phase_3_analysis==T){
+  RR_MTC_indiv <- ifelse(pat_chars["Age",] < 65,
+                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"],
+                         ifelse(pat_chars["Age",]<75,
+                                parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_65_74"],
+                                ifelse(pat_chars["Age",]<85,
+                                       parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
+                                       parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"])))
+  }else{
+    RR_MTC_indiv <- parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]
+  }
+  
   #Make sure these adjustments only happen if a composite risk score is used
   if(MTCs_in_mort_risk == "Yes"){
     #For patients with an ISS 16 or over
-    p_death_hosp_ISSo15_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
-    p_death_hosp_ISSo15_nMTC <- p_death_hosp_ISSo15_MTC * as.numeric(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
+    p_death_hosp_ISSo15_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*RR_MTC_indiv)
+    p_death_hosp_ISSo15_nMTC <- p_death_hosp_ISSo15_MTC * as.numeric(RR_MTC_indiv)
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
-    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
+    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(RR_MTC_indiv-1)))
     
     p_death_hosp_ISSo8_u16_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*mod_RR_MTC_ISS_o8_u16)
     p_death_hosp_ISSo8_u16_nMTC <- p_death_hosp_ISSo8_u16_MTC * mod_RR_MTC_ISS_o8_u16
@@ -1184,13 +1275,13 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
     #For patients with an ISS 16 or over
     #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
     #create a vector of relative risks by transfer status, determine the benefit of MTCs
-    RR_MTC_v_NMTC <- ifelse(trans_MTC==0, 1/parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"], 1 /(1+(Proportion_RR_MTC_transfer_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1))))
+    RR_MTC_v_NMTC <- ifelse(trans_MTC==0, 1/RR_MTC_indiv, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(RR_MTC_indiv-1))))
     p_death_hosp_ISSo15_MTC <- p_death_TARN*RR_MTC_v_NMTC
     p_death_hosp_ISSo15_nMTC <- p_death_TARN
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
-    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
+    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(RR_MTC_indiv-1)))
     RR_MTC_v_NMT_CISS_o8_u16 <- ifelse(trans_MTC==0, 1/mod_RR_MTC_ISS_o8_u16, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(mod_RR_MTC_ISS_o8_u16-1))) )
     
     #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
