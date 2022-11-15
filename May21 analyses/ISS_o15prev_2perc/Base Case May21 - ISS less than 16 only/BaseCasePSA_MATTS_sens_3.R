@@ -1,3 +1,5 @@
+
+
 #install.packages("devtools")
 
 library(devtools)
@@ -46,6 +48,9 @@ date <- "_3_ISS_u16" #name to append to saved files
 
 #read in files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Model\\"
+
+Eldery_specifc_params <- F          #Takes value T or F. If T model has different parameters for
+#elderly (65+) populations
 
 param_data <- read.csv("parameters.csv", row.names=1)
 life_tabs <- read.csv("ONSlifetables.csv")
