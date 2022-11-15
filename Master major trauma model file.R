@@ -50,7 +50,7 @@ PSA_rand_no <-  -99                 #random number to determine PSA parameters e
 
 date <- "_1_75_ben_ISS_u9"          #name to append to saved files 
 
-Phase_3_analysis <- T               #Takes value T or F. If T model has different parameters for
+Eldery_specifc_params <- T          #Takes value T or F. If T model has different parameters for
                                     #elderly (65+) populations
 
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)

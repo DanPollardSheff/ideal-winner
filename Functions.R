@@ -1247,7 +1247,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   #Use age specific RR for inhospital mortality if receiving MTC care & ISS >= 16
   #There is functionality in the code to revert to Phase 1 and Phase 2 parameterisation
-  if(Phase_3_analysis==T){
+  if(Eldery_specifc_params==T){
   RR_MTC_indiv <- ifelse(pat_chars["Age",] < 65,
                          parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"],
                          ifelse(pat_chars["Age",]<75,
