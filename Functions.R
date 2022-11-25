@@ -422,7 +422,7 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
                               "TARN_old_female_age_0_5", "TARN_old_female_age_6_10", "TARN_old_female_age_11_15", "TARN_old_female_age_45_54", "TARN_old_female_age_55_64", "TARN_old_female_age_65_75", "TARN_old_female_age_75_plus", "TARN_old_constant",
                               "p_death_y1_ISSo15_MTC_age_65_74", "p_death_y1_ISSo15_MTC_age_75_84", "p_death_y1_ISSo15_MTC_age_85_plus", "p_death_y1_ISSu16_age_65_74", "p_death_y1_ISSu16_age_75_84", "p_death_y1_ISSu16_age_85_plus", 
                               "RR_p_death_lm_ISSo15_age_65_plus", "RR_p_death_lm_ISSu15_age_65_plus", "RR_p_death_hosp_ISSo15_nMTC_age_65_74", "RR_p_death_hosp_ISSo15_nMTC_age_75_84", "RR_p_death_hosp_ISSo15_nMTC_age_85_plus", 
-                              "RR_p_death_y1_nMTC_age_65_plus")
+                              "RR_p_death_y1_nMTC_age_65_plus", "p_death_y1_ISSo15_MTC_age_under_14", "p_death_y1_ISS15_under_MTC_age_under_14")
   
   #First parameter, which is the probability of being transfered to an MTC from a non MTC, if the patient's ISS >15 and they have a positive triage rule
   #Step 1, record the name of the parameter in a temproary variable 
@@ -1070,9 +1070,19 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- RR_p_death_y1_nMTC_age_65_plus
   
+  t<- "p_death_y1_ISSo15_MTC_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_under_14
+  
+  t<- "p_death_y1_ISS15_under_MTC_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISS15_under_MTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISS15_under_MTC_age_under_14
   
   return(param_matrix)
-  
 }
 
 
