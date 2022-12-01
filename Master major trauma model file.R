@@ -1,15 +1,16 @@
-#install.packages("devtools")
 
-library(devtools)
+#install.packages("MASS")
+#install.packages("doParallel")
+
 library(MASS)
 library(parallel)
 library(doParallel)
 
-numCores <- (detectCores() -1) #Leave 1 Core for OS
+numCores <- (detectCores() -1)  #Leave 1 Core for OS
 
 #Global variables
 PSA_switch <- 1                 #1=run PSA, 0=deterministic
-PSA_numb <- 2                 #number of PSA runs
+PSA_numb <- 2                   #number of PSA runs
 pat_numb <- 25000               #number of patients
 days_to_discharge <- 30         #number of days to discharge from hospital
 days_in_year <- 365.25          #number of days in a year
@@ -50,8 +51,10 @@ PSA_rand_no <-  -99                 #random number to determine PSA parameters e
 
 date <- "_1_75_ben_ISS_u9"          #name to append to saved files 
 
-Eldery_specific_params <- T          #Takes value T or F. If T model has different parameters for
+Eldery_specific_params <- T         #Takes value T or F. If T model has different parameters for
                                     #elderly (65+) populations
+Pead_specific_params <- T           #Takes value T or F. If T the model has different parameters
+                                    #for peadatric (14 and under) population
 
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
@@ -113,6 +116,3 @@ if(Param_export==1){
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 All5 <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.8, 0.8,1)
-All2 <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 1, 0,1)
-
-

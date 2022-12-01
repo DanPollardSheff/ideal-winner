@@ -422,7 +422,7 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
                               "TARN_old_female_age_0_5", "TARN_old_female_age_6_10", "TARN_old_female_age_11_15", "TARN_old_female_age_45_54", "TARN_old_female_age_55_64", "TARN_old_female_age_65_75", "TARN_old_female_age_75_plus", "TARN_old_constant",
                               "p_death_y1_ISSo15_MTC_age_65_74", "p_death_y1_ISSo15_MTC_age_75_84", "p_death_y1_ISSo15_MTC_age_85_plus", "p_death_y1_ISSu16_age_65_74", "p_death_y1_ISSu16_age_75_84", "p_death_y1_ISSu16_age_85_plus", 
                               "RR_p_death_lm_ISSo15_age_65_plus", "RR_p_death_lm_ISSu15_age_65_plus", "RR_p_death_hosp_ISSo15_nMTC_age_65_74", "RR_p_death_hosp_ISSo15_nMTC_age_75_84", "RR_p_death_hosp_ISSo15_nMTC_age_85_plus", 
-                              "RR_p_death_y1_nMTC_age_65_plus", "p_death_y1_ISSo15_MTC_age_under_14", "p_death_y1_ISS15_under_MTC_age_under_14")
+                              "RR_p_death_y1_nMTC_age_65_plus", "p_death_y1_ISSo15_MTC_age_under_14", "p_death_y1_ISS15_under_MTC_age_under_14", "RR_p_death_hosp_ISSo15_nMTC_age_under_14")
   
   #First parameter, which is the probability of being transfered to an MTC from a non MTC, if the patient's ISS >15 and they have a positive triage rule
   #Step 1, record the name of the parameter in a temproary variable 
@@ -1076,11 +1076,17 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_under_14
   
-  t<- "p_death_y1_ISS15_under_MTC_age_under_14"
+  t <- "p_death_y1_ISS15_under_MTC_age_under_14"
   #Step 2, record the value of the parameter in the simulation
   p_death_y1_ISS15_under_MTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
   #Step 3, record the parameter value
   param_matrix[,t] <- p_death_y1_ISS15_under_MTC_age_under_14
+  
+  t <- "RR_p_death_hosp_ISSo15_nMTC_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_under_14
   
   return(param_matrix)
 }
@@ -1338,7 +1344,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   }
   
   #set the RR for nMTC v MTC care 
-  if(Eldery_specific_params==T){
+  if(Eldery_specific_params==T & Pead_specific_params==F){#Applies if different parameters for elderly but not peads population
     RR_nMTC_v_MTC_1yr<- ifelse(pat_chars[,"Age"] < 65,
                                parameters[SOUR,"RR_p_death_y1_nMTC"],
                                           ifelse(pat_chars[,"Age"]<75,
@@ -1346,7 +1352,21 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
                                                  ifelse(pat_chars[,"Age"]<85,
                                                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
                                                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"])))
-  }else{
+  }else if (Eldery_specific_params==F & Pead_specific_params==T) {#Applies if different parameters for peads but not eldery population
+    RR_nMTC_v_MTC_1yr <- ifelse(pat_chars[,"Age"] <= 14,
+                                parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                                parameters[SOUR,"RR_p_death_y1_nMTC"])
+  }else if (Eldery_specific_params==F & Pead_specific_params==T){#Applies if different parameters for both peads & eldery population
+    RR_nMTC_v_MTC_1yr<- ifelse(pat_chars[,"Age"] <= 14,
+                               parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                               ifelse(pat_chars[,"Age"] < 65,
+                                      parameters[SOUR,"RR_p_death_y1_nMTC"],
+                               ifelse(pat_chars[,"Age"]<75,
+                                      parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_65_74"],
+                                      ifelse(pat_chars[,"Age"]<85,
+                                             parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
+                                             parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"]))))
+    }else{#Applies if the effect of MTCs is the same for everyone
     RR_nMTC_v_MTC_1yr <- parameters[SOUR,"RR_p_death_y1_nMTC"]
   } 
   
@@ -1354,7 +1374,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   RR_nMTC_v_MTC_1yr <- ifelse(trans_MTC==0, RR_nMTC_v_MTC_1yr, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(RR_nMTC_v_MTC_1yr-1))))
   
   #Deaths between baseline and discharge, adjust for age if the model is set up that way
-  if(Eldery_specific_params==T){
+  if(Eldery_specific_params==T & Pead_specific_params==F){#Applies if different parameters for elderly but not peads population
     p_death_disch_1yr_ISSo15_MTC <- ifelse(pat_chars[,"Age"] < 65,
                                            parameters[SOUR,"p_death_y1_ISSo15_MTC"],
                                               ifelse(pat_chars[,"Age"]<75,
@@ -1362,7 +1382,21 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
                                                   ifelse(pat_chars[,"Age"]<85,
                                                         parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
                                                         parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"])))
-  }else{
+  }else if (Eldery_specific_params==F & Pead_specific_params==T){#Applies if different parameters for peads but not eldery population
+    p_death_disch_1yr_ISSo15_MTC <- ifelse(pat_chars[,"Age"] <= 14,
+                                           parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],
+                                           parameters[SOUR,"p_death_y1_ISSo15_MTC"])
+    }else if (Eldery_specific_params==T & Pead_specific_params==T){#Applies if different parameters for both peads & eldery population
+      p_death_disch_1yr_ISSo15_MTC <- ifelse(pat_chars[,"Age"] <= 14,
+                                             parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],
+                                             ifelse(pat_chars[,"Age"]<65,
+                                                    parameters[SOUR,"p_death_y1_ISSo15_MTC"],       
+                                             ifelse(pat_chars[,"Age"]<75,
+                                                    parameters[SOUR,"p_death_y1_ISSo15_MTC_age_65_74"],
+                                                    ifelse(pat_chars[,"Age"]<85,
+                                                           parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
+                                                           parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"]))))
+    }else{
     p_death_disch_1yr_ISSo15_MTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"]
   }
   
@@ -1823,7 +1857,8 @@ run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitiv
                            "population_source", "population_ISS_over16_only",
                            "population_ISS_under16_only",
                            "efficent_life_expectancy", "test_pat_chars",
-                           "future_costs", "Eldery_specific_params"))
+                           "future_costs", "Eldery_specific_params",
+                           "Pead_specific_params"))
     
     
     

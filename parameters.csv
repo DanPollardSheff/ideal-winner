@@ -104,3 +104,4 @@ RR_p_death_hosp_ISSo15_nMTC_age_85_plus,0.036331929,0.011960318,Normal_ln,Maugha
 RR_p_death_y1_nMTC_age_65_plus,0.024692613,0.012446699,Normal_ln,Maughan et al 2021. Field Trauma Triage among Older Adults. ,
 p_death_y1_ISSo15_MTC_age_under_14,70.05484094,13940.91335,Beta,Nishjimia et al 2021. Cost-effectiveness of field trauma among injured children. + Solver ,
 p_death_y1_ISS15_under_MTC_age_under_14,210.9547821,91508.51571,Beta,Nishjimia et al 2021. Cost-effectiveness of field trauma among injured children. + Solver ,
+RR_p_death_hosp_ISSo15_nMTC_age_under_14,0.139761942,0.044478722,Normal_ln,Nishjimia et al 2021. Cost-effectiveness of field trauma among injured children. + Solver ,
