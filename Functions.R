@@ -1263,7 +1263,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   #Use age specific RR for inhospital mortality if receiving MTC care & ISS >= 16
   #There is functionality in the code to revert to Phase 1 and Phase 2 parameterisation
-  if(Eldery_specific_params==T){
+  if(Eldery_specific_params==T & Pead_specific_params == F){
   RR_MTC_indiv <- ifelse(pat_chars[,"Age"] < 65,
                          parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"],
                          ifelse(pat_chars[,"Age"]<75,
@@ -1271,6 +1271,20 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
                                 ifelse(pat_chars[,"Age"]<85,
                                        parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
                                        parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"])))
+  }else if (Eldery_specific_params==T & Pead_specific_params == T){
+    RR_MTC_indiv <- ifelse(pat_chars[,"Age"]<15,
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                           ifelse(pat_chars[,"Age"] < 65,
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"],
+                           ifelse(pat_chars[,"Age"]<75,
+                                  parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_65_74"],
+                                  ifelse(pat_chars[,"Age"]<85,
+                                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
+                                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"]))))
+  }else if (Eldery_specific_params==F & Pead_specific_params == T){
+    RR_MTC_indiv <- ifelse(pat_chars[,"Age"]<15,
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
   }else{
     RR_MTC_indiv <- parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]
   }
@@ -1306,8 +1320,6 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
     
   }
   
-  
-  
   p_death_hosp_ISSu9 <- p_death_TARN
   
   #create the vector of the probability of death within hospital
@@ -1323,12 +1335,9 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   #record whether or not the patient has died in hospital 
   pat_chars[,"D_bl_disch"] <- death_hosp
   
-  
   #create a vector of people who survived their hospitilisation
   alive_disch <- pat_chars[,"D_bl_disch"] == 0
-  
-  
-  
+
   #record the probability of death 
   #step 1: estimate the probability of death between hospital discharge and one year post-hospitilisation using US data
   if(Eldery_specific_params==T & Pead_specific_params == F){
@@ -1361,25 +1370,17 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   if(Eldery_specific_params==T & Pead_specific_params==F){#Applies if different parameters for elderly but not peads population
     RR_nMTC_v_MTC_1yr<- ifelse(pat_chars[,"Age"] < 65,
                                parameters[SOUR,"RR_p_death_y1_nMTC"],
-                                          ifelse(pat_chars[,"Age"]<75,
-                                                 parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_65_74"],
-                                                 ifelse(pat_chars[,"Age"]<85,
-                                                        parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
-                                                        parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"])))
+                               parameters[SOUR,"RR_p_death_y1_nMTC_age_65_plus"])
   }else if (Eldery_specific_params==F & Pead_specific_params==T) {#Applies if different parameters for peads but not eldery population
     RR_nMTC_v_MTC_1yr <- ifelse(pat_chars[,"Age"] <= 14,
-                                parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                                parameters[SOUR,"RR_p_death_y1_nMTC_age_under_14"],
                                 parameters[SOUR,"RR_p_death_y1_nMTC"])
-  }else if (Eldery_specific_params==F & Pead_specific_params==T){#Applies if different parameters for both peads & eldery population
+  }else if (Eldery_specific_params==T & Pead_specific_params==T){#Applies if different parameters for both peads & eldery population
     RR_nMTC_v_MTC_1yr<- ifelse(pat_chars[,"Age"] <= 14,
-                               parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                               parameters[SOUR,"RR_p_death_y1_nMTC_age_under_14"],
                                ifelse(pat_chars[,"Age"] < 65,
                                       parameters[SOUR,"RR_p_death_y1_nMTC"],
-                               ifelse(pat_chars[,"Age"]<75,
-                                      parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_65_74"],
-                                      ifelse(pat_chars[,"Age"]<85,
-                                             parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
-                                             parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"]))))
+                                      parameters[SOUR,"RR_p_death_y1_nMTC_age_65_plus"]))
     }else{#Applies if the effect of MTCs is the same for everyone
     RR_nMTC_v_MTC_1yr <- parameters[SOUR,"RR_p_death_y1_nMTC"]
   } 
@@ -1420,7 +1421,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   #alter the relative risk by global proportion in the model
   mod_RR_MTC_ISS_o8_u16 <- 1 + (Proportion_RR_MTC_ISS_o8_u16_1yr*(RR_nMTC_v_MTC_1yr-1))
   
-  if(Eldery_specific_params==T){
+  if(Eldery_specific_params==T & Pead_specific_params==F){
     p_death_disch_1yr_ISSo8_u16_MTC <- ifelse(pat_chars[,"Age"] < 65,
                                               parameters[SOUR,"p_death_y1_ISSu16"],
                                            ifelse(pat_chars[,"Age"]<75,
@@ -1428,7 +1429,21 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
                                                   ifelse(pat_chars[,"Age"]<85,
                                                          parameters[SOUR,"p_death_y1_ISSu16_age_75_84"],
                                                          parameters[SOUR,"p_death_y1_ISSu16_age_85_plus"])))
-  }else{
+  }else if (Eldery_specific_params==T & Pead_specific_params==T){
+    p_death_disch_1yr_ISSo8_u16_MTC <- ifelse(pat_chars[,"Age"] < 15,
+                                              parameters[SOUR, "p_death_y1_ISS15_under_MTC_age_under_14"],
+                                              ifelse(pat_chars[,"Age"] < 65,
+                                              parameters[SOUR,"p_death_y1_ISSu16"],
+                                              ifelse(pat_chars[,"Age"]<75,
+                                                     parameters[SOUR,"p_death_y1_ISSu16_age_65_74"],
+                                                     ifelse(pat_chars[,"Age"]<85,
+                                                            parameters[SOUR,"p_death_y1_ISSu16_age_75_84"],
+                                                            parameters[SOUR,"p_death_y1_ISSu16_age_85_plus"]))))
+    }else if (Eldery_specific_params==F & Pead_specific_params==T){
+      p_death_disch_1yr_ISSo8_u16_MTC <- ifelse(pat_chars[,"Age"] < 15,
+                                                parameters[SOUR, "p_death_y1_ISS15_under_MTC_age_under_14"],
+                                                parameters[SOUR,"p_death_y1_ISSu16"])
+      }else{
     p_death_disch_1yr_ISSo8_u16_MTC <- parameters[SOUR,"p_death_y1_ISSu16"]
   }
    
@@ -1465,8 +1480,8 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   rates_f <- -log(1-life_tables[,3])/1
   
   #Step 2: apply a hazard ratio to calculate the instantaneous rates, for the population with an ISS > 15
-  rates_m_ISS_o_15 <- rates_m *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
-  rates_f_ISS_o_15 <- rates_f *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
+  rates_m_ISS_o_15 <- rates_m*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
+  rates_f_ISS_o_15 <- rates_f*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
   
   #Step3: create a new life table, based on these instantaneous rates
   Life_table_ISS_o_15 <- life_tables
@@ -1474,8 +1489,8 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   Life_table_ISS_o_15[,3] <- 1 - exp(-rates_f_ISS_o_15*1)
   
   #Step 4: apply a hazard ratio to calculate the instantaneous rates, for the population with an ISS < 15
-  rates_m_ISS_u_16 <- rates_m *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
-  rates_f_ISS_u_16 <- rates_f *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
+  rates_m_ISS_u_16 <- rates_m*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
+  rates_f_ISS_u_16 <- rates_f*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
   
   #Step5: create a new life table, based on these instantaneous rates
   Life_table_ISS_u_16 <- life_tables
@@ -1520,7 +1535,44 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
     Life_table_ISS_u_16[66:101,3] <- ifelse(Life_table_ISS_u_16[66:101,3]>1,
                                             1,
                                             Life_table_ISS_u_16[66:101,3])
-    }
+  }
+  if(Pead_specific_params==T){#Apply different LT long term risks if peadatric specific parameters are used
+    #Replace the life table probability of death for Males aged 65 or over 
+    #with an ISS of 16 or more
+    Life_table_ISS_o_15[1:15,2] <- 
+      life_tables[1:15,2]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_o_15[1:15,2] <- ifelse(Life_table_ISS_o_15[1:15,2]>1,
+                                            1,
+                                          Life_table_ISS_o_15[1:15,2])
+    
+    #Same for women
+    Life_table_ISS_o_15[1:15,3] <- 
+      life_tables[1:15,3]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_o_15[1:15,3] <- ifelse(Life_table_ISS_o_15[1:15,3]>1,
+                                          1,
+                                          Life_table_ISS_o_15[1:15,3])
+    
+    #Replace the life table probability of death for Males aged 65 or over
+    #with an ISS of 15 or less
+    Life_table_ISS_u_16[1:15,2] <- 
+      life_tables[1:15,2]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_u_16[1:15,2] <- ifelse(Life_table_ISS_u_16[1:15,2]>1,
+                                            1,
+                                            Life_table_ISS_u_16[1:15,2])
+    #Same for women
+    Life_table_ISS_u_16[1:15,3] <- 
+      life_tables[1:15,3]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_u_16[1:15,3] <- ifelse(Life_table_ISS_u_16[1:15,3]>1,
+                                            1,
+                                            Life_table_ISS_u_16[1:15,3])
+  }
   
   #Finished producing the life tables
   
