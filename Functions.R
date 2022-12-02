@@ -1331,15 +1331,29 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   #record the probability of death 
   #step 1: estimate the probability of death between hospital discharge and one year post-hospitilisation using US data
-  if(Eldery_specific_params==T){
+  if(Eldery_specific_params==T & Pead_specific_params == F){
     p_death_disch_1yr_ISSo15_MTC<- ifelse(pat_chars[,"Age"] < 65,
               parameters[SOUR,"p_death_y1_ISSo15_MTC"],
-              ifelse(pat_chars[,"Age"]<75,
+              ifelse(pat_chars[,"Age"] < 75,
                      parameters[SOUR,"p_death_y1_ISSo15_MTC_age_65_74"],
-                     ifelse(pat_chars[,"Age"]<85,
+                     ifelse(pat_chars[,"Age"] < 85,
                             parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
                             parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"])))
-  }else{
+  }else if(Eldery_specific_params==T & Pead_specific_params == T){
+    p_death_disch_1yr_ISSo15_MTC<- ifelse(pat_chars[,"Age"] < 15,
+                                          parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],              
+      ifelse(pat_chars[,"Age"] < 65,
+                                          parameters[SOUR,"p_death_y1_ISSo15_MTC"],
+                                          ifelse(pat_chars[,"Age"] < 75,
+                                                 parameters[SOUR,"p_death_y1_ISSo15_MTC_age_65_74"],
+                                                 ifelse(pat_chars[,"Age"] < 85,
+                                                        parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
+                                                        parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"]))))
+    } else if (Eldery_specific_params==F & Pead_specific_params == T){
+      p_death_disch_1yr_ISSo15_MTC<- ifelse(pat_chars[,"Age"] < 15,
+                                            parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],
+                                            parameters[SOUR,"p_death_y1_ISSo15_MTC"])
+    } else{
   p_death_disch_1yr_ISSo15_MTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"]
   }
   

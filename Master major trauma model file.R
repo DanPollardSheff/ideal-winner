@@ -60,6 +60,8 @@ Pead_specific_params <- T           #Takes value T or F. If T the model has diff
 file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
 
 param_data <- read.csv("parameters.csv", row.names=1)
+tarn_22_means <- read.csv("New TARN Means.csv", row.names = 1)
+tarn_22_vcov <- read.csv("New TARN vcov matrix.csv", row.names=1)
 life_tabs <- read.csv("ONSlifetables.csv")
 future_costs <- read.csv("lifetime-healthcare-costs.csv")
 

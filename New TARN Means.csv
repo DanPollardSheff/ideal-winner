@@ -1,0 +1,29 @@
+Parameter,Coefficient
+ISS_1,-2.69482
+ISS_2,-2.45931
+GCS=3,-3.7665
+GCS 4 - 5,-2.71299
+GCS 6 - 8,-1.86781
+GCS 9 - 12,-1.3058
+GCS 13 - 14,-0.479791
+"GCS ""Intubated""",-2.6012
+Age 0  - 5,-0.001826
+Age 6 - 10,0.263951
+Age 11 - 15,-0.07315
+Age 45 - 54,-0.405537
+Age 55 - 64,-0.963224
+Age 65 - 74,-1.57605
+Age >=75,-2.70957
+Gender Female,-0.176986
+Age 0  - 5 x Female,-0.110755
+Age 6 - 10 x Female,0.437005
+Age 11 - 15  x Female,0.225443
+Age 45 - 54 x Female,-0.079484
+Age 55 - 64 x Female,0.155338
+Age 65 - 74 x Female,0.196271
+Age >=75+ x Female,0.332054
+CCI NotKnown,-0.465775
+CCI 1 - 5,-0.552632
+CCI 6 - 10,-0.97536
+CCI > 10,-1.5929
+Constant,5.21655
