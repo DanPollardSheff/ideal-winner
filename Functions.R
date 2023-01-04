@@ -411,15 +411,15 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   
   colnames(param_matrix) <- rownames(parameters)
   
-  #First parameter, which is the probability of being transfered to an MTC from a non MTC, if the patient's ISS >15 and they have a positive triage rule
-  #Step 1, record the name of the parameter in a temproary variable 
+  #First parameter, which is the probability of being transferred to an MTC from a non MTC, if the patient's ISS >15 and they have a positive triage rule
+  #Step 1, record the name of the parameter in a temporary variable 
   t <- "Transfer_nMTC_to_MTC_ISSo15_TP"
   #Step 2, record the value of the parameter in the simulation
   Transfer_nMTC_to_MTC_ISSo15_TP <-value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
   #Step 3, record the parameter value
   param_matrix[,t] <- Transfer_nMTC_to_MTC_ISSo15_TP
   
-  #Second parameter, which is the probability of being transfered to an MTC from a non MTC, if the patient's ISS >15 and they have a negative triage rule
+  #Second parameter, which is the probability of being transferred to an MTC from a non MTC, if the patient's ISS >15 and they have a negative triage rule
   t <- "Transfer_nMTC_to_MTC_ISSo15_TN"
   #Step 2, record the value of the parameter in the simulation
   Transfer_nMTC_to_MTC_ISSo15_TN <-value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
@@ -555,359 +555,324 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- Umult_ISS_u9
   
-  if(TARN_22_params==F){ #If the TARN 22 parameters aren't being used, generate them 
-    #independently from the paper. 
-  
-  #record TARN parameters
-  t<- "p_death_hosp_TARN_sqrt_ISS"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_sqrt_ISS <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_sqrt_ISS
-  
-  t<- "p_death_hosp_TARN_ln_ISS"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_ln_ISS <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_ln_ISS
-  
-  t<- "p_death_hosp_TARN_GCS_3"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_3 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_3
-  
-  t<- "p_death_hosp_TARN_GCS_4_5"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_4_5 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_4_5
-  
-  t<- "p_death_hosp_TARN_GCS_6_8"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_6_8 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_6_8
-  
-  t<- "p_death_hosp_TARN_GCS_9_12"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_9_12 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_9_12
-  
-  t<- "p_death_hosp_TARN_GCS_13_14"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_13_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_13_14
-  
-  t<- "p_death_hosp_TARN_GCS_intubated"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_intubated <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_intubated
-  
-  t<- "p_death_hosp_TARN_CCI_1_5"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_1_5 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_1_5
-  
-  t<- "p_death_hosp_TARN_CCI_6_10"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_6_10 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_6_10
-  
-  t<- "p_death_hosp_TARN_CCI_unknown"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_unknown <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_unknown
-  
-  t<- "p_death_hosp_TARN_CCI_o_10"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_o_10 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_o_10
-  
-  t<- "p_death_hosp_TARN_age_0_5"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_0_5 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_0_5
-  
-  t<- "p_death_hosp_TARN_age_6_10"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_6_10 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_6_10
-  
-  t<- "p_death_hosp_TARN_age_11_15"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_11_15 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_11_15
-  
-  t<- "p_death_hosp_TARN_age_45_54"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_45_54 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_45_54
-  
-  t<- "p_death_hosp_TARN_age_55_64"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_55_64 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_55_64
-  
-  t<- "p_death_hosp_TARN_age_65_74"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_65_74
-  
-  t<- "p_death_hosp_TARN_age_o_75"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_o_75 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_o_75
-  
-  t<- "p_death_hosp_TARN_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_gen_f
-  
-  t<- "p_death_hosp_TARN_age_0_5_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_0_5_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_0_5_gen_f
-  
-  t<- "p_death_hosp_TARN_age_6_10_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_6_10_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_6_10_gen_f
-  
-  t<- "p_death_hosp_TARN_age_11_15_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_11_15_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_11_15_gen_f
-  
-  t<- "p_death_hosp_TARN_age_45_54_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_45_54_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_45_54_gen_f
-  
-  t<- "p_death_hosp_TARN_age_55_64_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_55_64_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_55_64_gen_f
-  
-  t<- "p_death_hosp_TARN_age_65_74_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_65_74_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_65_74_gen_f
-  
-  t<- "p_death_hosp_TARN_age_75_plus_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_75_plus_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_75_plus_gen_f
-  
-  t<- "p_death_hosp_TARN_cons"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_cons <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_cons
-  
-  }else{#otherwise use the TARN 2022 parameters
     #Generate the parameters needed
     if(PSA_switch==1){#parameters in a PSA
-    temp_param <- MASS::mvrnorm(n=PSA_numb, mu = tarn_22_means$Coefficient, Sigma = tarn_22_vcov)
+    temp_param_TARN_22 <- MASS::mvrnorm(n=PSA_numb, mu = tarn_22_means$Coefficient, Sigma = tarn_22_vcov)
     }else{#deterministic parameters
-    temp_param <- as.matrix(tarn_22_means$Coefficient)
+      temp_param_TARN_22 <- as.matrix(tarn_22_means$Coefficient)
     #transpose the matrix so the parameters are across the columns
-    temp_param <- t(temp_param)
+      temp_param_TARN_22 <- t(temp_param_TARN_22)
     }
     #Store the parameters into the right part of the param_matrix
     
     #record TARN parameters
     t<- "p_death_hosp_TARN_sqrt_ISS"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_sqrt_ISS <- temp_param[,1]
+    p_death_hosp_TARN_sqrt_ISS <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,1],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_sqrt_ISS
     
     t<- "p_death_hosp_TARN_ln_ISS"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_ln_ISS <- temp_param[,2]
+    p_death_hosp_TARN_ln_ISS <- ifelse(TARN_22_params==T,
+                                       temp_param_TARN_22[,2],
+                                       value_selector(as.numeric(parameters[t,1]),
+                                                      as.numeric(parameters[t,2]),
+                                                      parameters[t,3],
+                                                      PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_ln_ISS
     
     t<- "p_death_hosp_TARN_GCS_3"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_GCS_3 <- temp_param[,3]
+    p_death_hosp_TARN_GCS_3 <- ifelse(TARN_22_params==T,
+                                      temp_param_TARN_22[,3],
+                                      value_selector(as.numeric(parameters[t,1]),
+                                                     as.numeric(parameters[t,2]),
+                                                     parameters[t,3],
+                                                     PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_GCS_3
     
     t<- "p_death_hosp_TARN_GCS_4_5"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_GCS_4_5 <- temp_param[,4]
+    p_death_hosp_TARN_GCS_4_5 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,4],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_GCS_4_5
     
     t<- "p_death_hosp_TARN_GCS_6_8"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_GCS_6_8 <- temp_param[,5]
+    p_death_hosp_TARN_GCS_6_8 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,5],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_GCS_6_8
     
     t<- "p_death_hosp_TARN_GCS_9_12"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_GCS_9_12 <- temp_param[,6]
+    p_death_hosp_TARN_GCS_9_12 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,6],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_GCS_9_12
     
     t<- "p_death_hosp_TARN_GCS_13_14"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_GCS_13_14 <- temp_param[,7]
+    p_death_hosp_TARN_GCS_13_14 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,7],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_GCS_13_14
     
     t<- "p_death_hosp_TARN_GCS_intubated"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_GCS_intubated <- temp_param[,8]
+    p_death_hosp_TARN_GCS_intubated <- ifelse(TARN_22_params==T,
+                                              temp_param_TARN_22[,8],
+                                              value_selector(as.numeric(parameters[t,1]),
+                                                             as.numeric(parameters[t,2]),
+                                                             parameters[t,3],
+                                                             PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_GCS_intubated
     
     t<- "p_death_hosp_TARN_age_0_5"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_0_5 <- temp_param[,9]
+    p_death_hosp_TARN_age_0_5 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,9],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_0_5
     
     t<- "p_death_hosp_TARN_age_6_10"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_6_10 <- temp_param[,10]
+    p_death_hosp_TARN_age_6_10 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,10],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_6_10
     
     t<- "p_death_hosp_TARN_age_11_15"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_11_15 <- temp_param[,11]
+    p_death_hosp_TARN_age_11_15 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,11],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_11_15
     
     t<- "p_death_hosp_TARN_age_45_54"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_45_54 <- temp_param[,12]
+    p_death_hosp_TARN_age_45_54 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,12],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_45_54
     
     t<- "p_death_hosp_TARN_age_55_64"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_55_64 <- temp_param[,13]
+    p_death_hosp_TARN_age_55_64 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,13],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_55_64
     
     t<- "p_death_hosp_TARN_age_65_74"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_65_74 <- temp_param[,14]
+    p_death_hosp_TARN_age_65_74 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,14],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_65_74
     
     t<- "p_death_hosp_TARN_age_o_75"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_o_75 <- temp_param[,15]
+    p_death_hosp_TARN_age_o_75 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,15],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_o_75
     
     t<- "p_death_hosp_TARN_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_gen_f <- temp_param[,16]
+    p_death_hosp_TARN_gen_f <- ifelse(TARN_22_params==T,
+                                      temp_param_TARN_22[,16],
+                                      value_selector(as.numeric(parameters[t,1]),
+                                                     as.numeric(parameters[t,2]),
+                                                     parameters[t,3],
+                                                     PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_gen_f
     
     t<- "p_death_hosp_TARN_age_0_5_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_0_5_gen_f <- temp_param[,17]
+    p_death_hosp_TARN_age_0_5_gen_f <- ifelse(TARN_22_params==T,
+                                              temp_param_TARN_22[,17],
+                                              value_selector(as.numeric(parameters[t,1]),
+                                                             as.numeric(parameters[t,2]),
+                                                             parameters[t,3],
+                                                             PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_0_5_gen_f
     
     t<- "p_death_hosp_TARN_age_6_10_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_6_10_gen_f <- temp_param[,18]
+    p_death_hosp_TARN_age_6_10_gen_f <- ifelse(TARN_22_params==T,
+                                               temp_param_TARN_22[,18],
+                                               value_selector(as.numeric(parameters[t,1]),
+                                                              as.numeric(parameters[t,2]),
+                                                              parameters[t,3],
+                                                              PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_6_10_gen_f
     
     t<- "p_death_hosp_TARN_age_11_15_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_11_15_gen_f <- temp_param[,19]
+    p_death_hosp_TARN_age_11_15_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,19],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_11_15_gen_f
     
     t<- "p_death_hosp_TARN_age_45_54_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_45_54_gen_f <- temp_param[,20]
+    p_death_hosp_TARN_age_45_54_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,20],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_45_54_gen_f
     
     t<- "p_death_hosp_TARN_age_55_64_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_55_64_gen_f <- temp_param[,21]
+    p_death_hosp_TARN_age_55_64_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,21],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_55_64_gen_f
     
     t<- "p_death_hosp_TARN_age_65_74_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_65_74_gen_f <- temp_param[,22]
+    p_death_hosp_TARN_age_65_74_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,22],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_65_74_gen_f
     
     t<- "p_death_hosp_TARN_age_75_plus_gen_f"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_age_75_plus_gen_f <- temp_param[,23]
+    p_death_hosp_TARN_age_75_plus_gen_f <- ifelse(TARN_22_params==T,
+                                                  temp_param_TARN_22[,23],
+                                                  value_selector(as.numeric(parameters[t,1]),
+                                                                 as.numeric(parameters[t,2]),
+                                                                 parameters[t,3],
+                                                                 PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_age_75_plus_gen_f
     
     t<- "p_death_hosp_TARN_CCI_unknown"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_CCI_unknown <- temp_param[,24]
+    p_death_hosp_TARN_CCI_unknown <- ifelse(TARN_22_params==T,
+                                            temp_param_TARN_22[,24],
+                                            value_selector(as.numeric(parameters[t,1]),
+                                                           as.numeric(parameters[t,2]),
+                                                           parameters[t,3],
+                                                           PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_CCI_unknown
     
     t<- "p_death_hosp_TARN_CCI_1_5"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_CCI_1_5 <- temp_param[,25]
+    p_death_hosp_TARN_CCI_1_5 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,25],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_CCI_1_5
     
     t<- "p_death_hosp_TARN_CCI_6_10"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_CCI_6_10 <- temp_param[,26]
+    p_death_hosp_TARN_CCI_6_10 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,26],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_CCI_6_10
     
     t<- "p_death_hosp_TARN_CCI_o_10"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_CCI_o_10 <- temp_param[,27]
+    p_death_hosp_TARN_CCI_o_10 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,27],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_CCI_o_10
     
     t<- "p_death_hosp_TARN_cons"
     #Step 2, record the value of the parameter in the simulation
-    p_death_hosp_TARN_cons <- temp_param[,28]
+    p_death_hosp_TARN_cons <- ifelse(TARN_22_params==T,
+                                     temp_param_TARN_22[,28],
+                                     value_selector(as.numeric(parameters[t,1]),
+                                                    as.numeric(parameters[t,2]),
+                                                    parameters[t,3],
+                                                    PSA_switch,PSA_numb))
     #Step 3, record the parameter value
     param_matrix[,t] <- p_death_hosp_TARN_cons
-    
-    }
   
   t<- "p_MTC_ISS_o15_UK"
   #Step 2, record the value of the parameter in the simulation
