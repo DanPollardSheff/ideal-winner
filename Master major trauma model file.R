@@ -51,10 +51,11 @@ PSA_rand_no <-  -99                 #random number to determine PSA parameters e
 
 date <- "_1_75_ben_ISS_u9"          #name to append to saved files 
 
-Eldery_specific_params <- T         #Takes value T or F. If T model has different parameters for
-                                    #elderly (65+) populations
-Pead_specific_params <- T           #Takes value T or F. If T the model has different parameters
-                                    #for peadatric (14 and under) population
+Eldery_specific_params  <- T          #Takes value T or F. If T model has different parameters for
+                                      #elderly (65+) populations
+Pead_specific_params    <- T          #Takes value T or F. If T the model has different parameters
+                                      #for peadatric (14 and under) population
+TARN_22_params          <- T          #Use the TARN 22 parameter estimates? T = TRUE, F = FALSE
 
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
