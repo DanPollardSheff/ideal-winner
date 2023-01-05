@@ -52,6 +52,7 @@ p_death_hosp_TARN_age_65_74_gen_f,0.25829,0.112944461,Normal,Bouamra et al. 2015
 p_death_hosp_TARN_age_75_plus_gen_f,0.3477,0.087462676,Normal,Bouamra et al. 2015. Prediction modelling for trauma using comorbidity and ‘true’ 30-day outcome,
 p_death_hosp_TARN_cons,5.28621,,Fixed,Bouamra et al. 2015. Prediction modelling for trauma using comorbidity and ‘true’ 30-day outcome,
 p_MTC_ISS_o15_UK,31865,9438.101732,Beta,"Moran, C.G., et al, 2018. Changing the system-major trauma patients and their outcomes in the NHS (England) 2008–17. EClinicalMedicine, 2, pp.13-21.","Number of cases treated at an MTC, for patients with an ISS > 9"
+p_MTC_ISS_o15_UK_17,14247,3127.390244,Beta,"Moran, C.G., et al, 2018. Changing the system-major trauma patients and their outcomes in the NHS (England) 2008–17. EClinicalMedicine, 2, pp.13-21.","Number of cases treated at an MTC, for patients with an ISS > 9 in 2016-17"
 C_MTC_ISS_o8_u16,1466,,Fixed,NHS improvement. National tariff payment system 2017/18 and 2018/19. Annex A - National Tariff workbook,
 C_MTC_ISS_o15,2819,,Fixed,NHS improvement. National tariff payment system 2017/18 and 2018/19. Annex A - National Tariff workbook,
 C_bluntt_ISS_U10,14679.38557,0.422224757,Gamma,Christensen et al 2008. Outcomes and costs of blunt trauma in England and Wales,
