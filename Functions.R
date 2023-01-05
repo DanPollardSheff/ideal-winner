@@ -505,7 +505,6 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- U_genpop_cons
   
-  
   #Term for the effect of being male for determining age and gender matched utility
   t<- "U_genpop_male"
   #Step 2, record the value of the parameter in the simulation
@@ -876,7 +875,11 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   
   t<- "p_MTC_ISS_o15_UK"
   #Step 2, record the value of the parameter in the simulation
-  p_MTC_ISS_o15_UK <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #If using the TARN 2022 parameters, use the most recent evidence on the number
+  #of UK patients with an ISS > 9 who go to an MTC at any point in their care
+  p_MTC_ISS_o15_UK <- ifelse(TARN_22_params==T,
+                             value_selector(as.numeric(parameters["p_MTC_ISS_o15_UK_17",1]),as.numeric(parameters["p_MTC_ISS_o15_UK_17",2]),parameters["p_MTC_ISS_o15_UK_17",3],PSA_switch,PSA_numb),
+                             value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb))
   #Step 3, record the parameter value
   param_matrix[,t] <- p_MTC_ISS_o15_UK
   
