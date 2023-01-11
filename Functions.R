@@ -526,14 +526,14 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- U_genpop_age_squared
   
-  #Utility score for someone with an ISS over 15, who is sent to a major trama centre
+  #Utility score for someone with an ISS over 15, who is sent to a major trauma center
   t<- "U_ISS_o15_MTC"
   #Step 2, record the value of the parameter in the simulation
   U_ISS_o15_MTC <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
   #Step 4, record the parameter value
   param_matrix[,t] <- U_ISS_o15_MTC
   
-  #Utility score for someone with an ISS over 15, who is sent to a non major trama centre
+  #Utility score for someone with an ISS over 15, who is sent to a non major trauma center
   t<- "U_ISS_o15_nMTC"
   #Step 2, record the value of the parameter in the simulation
   U_ISS_o15_nMTC <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
@@ -1239,9 +1239,176 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- HR_p_death_lm_age_under_14
   
+  t <- "Util_ISS_1_3_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_preinjury
+  
+  t <- "Util_ISS_1_3_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_1_week
+  
+  t <- "Util_ISS_1_3_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_1_month
+  
+  t <- "Util_ISS_1_3_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_3_months
+  
+  t <- "Util_ISS_1_3_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_6_months
+  
+  t <- "Util_ISS_1_3_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_12_months
+  
+  t <- "Util_ISS_1_3_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_24_months
+  
+  t <- "Util_ISS_4_8_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_preinjury
+  
+  t <- "Util_ISS_4_8_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_1_week
+  
+  t <- "Util_ISS_4_8_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_1_month
+  
+  t <- "Util_ISS_4_8_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_3_months
+  
+  t <- "Util_ISS_4_8_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_6_months
+  
+  t <- "Util_ISS_4_8_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_12_months
+  
+  t <- "Util_ISS_4_8_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_24_months
+  
+  t <- "Util_ISS_9_15_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_preinjury
+  
+  t <- "Util_ISS_9_15_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_1_week
+  
+  t <- "Util_ISS_9_15_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_1_month
+  
+  t <- "Util_ISS_9_15_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_3_months
+  
+  t <- "Util_ISS_9_15_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_6_months
+  
+  t <- "Util_ISS_9_15_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_12_months
+  
+  t <- "Util_ISS_9_15_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_24_months
+  
+  t <- "Util_ISS_16_plus_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_preinjury
+  
+  t <- "Util_ISS_16_plus_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_1_week
+  
+  t <- "Util_ISS_16_plus_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_1_month
+  
+  t <- "Util_ISS_16_plus_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_3_months
+  
+  t <- "Util_ISS_16_plus_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_6_months
+  
+  t <- "Util_ISS_16_plus_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_12_months
+  
+  t <- "Util_ISS_16_plus_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_24_months
+  
   return(param_matrix)
 }
-
 
 TARN_mort_pred <- function(pat_chars, parameters, SOUR){
   GCS_3 <- pat_chars[,"GCS"]==3
@@ -1756,11 +1923,12 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
 
 apply_utils <- function (pat_chars,parameters, SOUR){
   
-  #Apply trauma specific utilties
-  
-  Util_gen_pop_mean_age <- parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*mean(pat_chars[,"Gender"]*(91/154)) + 
-    parameters[SOUR, "U_genpop_age"]*(61)+parameters[SOUR, "U_genpop_age_squared"]*(61)^2
-  #Calculate raw multipliers
+  if(Util_source == "Ahmed"){#if using Ahmed et al utilties calcualte the multipliers as below
+    #calculate the matched general population utility for Ahmed et al
+    Util_gen_pop_mean_age <- parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*mean(pat_chars[,"Gender"]*(91/154)) + 
+      parameters[SOUR, "U_genpop_age"]*(61)+parameters[SOUR, "U_genpop_age_squared"]*(61)^2
+    
+    #Calculate raw multipliers
   Util_mutl_ISS_o15_MTC <- parameters[SOUR,"U_ISS_o15_MTC"]/Util_gen_pop_mean_age
   Util_mutl_ISS_o15_nMTC <- parameters[SOUR,"U_ISS_o15_nMTC"]/Util_gen_pop_mean_age
   Util_mutl_ISS_u16_o8 <- parameters[SOUR,"U_ISS_u16_o8"]/Util_gen_pop_mean_age
@@ -1770,7 +1938,7 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   Util_mutl_ISS_o15_nMTC <- ifelse(Util_mutl_ISS_o15_nMTC>1,1,Util_mutl_ISS_o15_nMTC)
   Util_mutl_ISS_u16 <- ifelse(Util_mutl_ISS_u16_o8>1,1,Util_mutl_ISS_u16_o8)
   
-  #create a vector of multpliers relevant to each patient
+  #create a vector of multipliers relevant to each patient
   #Step 1: create a vector of whether ISS >= 16 or not
   ISS_o15 <- ifelse(pat_chars[,"ISS"]>15,1,0)
   #create a vector of whether ISS >= 9 or not
@@ -1780,6 +1948,7 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   #Step 3: determine the appropiate multiplier by the previous vector
   mults <- ifelse(ISS_o15==0,ifelse(ISS_o9==1,Util_mutl_ISS_u16_o8,Util_mult_ISS_u9), ifelse(MTC==0,Util_mutl_ISS_o15_nMTC,Util_mutl_ISS_o15_MTC))
   
+    
   #Calculate the discounted QALYs
   #The formula for applying continuous discounting to life years is:
   #disc_LY <- exp(-at)
@@ -1804,20 +1973,20 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   d <- pat_chars[,"Age"]
   f <- as.numeric(parameters[SOUR, "U_genpop_age_squared"])
   
-  #Calculate the indefinate integral at the time the patient dies (without the constant)
+  #Calculate the indefinite integral at the time the patient dies (without the constant)
   t <- t_end
   #Discounted QALYs
   temp_1 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
   #Undiscounted QALYs
   temp_3 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
-  #Calculate the indeinate integral at the time the patient enters the model (again without the constant)
+  #Calculate the indefinite integral at the time the patient enters the model (again without the constant)
   t <- t_start
   #Discounted QALYs
   temp_2 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
   #Undiscounted QALYs
   temp_4 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
   
-  #Calculate the definate integral between the time that the patient dies and when they entered the model
+  #Calculate the definite integral between the time that the patient dies and when they entered the model
   disc_QALYs <- (temp_1 - temp_2)
   undisc_QALYs <- (temp_3 - temp_4)
   
@@ -1829,7 +1998,205 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   pat_chars[,"dQALYS"] <- disc_QALYs
   pat_chars[,"QALYS"] <- undisc_QALYs 
   
+  }else{#otherwise use the Kruithoff et al parameters
+    #ISS 1-3
+  Util_mult_disch_ISS_1_3 <- ((1/4)*parameters[SOUR,"Util_ISS_1_3_1_week"]+
+  (3/4)*parameters[SOUR,"Util_ISS_1_3_1_month"])/
+    parameters[SOUR,"Util_ISS_1_3_preinjury"]
+  
+  Util_mult_year1_ISS_1_3 <- ((1/11)*parameters[SOUR,"Util_ISS_1_3_1_month"]+
+    (1/11)*parameters[SOUR,"Util_ISS_1_3_3_months"]+
+      (3/11)*parameters[SOUR,"Util_ISS_1_3_6_months"]+
+      (6/11)*parameters[SOUR,"Util_ISS_1_3_12_months"])/
+    parameters[SOUR,"Util_ISS_1_3_preinjury"]
+  
+  Util_mult_ongoing_ISS_1_3 <- ((1/2)*parameters[SOUR,"Util_ISS_1_3_12_months"]+
+                                  (1/2)*parameters[SOUR,"Util_ISS_1_3_24_months"])/
+                                parameters[SOUR,"Util_ISS_1_3_preinjury"]
+  #ISS 4 - 8
+  Util_mult_disch_ISS_4_8 <- ((1/4)*parameters[SOUR,"Util_ISS_4_8_1_week"]+
+                                (3/4)*parameters[SOUR,"Util_ISS_4_8_1_month"])/
+                              parameters[SOUR,"Util_ISS_4_8_preinjury"]
+  
+  Util_mult_year1_ISS_4_8 <- ((1/11)*parameters[SOUR,"Util_ISS_4_8_1_month"]+
+                                (1/11)*parameters[SOUR,"Util_ISS_4_8_3_months"]+
+                                (3/11)*parameters[SOUR,"Util_ISS_4_8_6_months"]+
+                                (6/11)*parameters[SOUR,"Util_ISS_4_8_12_months"])/
+                              parameters[SOUR,"Util_ISS_4_8_preinjury"]
+  
+  Util_mult_ongoing_ISS_4_8 <- ((1/2)*parameters[SOUR,"Util_ISS_4_8_12_months"]+
+                                  (1/2)*parameters[SOUR,"Util_ISS_4_8_24_months"])/
+                                parameters[SOUR,"Util_ISS_4_8_preinjury"]
+  
+  #ISS 9 - 15
+  Util_mult_disch_ISS_9_15 <- ((1/4)*parameters[SOUR,"Util_ISS_9_15_1_week"]+
+                                (3/4)*parameters[SOUR,"Util_ISS_9_15_1_month"])/
+                                parameters[SOUR,"Util_ISS_9_15_preinjury"]
+  
+  Util_mult_year1_ISS_9_15 <- ((1/11)*parameters[SOUR,"Util_ISS_9_15_1_month"]+
+                                (1/11)*parameters[SOUR,"Util_ISS_9_15_3_months"]+
+                                (3/11)*parameters[SOUR,"Util_ISS_9_15_6_months"]+
+                                (6/11)*parameters[SOUR,"Util_ISS_9_15_12_months"])/
+                              parameters[SOUR,"Util_ISS_9_15_preinjury"]
+  
+  Util_mult_ongoing_ISS_9_15 <- ((1/2)*parameters[SOUR,"Util_ISS_9_15_12_months"]+
+                                  (1/2)*parameters[SOUR,"Util_ISS_9_15_24_months"])/
+                                parameters[SOUR,"Util_ISS_9_15_preinjury"]
+  
+  #ISS 16+
+  Util_mult_disch_ISS_16_plus <- ((1/4)*parameters[SOUR,"Util_ISS_16_plus_1_week"]+
+                                 (3/4)*parameters[SOUR,"Util_ISS_16_plus_1_month"])/
+                                  parameters[SOUR,"Util_ISS_16_plus_preinjury"]
+  
+  Util_mult_year1_ISS_16_plus <- ((1/11)*parameters[SOUR,"Util_ISS_16_plus_1_month"]+
+                                 (1/11)*parameters[SOUR,"Util_ISS_16_plus_3_months"]+
+                                 (3/11)*parameters[SOUR,"Util_ISS_16_plus_6_months"]+
+                                 (6/11)*parameters[SOUR,"Util_ISS_16_plus_12_months"])/
+                                  parameters[SOUR,"Util_ISS_16_plus_preinjury"]
+  
+  Util_mult_ongoing_ISS_16_plus <- ((1/2)*parameters[SOUR,"Util_ISS_16_plus_12_months"]+
+                                   (1/2)*parameters[SOUR,"Util_ISS_16_plus_24_months"])/
+                                    parameters[SOUR,"Util_ISS_16_plus_preinjury"]
+  
+  #Calculate a vector of multipliers for each patient
+  mults_disch <- ifelse(pat_chars[,"ISS"] <= 3,
+                        Util_mult_disch_ISS_1_3,
+                        ifelse(pat_chars[,"ISS"] <= 8,
+                               Util_mult_disch_ISS_4_8,
+                               ifelse(pat_chars[,"ISS"] <=15,
+                                      Util_mult_disch_ISS_9_15,
+                                      Util_mult_disch_ISS_16_plus)))
+  
+  mults_1year <- ifelse(pat_chars[,"ISS"] <= 3,
+                        Util_mult_year1_ISS_1_3,
+                        ifelse(pat_chars[,"ISS"] <= 8,
+                               Util_mult_year1_ISS_4_8,
+                               ifelse(pat_chars[,"ISS"] <=15,
+                                      Util_mult_year1_ISS_9_15,
+                                      Util_mult_year1_ISS_16_plus)))
+  
+  mults_ongoing <- ifelse(pat_chars[,"ISS"] <= 3,
+                        Util_mult_ongoing_ISS_1_3,
+                        ifelse(pat_chars[,"ISS"] <= 8,
+                               Util_mult_ongoing_ISS_4_8,
+                               ifelse(pat_chars[,"ISS"] <=15,
+                                      Util_mult_ongoing_ISS_9_15,
+                                      Util_mult_ongoing_ISS_16_plus)))
+  #Constrain multipliers to 1 to prevent health improvements from major trauma
+  mults_disch <- ifelse(mults_disch>1,1,mults_disch)
+  mults_1year <- ifelse(mults_1year>1,1,mults_1year)
+  mults_ongoing <- ifelse(mults_disch>1,1,mults_ongoing)
+  
+  #sense check, if any multipliers are missing stop the simulation with an error
+  if(sum(is.na(mults_disch))+sum(is.na(mults_disch))+sum(is.na(mults_ongoing)) > 0){
+    stop("impossible values for multipliers have been generated", call. =FALSE)
+  }
+  
+  #accrue utilities in the initial hospitilisation for all patients
+  #get time spent in hospital
+  t_hosp <- ifelse(pat_chars[,"Age_death"] - pat_chars[,"Age"] < (days_to_discharge/days_in_year), 
+                   pat_chars[,"Age_death"] - pat_chars[,"Age"] ,
+                   (days_to_discharge/days_in_year))
+  #Create a sequence of TRUES for all patients
+  All_pats <- pat_chars[,"Age"] > -1
+  #Undiscounted QALYs
+  pat_chars[, "QALYS"] <- cont_undisc_QALYs(parameters, pat_chars,All_pats ,rep(0,length(t_hosp)),t_hosp, mults_disch, SOUR)
+  #Discounted QALYs
+  pat_chars[, "dQALYS"] <- cont_disc_QALYs(parameters, pat_chars,All_pats,rep(0,length(t_hosp)),t_hosp, mults_disch, SOUR)
+  
+  #accrue utilities between discharge and one year post-injury
+  #get a TRUE/FALSE statement for people surviving discharge
+  discharged <- pat_chars[,"D_bl_disch"]==0
+  #calculate time to death or end of the year
+  t_death_year1 <- ifelse(pat_chars[,"Age_death"] - pat_chars[,"Age"] < 1, 
+                          pat_chars[,"Age_death"] - pat_chars[,"Age"] ,
+                          1)
+  #Reset to an obviously incorrect value if the patient did not get discharged
+  t_death_year1 <- ifelse(discharged == F, 
+                          -99,
+                          t_death_year1)
+  #add a check, that no deaths happen at or before the time to discharge global varaible
+  if(sum(t_death_year1 < 0 & t_death_year1!= -99)){
+    stop("impossible values for the time of death for people dsicharged from hospital in the QALY calculations", call. =FALSE)
+  }
+  #Undiscounted
+  pat_chars[, "QALYS"][discharged] <-pat_chars[, "QALYS"][discharged] + 
+    cont_undisc_QALYs(parameters, pat_chars,discharged,t_hosp,t_death_year1, mults_1year, SOUR)
+  #Discounted
+  pat_chars[, "dQALYS"][discharged] <- pat_chars[, "dQALYS"][discharged]+
+    cont_disc_QALYs(parameters, pat_chars, discharged,t_hosp,t_death_year1, mults_1year, SOUR)
+  
+  #accrue utilities between discharge and after one-year post injury
+  one_yr_survivors <- pat_chars[,"D_bl_disch"]==0 & pat_chars[,"D_disch_1yr"]==0
+  
+  #calculate time to after year 1
+  #if they don't survive to 1 year post-injury, set the numbers so it will produce 
+  #an obviously wrong value
+  t_death_ongoing <- ifelse(pat_chars[,"Age_death"] - pat_chars[,"Age"] > 1, 
+                          pat_chars[,"Age_death"] - pat_chars[,"Age"],
+                          -99)
+  #check, if any NAs (impossible values) stop the simulation with an error message
+  if(sum(t_death_ongoing < 0 & t_death_ongoing!= -99)){
+   stop("impossible values for the time of death for one year suvivors in the QALY calculations", call. =FALSE) 
+  }
+  #Undiscounted
+  pat_chars[, "QALYS"][one_yr_survivors] <-pat_chars[, "QALYS"][one_yr_survivors] + 
+    cont_undisc_QALYs(parameters, pat_chars, one_yr_survivors,t_death_year1,t_death_ongoing, mults_ongoing, SOUR)
+  #Discounted
+  pat_chars[, "dQALYS"][one_yr_survivors] <- pat_chars[, "dQALYS"][one_yr_survivors]+
+    cont_disc_QALYs(parameters, pat_chars, one_yr_survivors,t_death_year1,t_death_ongoing, mults_ongoing, SOUR)
+  }
+  
+  
   return(pat_chars)
+}
+
+cont_disc_QALYs <- function(parameters, pat_chars, subset, t_start, t_end, mults, SOUR){
+  a <- log(1+discount_rate_QALYs)
+  b <- as.numeric(parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*pat_chars[,"Gender"][subset])
+  c <- as.numeric(parameters[SOUR,"U_genpop_age"])
+  d <- as.numeric(pat_chars[,"Age"][subset])
+  f <- as.numeric(parameters[SOUR, "U_genpop_age_squared"])
+  
+  #Calculate the indefinite integral at the time the patient dies (without the constant)
+  t <- t_end[subset]
+  #Discounted QALYs
+  temp_1 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
+  
+  #Calculate the indefinite integral at the time the patient enters the model (again without the constant)
+  t <- t_start[subset]
+  #Discounted QALYs
+  temp_2 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
+  
+  #Calculate the definite integral between the time that the patient dies and when they entered the model
+  disc_QALYs <- (temp_1 - temp_2)
+  #apply patient level multipliers
+  disc_QALYs <- disc_QALYs*mults[subset]
+  
+  return(disc_QALYs)
+}
+
+cont_undisc_QALYs <- function(parameters, pat_chars, subset, t_start, t_end, mults, SOUR){
+  a <- log(1+discount_rate_QALYs)
+  b <- as.numeric(parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*pat_chars[,"Gender"][subset])
+  c <- as.numeric(parameters[SOUR,"U_genpop_age"])
+  d <- as.numeric(pat_chars[,"Age"][subset])
+  f <- as.numeric(parameters[SOUR, "U_genpop_age_squared"])
+  
+  #Calculate the indefinite integral at the time the patient dies (without the constant)
+  t <- t_end[subset]
+  #Undiscounted QALYs
+  temp_3 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
+  #Calculate the indefinite integral at the time the patient enters the model (again without the constant)
+  t <- t_start[subset]
+  #Undiscounted QALYs
+  temp_4 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
+  #Calculate the definite integral between the time that the patient dies and when they entered the model
+  undisc_QALYs <- (temp_3 - temp_4)
+  #apply patient level multipliers
+  undisc_QALYs <- undisc_QALYs*mults[subset]
+  #Return the undiscounted QALYs
+  return(undisc_QALYs)
 }
 
 apply_costs <- function(pat_chars, parameters, SOUR){
@@ -1957,7 +2324,6 @@ triage_strategies <- function(pat_chars, name, sens, spec){
   return(pat_chars)
 }
 
-
 model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_name, sensitivity, specificity, pop_report){
   
   #add in line of code to generate parameters here
@@ -2023,7 +2389,6 @@ model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_nam
   }
 }
 
-
 run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitivity, specificity, pop_report){
   
   
@@ -2056,28 +2421,7 @@ run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitiv
     clusterEvalQ(cl, set.seed(569))
     
     registerDoParallel(cl)
-    clusterExport(cl, list("apply_costs",
-                           "apply_utils", "cont_disc", "final_dest", "life_expectancy_ONS",
-                           "life_expectancy_ONS2", "TARN_mort_pred", 
-                           "TARN_old_mort_pred", "outcomes", "triage_strategies",
-                           "model_single_run", "life_tabs",
-                           "days_to_discharge", "days_in_year",
-                           "time_horizon", "discount_rate_QALYs",
-                           "discount_rate_costs", "Param_export",
-                           "Proportion_RR_MTC_ISS_o8_u16_hosp",
-                           "Proportion_RR_MTC_ISS_o8_u16_1yr",
-                           "Proportion_RR_MTC_transfer_hosp",
-                           "Proportion_RR_MTC_ISS_transfer_1yr",
-                           "TARN_mort_eq", "MTCs_in_mort_risk",
-                           "percent_TARN_cases_reported_ISS_o16",
-                           "percent_TARN_cases_reported_ISS_o9_u16",
-                           "population_source", "population_ISS_over16_only",
-                           "population_ISS_under16_only",
-                           "efficent_life_expectancy", "test_pat_chars",
-                           "future_costs", "Eldery_specific_params",
-                           "Pead_specific_params"))
-    
-    
+    clusterExport(cl, ls(envir = .GlobalEnv))
     
     temp <- parLapply(cl = cl, SOUR, model_run)
     stopCluster(cl)

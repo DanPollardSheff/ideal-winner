@@ -1,6 +1,6 @@
 #Global variables
 PSA_switch <- 1                             #1=run PSA, 0=deterministic
-PSA_numb <- 2                               #number of PSA runs
+PSA_numb <- 6                              #number of PSA runs
 pat_numb <- 25000                           #number of patients
 days_to_discharge <- 30                     #number of days to discharge from hospital
 days_in_year <- 365.25                      #number of days in a year
@@ -47,7 +47,7 @@ Eldery_specific_params  <- T                #Takes value T or F. If T model has 
                                             #elderly (65+) populations
 
 Pead_specific_params    <- T                #Takes value T or F. If T the model has different parameters
-                                            #for peadatric (14 and under) population
+                                            #for pediatric (14 and under) population
 
 TARN_22_params          <- T                #Use the TARN 22 parameter estimates? T = TRUE, F = FALSE
 
@@ -58,3 +58,5 @@ if(TARN_22_params ==T){
   TARN_mort_eq <- "New" 
   MTCs_in_mort_risk <- "Yes"
 }
+
+Util_source             <- "Ahmed"        #Option for the source of the utility values. Either Ahmed or Kruithof. Default is Kruithof

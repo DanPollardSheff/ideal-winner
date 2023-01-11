@@ -6,7 +6,7 @@ library(MASS)
 library(parallel)
 library(doParallel)
 
-numCores <- (detectCores() -1)  #Number of cores avaialable minus 1, to
+numCores <- (detectCores() -1)  #Number of cores available minus 1, to
                                 #leave 1 Core for OS
 
 #read in the r script that sets the global variables
@@ -75,3 +75,6 @@ if(Param_export==1){
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 All5 <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.8, 0.8,1)
+col
+Util_source             <- "Kruithof"
+All <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.8, 0.8,1)
