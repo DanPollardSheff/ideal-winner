@@ -75,7 +75,7 @@ if(Param_export==1){
 
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
-All5 <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.8, 0.8,1)
+All5 <- run_simulation(pat_chars, parameters, PSA_numb, "MATTSP3", NA, NA,1)
 
 Util_source             <- "Kruithof"
 All <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.8, 0.8,1)

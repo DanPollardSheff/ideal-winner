@@ -1529,7 +1529,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   #determine triage rule status
   #code to be added, this will be specific to our decision rules
-  pat_chars <- triage_strategies(pat_chars,strat_name, sensitivity, specificity)
+  pat_chars <- triage_strategies(pat_chars,strat_name, sensitivity, specificity, SOUR)
   #determine initial transport site
   
   #create a vector of positive and negative triage rules
