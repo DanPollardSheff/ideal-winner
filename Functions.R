@@ -2320,7 +2320,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     #not account for compliance
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
   }
-  else if (name = "MATTSP3"){
+  else if (name == "MATTSP3"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
     rands <- runif(length(pat_chars[,"ISS"]))
@@ -2334,7 +2334,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     #All analyses are based on final location, therefore compliance is not accounted for
     pat_chars[,"Triage_rule"] <- temp
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
-  }else if(name = "LAS"){
+  }else if(name == "LAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
     rands <- runif(length(pat_chars[,"ISS"]))
@@ -2348,7 +2348,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     #All analyses are based on final location, therefore compliance is not accounted for
     pat_chars[,"Triage_rule"] <- temp
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
-  } else if (name = "SWAS"){
+  } else if (name == "SWAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
     rands <- runif(length(pat_chars[,"ISS"]))
@@ -2362,7 +2362,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     #All analyses are based on final location, therefore compliance is not accounted for
     pat_chars[,"Triage_rule"] <- temp
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
-  } else if (name = "WMAS"){
+  } else if (name == "WMAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
     rands <- runif(length(pat_chars[,"ISS"]))
@@ -2375,7 +2375,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     #All analyses are based on final location, therefore compliance is not accounted for
     pat_chars[,"Triage_rule"] <- temp
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
-  }else if (name = "YAS"){
+  }else if (name == "YAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
     rands <- runif(length(pat_chars[,"ISS"]))
