@@ -2306,7 +2306,7 @@ apply_costs <- function(pat_chars, parameters, SOUR){
 }
 
 ### Function to apply triage strategies in the model
-triage_strategies <- function(pat_chars, name, sens, spec){
+triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   #Apply the manual strategy, where the sensitivity and specficity of the rule are user
   #defined
   if(name=="manual"){
@@ -2318,6 +2318,75 @@ triage_strategies <- function(pat_chars, name, sens, spec){
     pat_chars[,"Triage_rule"] <- temp
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  }
+  else if (name = "MATTSP3"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- runif(length(pat_chars[,"ISS"]))
+    #Use PSA parameters if in a PSA run, otherwise use deterministic
+    if(SOUR != 1){
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR-1,"MATTSP3_Sens"], 1-triage_rules_params[SOUR-1,"MATTSP3_Spec"])
+    }else{
+    sens_spec <- ifelse(major_trauma==TRUE, 0.499, 1-0.887)
+    }
+    temp <- ifelse(rands[]<sens_spec, 1,0)
+    #All analyses are based on final location, therefore compliance is not accounted for
+    pat_chars[,"Triage_rule"] <- temp
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  }else if(name = "LAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- runif(length(pat_chars[,"ISS"]))
+    #Use PSA parameters if in a PSA run, otherwise use deterministic
+    if(SOUR != 1){
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR-1,"LAS_Sens"], 1-triage_rules_params[SOUR-1,"LAS_Spec"])
+    }else{
+    sens_spec <- ifelse(major_trauma==TRUE, 0.51, 1-0.831)  
+    }
+    temp <- ifelse(rands[]<sens_spec, 1,0)
+    #All analyses are based on final location, therefore compliance is not accounted for
+    pat_chars[,"Triage_rule"] <- temp
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  } else if (name = "SWAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- runif(length(pat_chars[,"ISS"]))
+    #Use PSA parameters if in a PSA run, otherwise use deterministic
+    if(SOUR != 1){
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR-1,"SWAS_Sens"], 1-triage_rules_params[SOUR-1,"SWAS_Spec"])
+    }else{
+    sens_spec <- ifelse(major_trauma==TRUE, 0.233, 1-0.895)  
+    }
+    temp <- ifelse(rands[]<sens_spec, 1,0)
+    #All analyses are based on final location, therefore compliance is not accounted for
+    pat_chars[,"Triage_rule"] <- temp
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  } else if (name = "WMAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- runif(length(pat_chars[,"ISS"]))
+    if(SOUR!=1){
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR-1,"WMAS_Sens"], 1-triage_rules_params[SOUR-1,"WMAS_Spec"])
+    }else{
+    sens_spec <- ifelse(major_trauma==TRUE, 0.536, 1-0.911)
+    }
+    temp <- ifelse(rands[]<sens_spec, 1,0)
+    #All analyses are based on final location, therefore compliance is not accounted for
+    pat_chars[,"Triage_rule"] <- temp
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  }else if (name = "YAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- runif(length(pat_chars[,"ISS"]))
+    if (SOUR!=1){
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR-1,"YAS_Sens"], 1-triage_rules_params[SOUR-1,"YAS_Spec"])
+    }else{
+    sens_spec <- ifelse(major_trauma==TRUE, 0.458, 1-0.905)
+    }
+    temp <- ifelse(rands[]<sens_spec, 1,0)
+    #All analyses are based on final location, therefore compliance is not accounted for
+    pat_chars[,"Triage_rule"] <- temp
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
   }
   #further strategies to be added at a later date
