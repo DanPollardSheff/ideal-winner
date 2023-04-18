@@ -1,5 +1,5 @@
 #Global variables
-PSA_switch <- 0                             #1=run PSA, 0=deterministic
+PSA_switch <- 1                             #1=run PSA, 0=deterministic
 PSA_numb <- 6                              #number of PSA runs
 pat_numb <- 25000                           #number of patients
 days_to_discharge <- 30                     #number of days to discharge from hospital
@@ -59,4 +59,4 @@ if(TARN_22_params ==T){
   MTCs_in_mort_risk <- "Yes"
 }
 
-Util_source             <- "Ahmed"        #Option for the source of the utility values. Either Ahmed or Kruithof. Default is Kruithof
+Util_source             <- "Kruithof"        #Option for the source of the utility values. Either Ahmed or Kruithof. Default is Kruithof

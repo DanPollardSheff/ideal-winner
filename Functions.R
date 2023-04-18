@@ -2330,9 +2330,9 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     rands <- runif(length(pat_chars[,"ISS"]))
     #Use PSA parameters if in a PSA run, otherwise use deterministic
     if(PSA_switch==1){
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"MATTSP3_Sens"], 1-triage_rules_params[SOUR+1,"MATTSP3_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"MATTSP3_SENS"], 1-triage_rules_params[SOUR+1,"MATTSP3_SPEC"])
     }else{
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"MATTSP3_Sens"], 1-triage_rules_params[1,"MATTSP3_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"MATTSP3_SENS"], 1-triage_rules_params[1,"MATTSP3_SPEC"])
     }
     temp <- ifelse(rands[]<sens_spec, 1,0)
     #All analyses are based on final location, therefore compliance is not accounted for
@@ -2344,9 +2344,9 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     rands <- runif(length(pat_chars[,"ISS"]))
     #Use PSA parameters if in a PSA run, otherwise use deterministic
     if(PSA_switch==1){
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"LAS_Sens"], 1-triage_rules_params[SOUR+1,"LAS_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"LAS_SENS"], 1-triage_rules_params[SOUR+1,"LAS_SPEC"])
     }else{
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"LAS_Sens"], 1-triage_rules_params[1,"LAS_Spec"])  
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"LAS_SENS"], 1-triage_rules_params[1,"LAS_SPEC"])  
     }
     temp <- ifelse(rands[]<sens_spec, 1,0)
     #All analyses are based on final location, therefore compliance is not accounted for
@@ -2358,9 +2358,9 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     rands <- runif(length(pat_chars[,"ISS"]))
     #Use PSA parameters if in a PSA run, otherwise use deterministic
     if(PSA_switch==1){
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"SWAS_Sens"], 1-triage_rules_params[SOUR+1,"SWAS_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"SWAS_SENS"], 1-triage_rules_params[SOUR+1,"SWAS_SPEC"])
     }else{
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"SWAS_Sens"], 1-triage_rules_params[1,"SWAS_Spec"])  
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"SWAS_SENS"], 1-triage_rules_params[1,"SWAS_SPEC"])  
     }
     temp <- ifelse(rands[]<sens_spec, 1,0)
     #All analyses are based on final location, therefore compliance is not accounted for
@@ -2371,9 +2371,9 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     non_mt <- pat_chars[,"ISS"] < 16
     rands <- runif(length(pat_chars[,"ISS"]))
     if(SOUR!=1){
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"WMAS_Sens"], 1-triage_rules_params[SOUR+1,"WMAS_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"WMAS_SENS"], 1-triage_rules_params[SOUR+1,"WMAS_SPEC"])
     }else{
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"WMAS_Sens"], 1-triage_rules_params[1,"WMAS_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"WMAS_SENS"], 1-triage_rules_params[1,"WMAS_SPEC"])
     }
     temp <- ifelse(rands[]<sens_spec, 1,0)
     #All analyses are based on final location, therefore compliance is not accounted for
@@ -2384,9 +2384,9 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     non_mt <- pat_chars[,"ISS"] < 16
     rands <- runif(length(pat_chars[,"ISS"]))
     if (PSA_switch==1){
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"YAS_Sens"], 1-triage_rules_params[SOUR+1,"YAS_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"YAS_SENS"], 1-triage_rules_params[SOUR+1,"YAS_SPEC"])
     }else{
-    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"YAS_Sens"], 1-triage_rules_params[1,"YAS_Spec"])
+    sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[1,"YAS_SENS"], 1-triage_rules_params[1,"YAS_SPEC"])
     }
     temp <- ifelse(rands[]<sens_spec, 1,0)
     #All analyses are based on final location, therefore compliance is not accounted for

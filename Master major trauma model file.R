@@ -17,7 +17,7 @@ file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\
 
 #read in global data files
 param_data <- read.csv("Parameters/parameters.csv", row.names=1)
-triage_rules_params <- read.csv("Parameters/PSA_parameters_rules.csv")
+triage_rules_params <- read.csv("Parameters/MATTSPhase3Rules.csv")
 tarn_22_means <- read.csv("Parameters/New TARN Means.csv", row.names = 1)
 tarn_22_vcov <- read.csv("Parameters/New TARN vcov matrix.csv", row.names=1)
 life_tabs <- read.csv("Parameters/ONSlifetables.csv")
@@ -75,7 +75,8 @@ if(Param_export==1){
 
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
-All5 <- run_simulation(pat_chars, parameters, PSA_numb, "MATTSP3", NA, NA,1)
-
-Util_source             <- "Kruithof"
-All <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.8, 0.8,1)
+MATTSP3 <- run_simulation(pat_chars, parameters, PSA_numb, "MATTSP3", NA, NA,1)
+LAS <- run_simulation(pat_chars, parameters, PSA_numb, "LAS", NA, NA,1)
+SWAS <- run_simulation(pat_chars, parameters, PSA_numb, "SWAS", NA, NA,1)
+WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "WMAS", NA, NA,1)
+YAS <- run_simulation(pat_chars, parameters, PSA_numb, "YAS", NA, NA,1)
