@@ -12,7 +12,7 @@ numCores <- (detectCores() -1)  #Number of cores available minus 1, to
 #read in the r script that sets the global variables
 source("Set global variables.R")
 #set number of patients to a large number
-pat_numb <- 2500
+pat_numb <- 250000
 #set to deterministic
 PSA_switch <- 0
 PSA_numb <- 1
@@ -89,3 +89,70 @@ LAS <- run_simulation(pat_chars, parameters, PSA_numb, "LAS", NA, NA,0)
 SWAS <- run_simulation(pat_chars, parameters, PSA_numb, "SWAS", NA, NA,0)
 WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "WMAS", NA, NA,0)
 YAS <- run_simulation(pat_chars, parameters, PSA_numb, "YAS", NA, NA,0)
+
+#####Store results in a matrix
+stability_res <- matrix(data=NA, nrow = pat_numb, ncol = 11)
+colnames(stability_res) <- c("ID", "MATTSP3Cost", "LASCost", "SWASCost", "WMASCost", "YASCost",
+                             "MATTSP3QALY", "LASQALY", "SWASQALY", "WMASQALY", "YASQALY")
+#Record ID
+stability_res[,"ID"] <- 1:pat_numb
+#Get cumulative costs for each strategy
+stability_res[,"MATTSP3Cost"] <- ave(MATTSP3[,"DCosts"],FUN=cumsum)
+stability_res[,"MATTSP3Cost"] <- stability_res[,"MATTSP3Cost"]/stability_res[,"ID"]
+
+stability_res[,"LASCost"] <- ave(LAS[,"DCosts"],FUN=cumsum)
+stability_res[,"LASCost"] <- stability_res[,"LASCost"]/stability_res[,"ID"]
+
+stability_res[,"SWASCost"] <- ave(SWAS[,"DCosts"],FUN=cumsum)
+stability_res[,"SWASCost"] <- stability_res[,"SWASCost"]/stability_res[,"ID"]
+
+stability_res[,"WMASCost"] <- ave(WMAS[,"DCosts"],FUN=cumsum)
+stability_res[,"WMASCost"] <- stability_res[,"WMASCost"]/stability_res[,"ID"]
+
+stability_res[,"YASCost"] <- ave(YAS[,"DCosts"],FUN=cumsum)
+stability_res[,"YASCost"] <- stability_res[,"YASCost"]/stability_res[,"ID"]
+
+#Get cumulative QALYs for each strategy
+stability_res[,"MATTSP3QALY"] <- ave(MATTSP3[,"dQALYS"],FUN=cumsum)
+stability_res[,"MATTSP3QALY"] <- stability_res[,"MATTSP3QALY"]/stability_res[,"ID"]
+
+stability_res[,"LASQALY"] <- ave(LAS[,"dQALYS"],FUN=cumsum)
+stability_res[,"LASQALY"] <- stability_res[,"LASQALY"]/stability_res[,"ID"]
+
+stability_res[,"SWASQALY"] <- ave(SWAS[,"dQALYS"],FUN=cumsum)
+stability_res[,"SWASQALY"] <- stability_res[,"SWASQALY"]/stability_res[,"ID"]
+
+stability_res[,"WMASQALY"] <- ave(WMAS[,"dQALYS"],FUN=cumsum)
+stability_res[,"WMASQALY"] <- stability_res[,"WMASQALY"]/stability_res[,"ID"]
+
+stability_res[,"YASQALY"] <- ave(YAS[,"dQALYS"],FUN=cumsum)
+stability_res[,"YASQALY"] <- stability_res[,"YASQALY"]/stability_res[,"ID"]
+
+#trun stability res into a dataframe for ggplot 2
+stability_res <- as.data.frame(stability_res)
+
+#plots
+install.packages("ggplot2")
+library(ggplot2)
+
+CostGraph <- ggplot(stability_res, aes(x=ID))+
+  geom_line(aes(y = MATTSP3Cost), color = "red")+
+  geom_line(aes(y = LASCost), color = "blue", linetype = 2)+
+  geom_line(aes(y = SWASCost), color = "yellow", linetype = 3)+
+  geom_line(aes(y = WMASCost), color = "purple", linetype = 4)+
+  geom_line(aes(y = YASCost), color = "orange", linetype = 5)+
+  ylim(30000,35000)
+
+CostGraph
+ggsave("Results/StabilityCostGraph.png", plot = CostGraph)
+
+QALYGraph <- ggplot(stability_res, aes(x=ID))+
+  geom_line(aes(y = MATTSP3QALY), color = "red")+
+  geom_line(aes(y = LASQALY), color = "blue", linetype = 2)+
+  geom_line(aes(y = SWASQALY), color = "yellow", linetype = 3)+
+  geom_line(aes(y = WMASQALY), color = "purple", linetype = 4)+
+  geom_line(aes(y = YASQALY), color = "orange", linetype = 5)+
+  ylim(11,14)
+
+QALYGraph
+ggsave("Results/StabilityQALYGraph.png", plot = QALYGraph)
