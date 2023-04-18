@@ -3,10 +3,10 @@ P_MTC_Tri_pos_ISS_o15,4001,479,Beta,Newgard et al. 2016. Journal of the American
 P_MTC_Tri_neg_ISS_o15,318,338,Beta,Newgard et al. 2016. Journal of the American College of Surgeons,
 P_MTC_Tri_pos_ISS_u16,21586,338,Beta,Newgard et al. 2016. Journal of the American College of Surgeons,
 P_MTC_Tri_neg_ISS_u16,16573,31325,Beta,Newgard et al. 2016. Journal of the American College of Surgeons,
-Transfer_nMTC_to_MTC_ISSo15_TP,0,,Beta,Newgard et al. 2016. Journal of the American College of Surgeons,"Percentage of patients with an ISS ? 16, with a positive triage result who where transferred from a non major trauma centre to a major trauma centre"
+Transfer_nMTC_to_MTC_ISSo15_TP,0,,Fixed,Newgard et al. 2016. Journal of the American College of Surgeons,"Percentage of patients with an ISS ? 16, with a positive triage result who where transferred from a non major trauma centre to a major trauma centre"
 Transfer_nMTC_to_MTC_ISSo15_TN,0,,Fixed,Newgard et al. 2016. Journal of the American College of Surgeons,"Percentage of patients with an ISS ? 16, with a positive triage result who where transferred from a non major trauma centre to a major trauma centre"
 Transfer_nMTC_to_MTC_ISSu16_TP,0,,Fixed,Newgard et al. 2016. Journal of the American College of Surgeons,"Percentage of patients with an ISS ? 16, with a positive triage result who where transferred from a non major trauma centre to a major trauma centre"
-Transfer_nMTC_to_MTC_ISSu16_TN,0,,Beta,Newgard et al. 2016. Journal of the American College of Surgeons,"Percentage of patients with an ISS ? 16, with a positive triage result who where transferred from a non major trauma centre to a major trauma centre"
+Transfer_nMTC_to_MTC_ISSu16_TN,0,,Fixed,Newgard et al. 2016. Journal of the American College of Surgeons,"Percentage of patients with an ISS ? 16, with a positive triage result who where transferred from a non major trauma centre to a major trauma centre"
 p_death_hosp_ISSo15_MTC,514,4623,Beta,Newgard et al. 2016. Journal of the American College of Surgeons,"Probability of dying during hospitalisation for a patient with an ISS ? 16, who was treated at a major trauma centre"
 RR_p_death_hosp_ISSo15_nMTC,0.2231,0.1138,Normal_ln,"unclear, Newgard et al. 2013. Health Affairs",
 p_death_hosp_ISSu16,898,73900,Beta,Newgard et al. 2016. Journal of the American College of Surgeons,Probability of dying during hospitalisation for a patient with an ISS < 16
