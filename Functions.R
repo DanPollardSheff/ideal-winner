@@ -2473,15 +2473,16 @@ run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitiv
   parameters[,"U_ISS_u16_o8"] <- parameters[,"U_ISS_o15_MTC"]
   
   #setup the matrix to store results
-  results <- matrix (nrow = ifelse(PSA_switch == 1,PSA_numb,1), ncol=12)
-  #create names for the results matrix
-  colnames(results) <- c("Sens_DR","Spec_DR", "Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year", "Years_lived",
-                         "undiscounted_QALYs", "discounted_QALYs", "undiscounted_Costs", "discounted_Costs", "proportion_ISS_over_16", "proportion_ISS_over_8_under_16")
-  
-  
+  results <- matrix (nrow = ifelse(pop_report==0,length(pat_chars[,"ID"]), 
+                                   ifelse(PSA_switch == 1,PSA_numb,1)), 
+                     ncol=ifelse(pop_report==0,21,12))
   
   #run the simulation, calling the user defined function to run the model once
-  if(PSA_switch==0){
+  if(pop_report==0){
+    SOUR <- 1
+    results <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
+  }else if(PSA_switch==0){
+    SOUR <- 1
     results[SOUR,] <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
   }else{
     SOUR <- seq(1,PSA_numb)
