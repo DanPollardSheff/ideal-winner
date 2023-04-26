@@ -256,8 +256,9 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   #otherwise generate the characteristics by doing the simulations yourself
   
   #Create a matrix for all patient characteristics
-  test2 = matrix(nrow = pat_numb, ncol = 22)  
-  colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr", "rule_rand")  
+  test2 = matrix(nrow = pat_numb, ncol = 24)  
+  colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr", "rule_rand",
+                       "deathdisch_rand", "death1year_rand")  
   
   #test sampling
   test <- mvrnorm (n = as.numeric(pat_numb), means, covariance)
@@ -400,6 +401,8 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   
   #Give everyone a random number to determine their triage location 
   test2[,"rule_rand"] <- runif(test2[,"rule_rand"])
+  test2[,"deathdisch_rand"] <- runif(test2[,"deathdisch_rand"])
+  test2[,"death1year_rand"] <- runif(test2[,"death1year_rand"])
   
   return(test2)
 }
@@ -1655,7 +1658,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   pat_chars[,"p_death_hosp"] <- p_death_hosp
   
   #create a vector of random numbers, equal in length to the probability of dying in hospital
-  rand_vect <- runif(length(p_death_hosp))
+  rand_vect <- pat_chars[,"deathdisch_rand"]
   #determine if the patient has died in hospital
   death_hosp <- ifelse (rand_vect < p_death_hosp, 1,0)
   #record whether or not the patient has died in hospital 
@@ -1792,7 +1795,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   pat_chars[,"p_death_disch_1yr"] <- p_death_disch_1yr
   
   #create a random vector, which is the length of the probability of dying between discharge and year 1
-  rand_vect <- runif(length(p_death_disch_1yr))
+  rand_vect <- pat_chars[,"death1year_rand"]
   #Compare the random numbers to the probability of dying between discharge and death
   death_disch_1yr <- ifelse(rand_vect < p_death_disch_1yr ,1,0)
   #Store these results in the patient characteristics matrix
