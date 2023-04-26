@@ -128,31 +128,47 @@ stability_res[,"WMASQALY"] <- stability_res[,"WMASQALY"]/stability_res[,"ID"]
 stability_res[,"YASQALY"] <- ave(YAS[,"dQALYS"],FUN=cumsum)
 stability_res[,"YASQALY"] <- stability_res[,"YASQALY"]/stability_res[,"ID"]
 
-#trun stability res into a dataframe for ggplot 2
+#turn stability res into a data frame for ggplot 2
 stability_res <- as.data.frame(stability_res)
 
 #plots
 install.packages("ggplot2")
 library(ggplot2)
 
-CostGraph <- ggplot(stability_res, aes(x=ID))+
-  geom_line(aes(y = MATTSP3Cost), color = "red")+
-  geom_line(aes(y = LASCost), color = "blue", linetype = 2)+
-  geom_line(aes(y = SWASCost), color = "yellow", linetype = 3)+
-  geom_line(aes(y = WMASCost), color = "purple", linetype = 4)+
-  geom_line(aes(y = YASCost), color = "orange", linetype = 5)+
-  ylim(30000,35000)
+#Cost stability graph, start at patient 1000 as it is highly unlikely that fewer patients
+#can be run
+
+CostGraph <- ggplot(stability_res[1000:length(stability_res$ID),], aes(x=ID))+
+  geom_line(aes(y = MATTSP3Cost, colour ="red") )+
+  geom_line(aes(y = LASCost, colour ="yellow"), linetype = 2)+
+  geom_line(aes(y = SWASCost, colour ="blue"),linetype = 3)+
+  geom_line(aes(y = WMASCost, colour ="purple"), linetype = 4)+
+  geom_line(aes(y = YASCost, colour ="orange"),linetype = 5)+
+  ylim(30500,33500)+
+  ylab("Per patient cost (£)")+
+  xlab("Number of patients")+
+  scale_color_identity(name="",
+                     breaks = c("red", "yellow", "blue", "purple", "orange"),
+                     labels = c("MATTS", "LAS", "SWAS", "WMAS", "YAS"),
+                     guide = 'legend')
+  
 
 CostGraph
 ggsave("Results/StabilityCostGraph.png", plot = CostGraph)
 
-QALYGraph <- ggplot(stability_res, aes(x=ID))+
-  geom_line(aes(y = MATTSP3QALY), color = "red")+
-  geom_line(aes(y = LASQALY), color = "blue", linetype = 2)+
-  geom_line(aes(y = SWASQALY), color = "yellow", linetype = 3)+
-  geom_line(aes(y = WMASQALY), color = "purple", linetype = 4)+
-  geom_line(aes(y = YASQALY), color = "orange", linetype = 5)+
-  ylim(11,14)
+QALYGraph <- ggplot(stability_res[1000:length(stability_res$ID),], aes(x=ID))+
+  geom_line(aes(y = MATTSP3QALY, colour ="red") )+
+  geom_line(aes(y = LASQALY, colour ="yellow"), linetype = 2)+
+  geom_line(aes(y = SWASQALY, colour ="blue"),linetype = 3)+
+  geom_line(aes(y = WMASQALY, colour ="purple"), linetype = 4)+
+  geom_line(aes(y = YASQALY, colour ="orange"),linetype = 5)+
+  ylim(12.2,13)+
+  ylab("Per patient cost (£)")+
+  xlab("Number of patients")+
+  scale_color_identity(name="",
+                       breaks = c("red", "yellow", "blue", "purple", "orange"),
+                       labels = c("MATTS", "LAS", "SWAS", "WMAS", "YAS"),
+                       guide = 'legend')
 
 QALYGraph
 ggsave("Results/StabilityQALYGraph.png", plot = QALYGraph)

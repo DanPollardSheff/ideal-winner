@@ -1,7 +1,7 @@
 #Global variables
 PSA_switch <- 1                             #1=run PSA, 0=deterministic
-PSA_numb <- 6                              #number of PSA runs
-pat_numb <- 25000                           #number of patients
+PSA_numb <- 1000                            #number of PSA runs
+pat_numb <- 150000                          #number of patients
 days_to_discharge <- 30                     #number of days to discharge from hospital
 days_in_year <- 365.25                      #number of days in a year
 time_horizon <- 100                         #time horizon, years
@@ -40,7 +40,7 @@ test_pat_chars <- "No"                      #Change this to Yes if you only want
 
 PSA_rand_no <-  -99                         #random number to determine PSA parameters either -99 (to not reset the seed) or any positive number
 
-date <- "_1_75_ben_ISS_u9"                  #name to append to saved files 
+scenario <- "_basecase"                         #name to append to saved files 
 
 
 Eldery_specific_params  <- T                #Takes value T or F. If T model has different parameters for

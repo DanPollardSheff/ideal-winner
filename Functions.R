@@ -256,8 +256,8 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   #otherwise generate the characteristics by doing the simulations yourself
   
   #Create a matrix for all patient characteristics
-  test2 = matrix(nrow = pat_numb, ncol = 21)  
-  colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr")  
+  test2 = matrix(nrow = pat_numb, ncol = 22)  
+  colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr", "rule_rand")  
   
   #test sampling
   test <- mvrnorm (n = as.numeric(pat_numb), means, covariance)
@@ -397,6 +397,10 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   
   #As we have no data on mCCI, set everyone to have a missing mCCI
   test2[,"CCI"] <- -99
+  
+  #Give everyone a random number to determine their triage location 
+  test2[,"rule_rand"] <- runif(test2[,"rule_rand"])
+  
   return(test2)
 }
 
@@ -2316,7 +2320,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   if(name=="manual"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
-    rands <- runif(length(pat_chars[,"ISS"]))
+    rands <- pat_chars[,"rule_rand"]
     sens_spec <- ifelse(major_trauma==TRUE, sens, 1-spec)
     temp <- ifelse(rands[]<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
@@ -2327,7 +2331,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   else if (name == "MATTSP3"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
-    rands <- runif(length(pat_chars[,"ISS"]))
+    rands <- pat_chars[,"rule_rand"]
     #Use PSA parameters if in a PSA run, otherwise use deterministic
     if(PSA_switch==1){
     sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"MATTSP3_SENS"], 1-triage_rules_params[SOUR+1,"MATTSP3_SPEC"])
@@ -2341,7 +2345,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   }else if(name == "LAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
-    rands <- runif(length(pat_chars[,"ISS"]))
+    rands <- pat_chars[,"rule_rand"]
     #Use PSA parameters if in a PSA run, otherwise use deterministic
     if(PSA_switch==1){
     sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"LAS_SENS"], 1-triage_rules_params[SOUR+1,"LAS_SPEC"])
@@ -2355,7 +2359,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   } else if (name == "SWAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
-    rands <- runif(length(pat_chars[,"ISS"]))
+    rands <- pat_chars[,"rule_rand"]
     #Use PSA parameters if in a PSA run, otherwise use deterministic
     if(PSA_switch==1){
     sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"SWAS_SENS"], 1-triage_rules_params[SOUR+1,"SWAS_SPEC"])
@@ -2369,7 +2373,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   } else if (name == "WMAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
-    rands <- runif(length(pat_chars[,"ISS"]))
+    rands <- pat_chars[,"rule_rand"]
     if(SOUR!=1){
     sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"WMAS_SENS"], 1-triage_rules_params[SOUR+1,"WMAS_SPEC"])
     }else{
@@ -2382,7 +2386,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   }else if (name == "YAS"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
-    rands <- runif(length(pat_chars[,"ISS"]))
+    rands <- pat_chars[,"rule_rand"]
     if (PSA_switch==1){
     sens_spec <- ifelse(major_trauma==TRUE, triage_rules_params[SOUR+1,"YAS_SENS"], 1-triage_rules_params[SOUR+1,"YAS_SPEC"])
     }else{

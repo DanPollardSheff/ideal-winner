@@ -12,6 +12,9 @@ numCores <- (detectCores() -1)  #Number of cores available minus 1, to
 #read in the r script that sets the global variables
 source("Set global variables.R")
 
+#set the number of PSAs to 50
+PSA_numb <- 50  
+
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
 
@@ -76,7 +79,13 @@ if(Param_export==1){
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 MATTSP3 <- run_simulation(pat_chars, parameters, PSA_numb, "MATTSP3", NA, NA,1)
+write.csv(MATTSP3, "Results/MATTSP3PSAtest.csv")
 LAS <- run_simulation(pat_chars, parameters, PSA_numb, "LAS", NA, NA,1)
+write.csv(LAS, "Results/LASPSAtest.csv")
 SWAS <- run_simulation(pat_chars, parameters, PSA_numb, "SWAS", NA, NA,1)
+write.csv(SWAS, "Results/SWASPSAtest.csv")
 WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "WMAS", NA, NA,1)
+write.csv(WMAS, "Results/WMASPSAtest.csv")
 YAS <- run_simulation(pat_chars, parameters, PSA_numb, "YAS", NA, NA,1)
+write.csv(YAS, "Results/YASPSAtest.csv")
+
