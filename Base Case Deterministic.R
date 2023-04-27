@@ -75,6 +75,10 @@ parameters <- gen_parameters(PSA_switch,PSA_numb, param_data_bc)
 if(Param_export==1){
   write.csv(parameters, file = "parameter_outputs.csv")
 }
+
+#Generate a random number table for life table analysis
+random_numbs_LE <- array(data = runif(pat_numb*100*2), dim = c(pat_numb,100,2))
+
 ##########################################################
 
 #### add in analysis run here

@@ -4,7 +4,10 @@
 #Function to sample from PSA distributions for parmeters or if a PSA is not being conducted return the deterministic value. 
 #Uses three arguments: parameter 1 (mean/alpha), parameter 2 (SE / beta), parameter 3 (distribution type)
 #distributions which are currently implemented are: Beta, log normal, normal, gamma and multivariate normal.
-
+#' @param a is the first parameter for the distribution
+#' @param b is the second parameter for the distribution
+#' @param d is the type of distribution used
+#' @param PSA_switch is the 
 value_selector <- function(a,b,d, PSA_switch, PSA_numb,f,g){
   #set temp to NA, so if there is a bug, it should be obvious
   temp <- NA
@@ -119,56 +122,7 @@ value_selector <- function(a,b,d, PSA_switch, PSA_numb,f,g){
 #the second argument is the patient genders
 # the third argument is the following three columns of the ONS lifetables: age; qx for men; and, qx for women (see lifetables for defs)
 
-life_expectancy_ONS <- function(age, gender, life_tables){
-  #Check that the length of the two vectors (age and gender) is the same
-  
-  #Generate a temporary vector of the same length to store the results, with all values defaulting to -99.
-  #a value of -99 indicates that the age of death has not been determined in the loop
-  all_cause_death <- rep(-99, length.out = length(age))
-  
-  #Loop so that the process is repeated for each patient in the model on the basis of their age
-  for (i in 1:length(age)){
-    #If the patient is 101 when this function is run, assume they have the remaining life expectancy of a 100 year old for their gender
-    #Life expectancies are 103.02 for men and 103.32 for women
-    if(age[i]==101){
-      #using solver to calibrate the %die before 101*100.5 + %that don't die before 101*unknown life expectancy 
-      # is equal to the life expectancy at age 100, in the UK ONS lifetables
-      
-      all_cause_death[i] = age[i] + ifelse(gender[i]==1,2.02,2.32)
-      
-    }else{
-      
-      
-      #Loop down so all patients have an all cause death age assigned 
-      
-      #apply the loop from the baseline age + 1 (the short term model determines outcomes in the first year)
-      temp <- as.numeric(age[i])
-      
-      for(y in temp:100){
-        #store a random number to compbl_ageare against the prob of death in each year
-        rand <- runif(1)
-        if(rand < life_tables[y+1, 3 - gender[i]*1]){
-          #if the random number is less than the probability of death from the life, then set their age of death to the 
-          #current age plus a sample from a uniform distribution
-          #assumes that if they die between age x and x+1, the deaths will happen uniformly accross the year
-          all_cause_death[i] <- y+runif(1)
-          #stop the inner loop, as the individual has been simulated as dying
-          break
-        }
-      }
-      #If the all cause death date is still NA, set the age of death to 100
-      if(all_cause_death[i] == -99){
-        #If they don't die between age 100 and 101, assume they die at age 103.02 for men and 103.32 for women
-        #using solver to calibrate the %die before 101*100.5 + %that don't die before 101*unknown life expectancy 
-        # is equal to the life expectancy at age 100
-        all_cause_death[i] = 101 + ifelse(gender[i]==1,2.02,2.32)
-      }
-    }
-  }
-  return(all_cause_death)
-}
-
-life_expectancy_ONS2 <- function(pat_chars, life_tables){
+life_expectancy_ONS2 <- function(pat_chars, life_tables, random_numbs_LE){
   
   #loop over ages and determine whether the patients died in each year. 
   for (i in 1:85){
@@ -198,7 +152,7 @@ life_expectancy_ONS2 <- function(pat_chars, life_tables){
     #record the probability of deaths
     
     #men
-    #note the +1 is to offset the rwo by 1 to adjust for the fact that ONS life
+    #note the +1 is to offset the row by 1 to adjust for the fact that ONS life
     #tables start at age 0
     age_temp_m <- (pat_chars[,"Age"]+i+1)[alive_m_under_100]
     p_death_m <- life_tables[age_temp_m,2]
@@ -216,8 +170,8 @@ life_expectancy_ONS2 <- function(pat_chars, life_tables){
     pat_chars[,"D_1yr_plus"][alive_f_over_100] <- 103.32
     
     #Generate the random numbers 
-    rands <- runif(length(pat_chars[,1][alive_under_100])) #set to determine whether or not an event has occured
-    rands2 <- runif(length(pat_chars[,1][alive_under_100])) #if an event has occured within the next year, exactly how far into the year does it occur
+    rands <- random_numbs_LE[,i,1][alive_under_100] #set to determine whether or not an event has occured
+    rands2 <- random_numbs_LE[,i,2][alive_under_100] #if an event has occured within the next year, exactly how far into the year does it occur
     
     pat_chars[,"D_1yr_plus"][alive_under_100] <- ifelse(rands < pat_chars[,"D_1yr_plus"][alive_under_100], pat_chars[,"Age"][alive_under_100]+i+rands2, -99)
   }
@@ -1532,7 +1486,7 @@ final_dest <- function(strategy, pat_chars, sens, spec, ISS_cutoff_MTC_pos){
   }
 }
 
-outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensitivity, specificity){
+outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensitivity, specificity, random_numbs_LE){
   
   #determine triage rule status
   #code to be added, this will be specific to our decision rules
@@ -1910,15 +1864,11 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   #estimate the time of death for each patient, as though their ISS is over 15
   #Note this is plus one, because their characteristic is age at baseline and these patients have survived to one year
-  if(efficent_life_expectancy =="No"){
-    Age_at_death_ISS_o15 <-  life_expectancy_ONS(pat_chars[,"Age"]+1,pat_chars[,"Gender"], Life_table_ISS_o_15)
+
+    Age_at_death_ISS_o15 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_o_15, random_numbs_LE)
     #estimate the time of death for each patient, as though their ISS is under 16
-    Age_at_death_ISS_u16 <-  life_expectancy_ONS(pat_chars[,"Age"]+1,pat_chars[,"Gender"], Life_table_ISS_u_16)
-  } else{
-    Age_at_death_ISS_o15 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_o_15)
-    #estimate the time of death for each patient, as though their ISS is under 16
-    Age_at_death_ISS_u16 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_u_16)
-  }
+    Age_at_death_ISS_u16 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_u_16, random_numbs_LE)
+
   #Note is age +1 in these calculations, as they must be alive one year after their major trauma to have their long term
   #life expectancy estimated
   
