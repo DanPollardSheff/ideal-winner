@@ -77,21 +77,23 @@ if(Param_export==1){
 }
 
 #Generate a random number table for life table analysis
-random_numbs_LE <- array(data = runif(pat_numb*100*2), dim = c(pat_numb,100,2))
-
+random_numbs_LE <- array(data = runif(pat_numb*101*2), dim = c(pat_numb,101,2))
+#Reset the first columns to be patient ID's
+random_numbs_LE[,1,1] <- pat_chars[,"ID"]
+random_numbs_LE[,1,2] <- pat_chars[,"ID"]
 ##########################################################
 
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 start_time <- Sys.time()
-MATTSP3 <- run_simulation(pat_chars, parameters, PSA_numb, "MATTSP3", NA, NA,1)
+MATTSP3 <- run_simulation(pat_chars, parameters, PSA_numb, "MATTSP3", 0.498, 0.887,1,random_numbs_LE)
 end_time <- Sys.time()
 end_time - start_time
 model_runtime <- end_time - start_time
-LAS <- run_simulation(pat_chars, parameters, PSA_numb, "LAS", NA, NA,1)
-SWAS <- run_simulation(pat_chars, parameters, PSA_numb, "SWAS", NA, NA,1)
-WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "WMAS", NA, NA,1)
-YAS <- run_simulation(pat_chars, parameters, PSA_numb, "YAS", NA, NA,1)
+LAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.511, 0.83,1,random_numbs_LE)
+SWAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.233, 0.895,1,random_numbs_LE)
+WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.536, 0.911,1,random_numbs_LE)
+YAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.458, 0.905,1,random_numbs_LE)
 
 write.csv(MATTSP3, "Results/MATTSP3.csv")
 write.csv(LAS, "Results/LAS.csv")

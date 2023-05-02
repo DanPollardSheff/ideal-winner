@@ -34,10 +34,6 @@ population_source <- "Dutch"                #Source of simulated population.Opti
 population_ISS_over16_only <- "No"          #Option for resampling to produce a population with ISS >= 16. Options are "Yes" or "No". Default is no. 
 population_ISS_under16_only <- "No"         #Option for resampling to produce a population with ISS < 16. Can be "Yes" or "No". Default is no.
 
-efficent_life_expectancy <- "Yes"           #Options are Yes or No. Default is yes
-
-test_pat_chars <- "No"                      #Change this to Yes if you only want to run the base case analysis with patient level results
-
 PSA_rand_no <-  -99                         #random number to determine PSA parameters either -99 (to not reset the seed) or any positive number
 
 scenario <- "_basecase"                         #name to append to saved files 
@@ -46,7 +42,7 @@ scenario <- "_basecase"                         #name to append to saved files
 Eldery_specific_params  <- T                #Takes value T or F. If T model has different parameters for
                                             #elderly (65+) populations
 
-Pead_specific_params    <- T                #Takes value T or F. If T the model has different parameters
+Pead_specific_params    <- F                #Takes value T or F. If T the model has different parameters
                                             #for pediatric (14 and under) population
 
 TARN_22_params          <- T                #Use the TARN 22 parameter estimates? T = TRUE, F = FALSE
