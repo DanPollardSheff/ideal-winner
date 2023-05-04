@@ -2397,9 +2397,9 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
     
     sens_spec <- ifelse(major_trauma==T&elderly==T,
-                        triage_rules_params[rowlookup,"YAS_P3_Sens_Non_Elderly"],
+                        triage_rules_params[rowlookup,"YAS_P3_Sens_Elderly"],
                         ifelse(major_trauma==T&elderly==F,
-                               triage_rules_params[rowlookup,"YAS_P3_Sens_Elderly"],
+                               triage_rules_params[rowlookup,"YAS_P3_Sens_Non_Elderly"],
                                ifelse(major_trauma==F&elderly==T,
                                       1-triage_rules_params[rowlookup,"YAS_P3_Spec_Non_Elderly"],
                                       1-triage_rules_params[rowlookup,"YAS_P3_Spec_Elderly"])))

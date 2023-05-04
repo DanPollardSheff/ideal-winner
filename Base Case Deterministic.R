@@ -81,22 +81,36 @@ random_numbs_LE <- array(data = runif(pat_numb*101*2), dim = c(pat_numb,101,2))
 #Reset the first columns to be patient ID's
 random_numbs_LE[,1,1] <- pat_chars[,"ID"]
 random_numbs_LE[,1,2] <- pat_chars[,"ID"]
+
+#Proportion Elderly
+ISS_o15 <- sum(ifelse(pat_chars[,"ISS"]>15,1,0))
+ISS_u15 <- length(pat_chars[,"ISS"])-ISS_o15
+Elderly_ISSo15 <- sum(ifelse(pat_chars[,"Age"]>=65&pat_chars[,"ISS"]>15,1,0))
+Elderly_ISSu15 <- sum(ifelse(pat_chars[,"Age"]>=65&pat_chars[,"ISS"]<15,1,0))
+Elderly <- sum(ifelse(pat_chars[,"Age"]>=65,1,0))
+
+Elderly_ISSo15/ISS_o15
+Elderly_ISSu15/ISS_u15
 ##########################################################
 
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 start_time <- Sys.time()
-MATTSP3 <- run_simulation(pat_chars, parameters, PSA_numb, "MATTSP3", 0.498, 0.887,1,random_numbs_LE)
+P2_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_WMAS", NA, NA,1,random_numbs_LE)
 end_time <- Sys.time()
 end_time - start_time
 model_runtime <- end_time - start_time
-LAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.511, 0.83,1,random_numbs_LE)
-SWAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.233, 0.895,1,random_numbs_LE)
-WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.536, 0.911,1,random_numbs_LE)
-YAS <- run_simulation(pat_chars, parameters, PSA_numb, "manual", 0.458, 0.905,1,random_numbs_LE)
+P3_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase3_WMAS", NA, NA,1,random_numbs_LE)
+SWAST <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_SWAST", NA, NA,1,random_numbs_LE)
+LAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_LAS", NA, NA,1,random_numbs_LE)
 
-write.csv(MATTSP3, "Results/MATTSP3.csv")
+P2_YAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_YAS", NA, NA,1,random_numbs_LE)
+P3_YAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase3_YAS", NA, NA,1,random_numbs_LE)
+
+
+write.csv(P2_WMAS, "Results/Phase2_WMAS.csv")
+write.csv(P3_WMAS, "Results/Phase3_WMAS.csv")
+write.csv(SWAST, "Results/SWAST.csv")
 write.csv(LAS, "Results/LAS.csv")
-write.csv(SWAS, "Results/SWAS.csv")
-write.csv(WMAS, "Results/WMAS.csv")
-write.csv(YAS, "Results/YAS.csv")
+write.csv(P2_YAS, "Results/Phase2_YAS.csv")
+write.csv(P3_YAS, "Results/Phase3_YAS.csv")
