@@ -12,11 +12,11 @@ numCores <- (detectCores() -1)  #Number of cores available minus 1, to
 #read in the r script that sets the global variables
 source("Set global variables.R")
 #set number of patients to a large number
-pat_numb <- 1000000
+pat_numb <- 2000
 #set to deterministic
 PSA_switch <- 0
 PSA_numb <- 1
-
+population_ISS_over16_only <- "Yes"
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)
 file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
 
@@ -87,86 +87,19 @@ random_numbs_LE[,1,2] <- pat_chars[,"ID"]
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 start_time <- Sys.time()
+#set.seed(123)
 P2_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_WMAS", NA, NA,0,random_numbs_LE)
 end_time <- Sys.time()
 end_time - start_time
 model_runtime <- end_time - start_time
+#set.seed(123)
 P3_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase3_WMAS", NA, NA,0,random_numbs_LE)
+#set.seed(123)
 SWAST <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_SWAST", NA, NA,0,random_numbs_LE)
+#set.seed(123)
 LAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_LAS", NA, NA,0,random_numbs_LE)
 
-#####Store results in a matrix
-stability_res <- matrix(data=NA, nrow = pat_numb, ncol = 9)
-colnames(stability_res) <- c("ID", "P2_WMASCost", "P3_WMASCost", "P2_SWASCost", "P2_LASCost",
-                             "P2_WMASQALY", "P3_WMASQALY", "P2_SWASQALY", "P2_LASQALY")
-#Record ID
-stability_res[,"ID"] <- 1:pat_numb
-#Get cumulative costs for each strategy
-stability_res[,"P2_WMASCost"] <- ave(P2_WMAS[,"DCosts"],FUN=cumsum)
-stability_res[,"P2_WMASCost"] <- stability_res[,"P2_WMASCost"]/stability_res[,"ID"]
-
-stability_res[,"P3_WMASCost"] <- ave(P3_WMAS[,"DCosts"],FUN=cumsum)
-stability_res[,"P3_WMASCost"] <- stability_res[,"P3_WMASCost"]/stability_res[,"ID"]
-
-stability_res[,"P2_SWASCost"] <- ave(SWAST[,"DCosts"],FUN=cumsum)
-stability_res[,"P2_SWASCost"] <- stability_res[,"P2_SWASCost"]/stability_res[,"ID"]
-
-stability_res[,"P2_LASCost"] <- ave(LAS[,"DCosts"],FUN=cumsum)
-stability_res[,"P2_LASCost"] <- stability_res[,"P2_LASCost"]/stability_res[,"ID"]
-
-#Get cumulative QALYs for each strategy
-stability_res[,"P2_WMASQALY"] <- ave(P2_WMAS[,"dQALYS"],FUN=cumsum)
-stability_res[,"P2_WMASQALY"] <- stability_res[,"P2_WMASQALY"]/stability_res[,"ID"]
-
-stability_res[,"P3_WMASQALY"] <- ave(P3_WMAS[,"dQALYS"],FUN=cumsum)
-stability_res[,"P3_WMASQALY"] <- stability_res[,"P3_WMASQALY"]/stability_res[,"ID"]
-
-stability_res[,"P2_SWASQALY"] <- ave(SWAST[,"dQALYS"],FUN=cumsum)
-stability_res[,"P2_SWASQALY"] <- stability_res[,"P2_SWASQALY"]/stability_res[,"ID"]
-
-stability_res[,"P2_LASQALY"] <- ave(LAS[,"dQALYS"],FUN=cumsum)
-stability_res[,"P2_LASQALY"] <- stability_res[,"P2_LASQALY"]/stability_res[,"ID"]
-
-
-#turn stability res into a data frame for ggplot 2
-stability_res <- as.data.frame(stability_res)
-
-#plots
-install.packages("ggplot2")
-library(ggplot2)
-
-#Cost stability graph, start at patient 1000 as it is highly unlikely that fewer patients
-#can be run
-
-CostGraph <- ggplot(stability_res[1000:length(stability_res$ID),], aes(x=ID))+
-  geom_line(aes(y = P2_WMASCost, colour ="red") )+
-  geom_line(aes(y = P3_WMASCost, colour ="yellow"), linetype = 2)+
-  geom_line(aes(y = P2_SWASCost, colour ="blue"),linetype = 3)+
-  geom_line(aes(y = P2_LASCost, colour ="purple"), linetype = 4)+
-  ylim(30500,33500)+
-  ylab("Per patient cost (£)")+
-  xlab("Number of patients")+
-  scale_color_identity(name="",
-                     breaks = c("red", "yellow", "blue", "purple"),
-                     labels = c("Phase 2 WMAS", "Phase 3 WMAS", "Phase 2 SWAST", "Phase 2 LAS"),
-                     guide = 'legend')
-  
-
-CostGraph
-ggsave("Results/StabilityCostGraph.png", plot = CostGraph)
-
-QALYGraph <- ggplot(stability_res[1000:length(stability_res$ID),], aes(x=ID))+
-  geom_line(aes(y = P2_WMASQALY, colour ="red") )+
-  geom_line(aes(y = P3_WMASQALY, colour ="yellow"), linetype = 2)+
-  geom_line(aes(y = P2_SWASQALY, colour ="blue"),linetype = 3)+
-  geom_line(aes(y = P2_LASQALY, colour ="purple"), linetype = 4)+
-  ylim(12.2,13)+
-  ylab("Quality Adjusted Life Years")+
-  xlab("Number of patients")+
-  scale_color_identity(name="",
-                       breaks = c("red", "yellow", "blue", "purple"),
-                       labels = c("Phase 2 WMAS", "Phase 3 WMAS", "Phase 2 SWAST", "Phase 2 LAS"),
-                       guide = 'legend')
-
-QALYGraph
-ggsave("Results/StabilityQALYGraph.png", plot = QALYGraph)
+write.csv(P2_WMAS, "Results/Phase 2 WMAS patlevel ISS over 15.csv")
+write.csv(P3_WMAS, "Results/Phase 3 WMAS patlevel ISS over 15.csv")
+write.csv(SWAST, "Results/Phase 2 SWAST patlevel ISS over 15.csv")
+write.csv(LAS, "Results/Phase 2 LAS patlevel ISS over 15.csv")

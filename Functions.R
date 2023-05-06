@@ -211,9 +211,9 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   #otherwise generate the characteristics by doing the simulations yourself
   
   #Create a matrix for all patient characteristics
-  test2 = matrix(nrow = pat_numb, ncol = 24)  
+  test2 = matrix(nrow = pat_numb, ncol = 27)  
   colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr", "rule_rand",
-                       "deathdisch_rand", "death1year_rand")  
+                       "deathdisch_rand", "death1year_rand", "MTC_transfer", "timedeathdisch_rand", "timedeath1year_rand")  
   
   #test sampling
   test <- mvrnorm (n = as.numeric(pat_numb), means, covariance)
@@ -355,10 +355,12 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   test2[,"CCI"] <- -99
   
   #Give everyone a random number to determine their triage location 
-  test2[,"rule_rand"] <- runif(test2[,"rule_rand"])
-  test2[,"deathdisch_rand"] <- runif(test2[,"deathdisch_rand"])
-  test2[,"death1year_rand"] <- runif(test2[,"death1year_rand"])
-  
+  test2[,"rule_rand"] <- runif(length(test2[,"rule_rand"]))
+  test2[,"deathdisch_rand"] <- runif(length(test2[,"deathdisch_rand"]))
+  test2[,"death1year_rand"] <- runif(length(test2[,"death1year_rand"]))
+  test2[,"MTC_transfer"] <- runif(length(test2[,"MTC_transfer"]))
+  test2[,"timedeathdisch_rand"] <- runif(length(test2[,"timedeathdisch_rand"]))
+  test2[,"timedeath1year_rand"] <- runif(length(test2[,"timedeath1year_rand"]))
   return(test2)
 }
 
@@ -1505,13 +1507,6 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   #code here has been commented out, as we are applying sens and spec values
   
-  #generate a vector of probabilities of being sent to a major trauma centre (initally)
-  #Dummy values used, this is adherence to triage rule results and we currently dont know what we will do with this
-  #prob_MTC <- ifelse (triage_pos==TRUE & ISS_o15 ==TRUE, parameters[SOUR,"P_MTC_Tri_pos_ISS_o15"] ,ifelse (triage_pos==FALSE & ISS_o15 ==TRUE, parameters[SOUR,"P_MTC_Tri_neg_ISS_o15"], ifelse (triage_pos==TRUE & ISS_o15 ==FALSE, parameters[SOUR,"P_MTC_Tri_pos_ISS_u16"], parameters[SOUR,"P_MTC_Tri_neg_ISS_u16"])))
-  #Determine if there is an event
-  #create a vector of random numbers equal in length to the prob_MTC vector
-  #rand_vect <- runif(length(prob_MTC))
-  #pat_chars[,"MTC"] <- ifelse (rand_vect < prob_MTC,1,0)
   #do people receive a transfer to an MTC?
   MTC <- pat_chars[,"MTC"]==1
   #create a vector of people who went to an nMTC
@@ -1523,7 +1518,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
                                            parameters[SOUR,"Transfer_nMTC_to_MTC_ISSu16_TN"])))
   
   #create a vector of random numbers equal in length to the prob_transfer vector
-  rand_vect <- runif(length(prob_transfer))
+  rand_vect <- pat_chars[,"MTC_transfer"]
   #Determine whether they would have an event, regardless of MTC status
   trans_MTC <- ifelse (rand_vect < prob_transfer,1,0)
   #update the patient characteristics, for those patients who where sent to an nMTC
@@ -1576,7 +1571,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   #Make sure these adjustments only happen if a composite risk score is used
   if(MTCs_in_mort_risk == "Yes"){
     #For patients with an ISS 16 or over
-    p_death_hosp_ISSo15_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*RR_MTC_indiv)
+    p_death_hosp_ISSo15_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*as.numeric(RR_MTC_indiv))
     p_death_hosp_ISSo15_nMTC <- p_death_hosp_ISSo15_MTC * as.numeric(RR_MTC_indiv)
     
     #For patients with an ISS between 9 and 15 inclusive
@@ -1875,7 +1870,7 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   pat_chars[,"D_1yr_plus"] <- ISS_o15*alive_1yr*Age_at_death_ISS_o15 + ISS_u16*alive_1yr*Age_at_death_ISS_u16
   
-  pat_chars[,"Age_death"] <- ifelse(pat_chars[,"D_bl_disch"]==1, pat_chars[,"Age"]+((days_to_discharge*runif(1))/days_in_year), ifelse(pat_chars[,"D_disch_1yr"]==1, pat_chars[,"Age"]+((days_to_discharge+(days_in_year -days_to_discharge)*runif(1))/days_in_year), pat_chars[,"D_1yr_plus"]))
+  pat_chars[,"Age_death"] <- ifelse(pat_chars[,"D_bl_disch"]==1, pat_chars[,"Age"]+((days_to_discharge*pat_chars[,"timedeathdisch_rand"])/days_in_year), ifelse(pat_chars[,"D_disch_1yr"]==1, pat_chars[,"Age"]+((days_to_discharge+(days_in_year -days_to_discharge)*pat_chars[,"timedeath1year_rand"])/days_in_year), pat_chars[,"D_1yr_plus"]))
   pat_chars[,"Life_years"] <- pat_chars[,"Age_death"] - pat_chars[,"Age"]
   
   
@@ -2298,7 +2293,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
                                       1-triage_rules_params[rowlookup,"WMAS_Spec_Elderly"],
                                       1-triage_rules_params[rowlookup,"WMAS_Spec_Non_Elderly"])))
     
-    temp <- ifelse(rands[]<sens_spec, 1,0)
+    temp <- ifelse(rands<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
@@ -2320,7 +2315,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
                                       1-triage_rules_params[rowlookup,"LAS_Spec_Elderly"],
                                       1-triage_rules_params[rowlookup,"LAS_Spec_Non_Elderly"])))
     
-    temp <- ifelse(rands[]<sens_spec, 1,0)
+    temp <- ifelse(rands<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
@@ -2341,7 +2336,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
                                       1-triage_rules_params[rowlookup,"SWAST_Spec_Elderly"],
                                       1-triage_rules_params[rowlookup,"SWAST_Spec_Non_Elderly"])))
     
-    temp <- ifelse(rands[]<sens_spec, 1,0)
+    temp <- ifelse(rands<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
@@ -2362,7 +2357,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
                                       1-triage_rules_params[rowlookup,"WMAS_P3_Spec_Elderly"],
                                       1-triage_rules_params[rowlookup,"WMAS_P3_WMAS_Spec_Non_Elderly"])))
     
-    temp <- ifelse(rands[]<sens_spec, 1,0)
+    temp <- ifelse(rands<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
@@ -2383,7 +2378,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
                                       1-triage_rules_params[rowlookup,"YAS_Spec_Elderly"],
                                       1-triage_rules_params[rowlookup,"YAS_Spec_Non_Elderly"])))
     
-    temp <- ifelse(rands[]<sens_spec, 1,0)
+    temp <- ifelse(rands<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
@@ -2404,7 +2399,7 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
                                       1-triage_rules_params[rowlookup,"YAS_P3_Spec_Non_Elderly"],
                                       1-triage_rules_params[rowlookup,"YAS_P3_Spec_Elderly"])))
     
-    temp <- ifelse(rands[]<sens_spec, 1,0)
+    temp <- ifelse(rands<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
