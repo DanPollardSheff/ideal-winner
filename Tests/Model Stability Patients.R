@@ -25,7 +25,7 @@ param_data <- read.csv("Parameters/parameters.csv", row.names=1)
 triage_rules_params <- read.csv("Parameters/MATTSPhase3Rules.csv")
 tarn_22_means <- read.csv("Parameters/New TARN Means.csv", row.names = 1)
 tarn_22_vcov <- read.csv("Parameters/New TARN vcov matrix.csv", row.names=1)
-life_tabs <- read.csv("Parameters/ONSlifetables.csv")
+life_tables <- read.csv("Parameters/ONSlifetables.csv")
 future_costs <- read.csv("Parameters/lifetime-healthcare-costs.csv")
 
 if(population_source=="UK"){
@@ -143,7 +143,7 @@ CostGraph <- ggplot(stability_res[1000:length(stability_res$ID),], aes(x=ID))+
   geom_line(aes(y = P3_WMASCost, colour ="yellow"), linetype = 2)+
   geom_line(aes(y = P2_SWASCost, colour ="blue"),linetype = 3)+
   geom_line(aes(y = P2_LASCost, colour ="purple"), linetype = 4)+
-  ylim(30500,33500)+
+  ylim(35500, 36250)+
   ylab("Per patient cost (£)")+
   xlab("Number of patients")+
   scale_color_identity(name="",
@@ -160,7 +160,7 @@ QALYGraph <- ggplot(stability_res[1000:length(stability_res$ID),], aes(x=ID))+
   geom_line(aes(y = P3_WMASQALY, colour ="yellow"), linetype = 2)+
   geom_line(aes(y = P2_SWASQALY, colour ="blue"),linetype = 3)+
   geom_line(aes(y = P2_LASQALY, colour ="purple"), linetype = 4)+
-  ylim(12.2,13)+
+  ylim(12.5,12.6)+
   ylab("Quality Adjusted Life Years")+
   xlab("Number of patients")+
   scale_color_identity(name="",

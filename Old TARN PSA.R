@@ -1,4 +1,4 @@
-
+  
 #install.packages("MASS")
 #install.packages("doParallel")
 
@@ -12,13 +12,12 @@ numCores <- (detectCores() -1)  #Number of cores available minus 1, to
 #read in the r script that sets the global variables
 source("Set global variables.R")
 
-#Change the code to a determinsitic model run
-PSA_switch <- 0                             #1=run PSA, 0=deterministic
-PSA_numb <- 1                            #number of PSA runs
+TARN_mort_eq <- "Old"                       #options are new or old. Default is old
+MTCs_in_mort_risk <- "No"                   #options are Yes or no. Relates to whether the mort eq is a composite risk score for a 
 
 
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)
-file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
+file_location <- "\\\\tsclient\\X\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
 
 #read in global data files
 param_data <- read.csv("Parameters/parameters.csv", row.names=1)
@@ -100,17 +99,18 @@ P2_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_WMAS", NA, NA
 end_time <- Sys.time()
 end_time - start_time
 model_runtime <- end_time - start_time
+write.csv(P2_WMAS, "Results/OldTARN_Phase2_WMAS_PSA.csv")
 P3_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase3_WMAS", NA, NA,1,random_numbs_LE)
+write.csv(P3_WMAS, "Results/OldTARN_Phase3_WMAS_PSA.csv")
+
 SWAST <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_SWAST", NA, NA,1,random_numbs_LE)
+write.csv(SWAST, "Results/OldTARN_SWAST_PSA.csv")
+
 LAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_LAS", NA, NA,1,random_numbs_LE)
+write.csv(LAS, "Results/OldTARN_LAS_PSA.csv")
 
 P2_YAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_YAS", NA, NA,1,random_numbs_LE)
+write.csv(P2_YAS, "Results/OldTARN_Phase2_YAS_PSA.csv")
+
 P3_YAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase3_YAS", NA, NA,1,random_numbs_LE)
-
-
-write.csv(P2_WMAS, "Results/Phase2_WMAS_det.csv")
-write.csv(P3_WMAS, "Results/Phase3_WMAS_det.csv")
-write.csv(SWAST, "Results/SWAST_det.csv")
-write.csv(LAS, "Results/LAS_det.csv")
-write.csv(P2_YAS, "Results/Phase2_YAS_det.csv")
-write.csv(P3_YAS, "Results/Phase3_YAS_det.csv")
+write.csv(P3_YAS, "Results/OldTARN_Phase3_YAS_PSA.csv")

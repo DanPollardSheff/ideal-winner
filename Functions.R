@@ -2404,10 +2404,115 @@ triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
     #For the manual rules are based on final destination as the outcome. Therefore, I do
     #not account for compliance
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  }else if (name=="Phase2_LAS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"LAS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"LAS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"LAS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"LAS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]  
+  }else if (name=="Phase2_MATTS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"MATTS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"MATTS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"MATTS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"MATTS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
+  }else if(name=="Phase2_WMAS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"WMAS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"WMAS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"WMAS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"WMAS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
+  } else if (name=="Phase2_YAS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"YAS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"YAS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"YAS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"YAS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
+  } else if (name=="Phase2_SWAST_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"SWAST_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"SWAST_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"SWAST_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"SWAST_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
   }
   #further strategies to be added at a later date
   return(pat_chars)
-}
+} 
 
 model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_name, sensitivity, specificity, pop_report, random_numbs_LE){
   
@@ -2492,15 +2597,15 @@ run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitiv
   #run the simulation, calling the user defined function to run the model once
   if(pop_report==0){
     SOUR <- 1
-    results <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
+    results <- model_single_run(pat_chars, parameters, SOUR, life_tables,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
   }else if(PSA_switch==0){
     SOUR <- 1
-    results[SOUR,] <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
+    results[SOUR,] <- model_single_run(pat_chars, parameters, SOUR, life_tables,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
   }else{
     SOUR <- seq(1,PSA_numb)
       
     model_run <- function(SOUR){
-    model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
+    model_single_run(pat_chars, parameters, SOUR, life_tables,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
     }
     cl <- makeCluster(numCores)
     #Set a random number seed

@@ -1,4 +1,4 @@
-
+  
 #install.packages("MASS")
 #install.packages("doParallel")
 
@@ -12,21 +12,22 @@ numCores <- (detectCores() -1)  #Number of cores available minus 1, to
 #read in the r script that sets the global variables
 source("Set global variables.R")
 
-#Change the code to a determinsitic model run
-PSA_switch <- 0                             #1=run PSA, 0=deterministic
-PSA_numb <- 1                            #number of PSA runs
-
 
 #read in files / save files from the X drive (note not on Git due to confidentiality reasons)
-file_location <- "\\\\uosfstore.shefuniad.shef.ac.uk\\shared\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
+file_location <- "X:\\ScHARR\\PR_MATTS\\General\\Health Economics\\Phase 1  & 2\\Model\\"
 
 #read in global data files
 param_data <- read.csv("Parameters/parameters.csv", row.names=1)
-triage_rules_params <- read.csv("Parameters/MATTSPhase3Rules.csv")
+triage_rules_params <- read.csv("Parameters/Phase2rules_Theorectical.csv", row.names=1)
 tarn_22_means <- read.csv("Parameters/New TARN Means.csv", row.names = 1)
 tarn_22_vcov <- read.csv("Parameters/New TARN vcov matrix.csv", row.names=1)
 life_tables <- read.csv("Parameters/ONSlifetables.csv")
 future_costs <- read.csv("Parameters/lifetime-healthcare-costs.csv")
+
+##As this is theoretical rule performance, turn all transfers to 0
+param_data["Transfer_nMTC_to_MTC_ISSo15_TN","Mean_Alpha"] <- 0
+param_data["Transfer_nMTC_to_MTC_ISSo15_TN","SE_Beta"]    <- NA
+param_data["Transfer_nMTC_to_MTC_ISSo15_TN","Dist"]       <- "Fixed"
 
 if(population_source=="UK"){
   means <- as.matrix(read.csv(paste(file_location,"means.csv", sep=""),row.names=1))
@@ -96,21 +97,20 @@ Elderly_ISSu15/ISS_u15
 #### add in analysis run here
 ##example sens 99.8%, spec 2.5%, 1000 PSA runs
 start_time <- Sys.time()
-P2_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_WMAS", NA, NA,1,random_numbs_LE)
+P2_LAS_theory <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_LAS_theory", NA, NA,1,random_numbs_LE)
 end_time <- Sys.time()
 end_time - start_time
 model_runtime <- end_time - start_time
-P3_WMAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase3_WMAS", NA, NA,1,random_numbs_LE)
-SWAST <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_SWAST", NA, NA,1,random_numbs_LE)
-LAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_LAS", NA, NA,1,random_numbs_LE)
+write.csv(P2_LAS_theory, "Results/Phase2_LAS_theory_PSA.csv")
 
-P2_YAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_YAS", NA, NA,1,random_numbs_LE)
-P3_YAS <- run_simulation(pat_chars, parameters, PSA_numb, "Phase3_YAS", NA, NA,1,random_numbs_LE)
+P2_MATTS_theory <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_MATTS_theory", NA, NA,1,random_numbs_LE)
+write.csv(P2_MATTS_theory, "Results/P2_MATTS_theory_PSA.csv")
 
+P2_WMAS_theory <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_WMAS_theory", NA, NA,1,random_numbs_LE)
+write.csv(P2_SWAST_theory, "Results/P2_WMAS_theory_PSA.csv")
 
-write.csv(P2_WMAS, "Results/Phase2_WMAS_det.csv")
-write.csv(P3_WMAS, "Results/Phase3_WMAS_det.csv")
-write.csv(SWAST, "Results/SWAST_det.csv")
-write.csv(LAS, "Results/LAS_det.csv")
-write.csv(P2_YAS, "Results/Phase2_YAS_det.csv")
-write.csv(P3_YAS, "Results/Phase3_YAS_det.csv")
+P2_YAS_theory <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_YAS_theory", NA, NA,1,random_numbs_LE)
+write.csv(P2_YAS_theory, "Results/P2_YAS_theory.csv")
+
+P2_SWAST_theory <- run_simulation(pat_chars, parameters, PSA_numb, "Phase2_SWAST_theory", NA, NA,1,random_numbs_LE)
+write.csv(P2_SWAST_theory, "Results/P2_SWAST_theory_PSA.csv")

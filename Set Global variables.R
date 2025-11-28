@@ -1,7 +1,7 @@
 #Global variables
-PSA_switch <- 1                             #1=run PSA, 0=deterministic
+PSA_switch <- 1                            #1=run PSA, 0=deterministic
 PSA_numb <- 1000                            #number of PSA runs
-pat_numb <- 10000                          #number of patients
+pat_numb <- 100000                          #number of patients
 days_to_discharge <- 30                     #number of days to discharge from hospital
 days_in_year <- 365.25                      #number of days in a year
 time_horizon <- 100                         #time horizon, years
