@@ -4,7 +4,10 @@
 #Function to sample from PSA distributions for parmeters or if a PSA is not being conducted return the deterministic value. 
 #Uses three arguments: parameter 1 (mean/alpha), parameter 2 (SE / beta), parameter 3 (distribution type)
 #distributions which are currently implemented are: Beta, log normal, normal, gamma and multivariate normal.
-
+#' @param a is the first parameter for the distribution
+#' @param b is the second parameter for the distribution
+#' @param d is the type of distribution used
+#' @param PSA_switch is the 
 value_selector <- function(a,b,d, PSA_switch, PSA_numb,f,g){
   #set temp to NA, so if there is a bug, it should be obvious
   temp <- NA
@@ -119,56 +122,7 @@ value_selector <- function(a,b,d, PSA_switch, PSA_numb,f,g){
 #the second argument is the patient genders
 # the third argument is the following three columns of the ONS lifetables: age; qx for men; and, qx for women (see lifetables for defs)
 
-life_expectancy_ONS <- function(age, gender, life_tables){
-  #Check that the length of the two vectors (age and gender) is the same
-  
-  #Generate a temporary vector of the same length to store the results, with all values defaulting to -99.
-  #a value of -99 indicates that the age of death has not been determined in the loop
-  all_cause_death <- rep(-99, length.out = length(age))
-  
-  #Loop so that the process is repeated for each patient in the model on the basis of their age
-  for (i in 1:length(age)){
-    #If the patient is 101 when this function is run, assume they have the remaining life expectancy of a 100 year old for their gender
-    #Life expectancies are 103.02 for men and 103.32 for women
-    if(age[i]==101){
-      #using solver to calibrate the %die before 101*100.5 + %that don't die before 101*unknown life expectancy 
-      # is equal to the life expectancy at age 100, in the UK ONS lifetables
-      
-      all_cause_death[i] = age[i] + ifelse(gender[i]==1,2.02,2.32)
-      
-    }else{
-      
-      
-      #Loop down so all patients have an all cause death age assigned 
-      
-      #apply the loop from the baseline age + 1 (the short term model determines outcomes in the first year)
-      temp <- as.numeric(age[i])
-      
-      for(y in temp:100){
-        #store a random number to compbl_ageare against the prob of death in each year
-        rand <- runif(1)
-        if(rand < life_tables[y+1, 3 - gender[i]*1]){
-          #if the random number is less than the probability of death from the life, then set their age of death to the 
-          #current age plus a sample from a uniform distribution
-          #assumes that if they die between age x and x+1, the deaths will happen uniformly accross the year
-          all_cause_death[i] <- y+runif(1)
-          #stop the inner loop, as the individual has been simulated as dying
-          break
-        }
-      }
-      #If the all cause death date is still NA, set the age of death to 100
-      if(all_cause_death[i] == -99){
-        #If they don't die between age 100 and 101, assume they die at age 103.02 for men and 103.32 for women
-        #using solver to calibrate the %die before 101*100.5 + %that don't die before 101*unknown life expectancy 
-        # is equal to the life expectancy at age 100
-        all_cause_death[i] = 101 + ifelse(gender[i]==1,2.02,2.32)
-      }
-    }
-  }
-  return(all_cause_death)
-}
-
-life_expectancy_ONS2 <- function(pat_chars, life_tables){
+life_expectancy_ONS2 <- function(pat_chars, life_tables, random_numbs_LE){
   
   #loop over ages and determine whether the patients died in each year. 
   for (i in 1:85){
@@ -198,7 +152,7 @@ life_expectancy_ONS2 <- function(pat_chars, life_tables){
     #record the probability of deaths
     
     #men
-    #note the +1 is to offset the rwo by 1 to adjust for the fact that ONS life
+    #note the +1 is to offset the row by 1 to adjust for the fact that ONS life
     #tables start at age 0
     age_temp_m <- (pat_chars[,"Age"]+i+1)[alive_m_under_100]
     p_death_m <- life_tables[age_temp_m,2]
@@ -215,9 +169,10 @@ life_expectancy_ONS2 <- function(pat_chars, life_tables){
     #for the women aged 100 or more, give them the life expectancy of someone aged 100
     pat_chars[,"D_1yr_plus"][alive_f_over_100] <- 103.32
     
-    #Generate the random numbers 
-    rands <- runif(length(pat_chars[,1][alive_under_100])) #set to determine whether or not an event has occured
-    rands2 <- runif(length(pat_chars[,1][alive_under_100])) #if an event has occured within the next year, exactly how far into the year does it occur
+    #Call in the random numbers
+    life_tabs_subset <- random_numbs_LE[,1,1] %in% pat_chars[,"ID"][alive_under_100]
+    rands <- random_numbs_LE[,i+1,1][life_tabs_subset] #set to determine whether or not an event has occured
+    rands2 <- random_numbs_LE[,i+1,2][life_tabs_subset] #if an event has occured within the next year, exactly how far into the year does it occur
     
     pat_chars[,"D_1yr_plus"][alive_under_100] <- ifelse(rands < pat_chars[,"D_1yr_plus"][alive_under_100], pat_chars[,"Age"][alive_under_100]+i+rands2, -99)
   }
@@ -256,8 +211,9 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   #otherwise generate the characteristics by doing the simulations yourself
   
   #Create a matrix for all patient characteristics
-  test2 = matrix(nrow = pat_numb, ncol = 21)  
-  colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr")  
+  test2 = matrix(nrow = pat_numb, ncol = 27)  
+  colnames(test2) <- c("ID", "ISS", "Gender", "Age", "Triage_rule", "GCS", "CCI", "Blunt_trauma", "MTC", "MTC_transfer", "D_bl_disch", "D_disch_1yr", "D_1yr_plus", "Age_death", "Life_years", "QALYS", "dQALYS", "Costs", "DCosts", "p_death_hosp", "p_death_disch_1yr", "rule_rand",
+                       "deathdisch_rand", "death1year_rand", "MTC_transfer", "timedeathdisch_rand", "timedeath1year_rand")  
   
   #test sampling
   test <- mvrnorm (n = as.numeric(pat_numb), means, covariance)
@@ -397,6 +353,14 @@ gen_pat_chars <- function(pat_numb, means, covariance,age_tab, gen_tab, ISS_tab,
   
   #As we have no data on mCCI, set everyone to have a missing mCCI
   test2[,"CCI"] <- -99
+  
+  #Give everyone a random number to determine their triage location 
+  test2[,"rule_rand"] <- runif(length(test2[,"rule_rand"]))
+  test2[,"deathdisch_rand"] <- runif(length(test2[,"deathdisch_rand"]))
+  test2[,"death1year_rand"] <- runif(length(test2[,"death1year_rand"]))
+  test2[,"MTC_transfer"] <- runif(length(test2[,"MTC_transfer"]))
+  test2[,"timedeathdisch_rand"] <- runif(length(test2[,"timedeathdisch_rand"]))
+  test2[,"timedeath1year_rand"] <- runif(length(test2[,"timedeath1year_rand"]))
   return(test2)
 }
 
@@ -409,27 +373,17 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Set up a matrix to store all parameter values
   param_matrix <- matrix(nrow = ifelse(PSA_switch==1,PSA_numb,1), ncol = nrow(parameters))
   
-  colnames(param_matrix) <- c("P_MTC_Tri_pos_ISS_o15","P_MTC_Tri_neg_ISS_o15","P_MTC_Tri_pos_ISS_u16","P_MTC_Tri_neg_ISS_u16","Transfer_nMTC_to_MTC_ISSo15_TP","Transfer_nMTC_to_MTC_ISSo15_TN", "Transfer_nMTC_to_MTC_ISSu16_TP", "Transfer_nMTC_to_MTC_ISSu16_TN", "p_death_hosp_ISSo15_MTC",
-                              "RR_p_death_hosp_ISSo15_nMTC", "p_death_hosp_ISSu16", "p_death_y1_ISSo15_MTC", "RR_p_death_y1_nMTC", "p_death_y1_ISSu16", "HR_p_death_lm_ISSo15", "HR_p_death_lm_ISSu15", 
-                              "U_ISS_o15_MTC","U_ISS_o15_nMTC","U_ISS_u16_o8","Umult_ISS_u9", "U_genpop_cons", "U_genpop_male", "U_genpop_age", "U_genpop_age_squared", "p_death_hosp_TARN_sqrt_ISS", "p_death_hosp_TARN_ln_ISS",
-                              "p_death_hosp_TARN_GCS_3", "p_death_hosp_TARN_GCS_4_5", "p_death_hosp_TARN_GCS_6_8", "p_death_hosp_TARN_GCS_9_12", "p_death_hosp_TARN_GCS_13_14", "p_death_hosp_TARN_GCS_intubated",
-                              "p_death_hosp_TARN_CCI_unknown", "p_death_hosp_TARN_CCI_1_5", "p_death_hosp_TARN_CCI_6_10", "p_death_hosp_TARN_CCI_o_10", "p_death_hosp_TARN_age_0_5", "p_death_hosp_TARN_age_6_10",
-                              "p_death_hosp_TARN_age_11_15", "p_death_hosp_TARN_age_45_54", "p_death_hosp_TARN_age_55_64", "p_death_hosp_TARN_age_65_74", "p_death_hosp_TARN_gen_f", "p_death_hosp_TARN_age_o_75" ,"p_death_hosp_TARN_age_0_5_gen_f", "p_death_hosp_TARN_age_6_10_gen_f",
-                              "p_death_hosp_TARN_age_11_15_gen_f", "p_death_hosp_TARN_age_45_54_gen_f", "p_death_hosp_TARN_age_55_64_gen_f", "p_death_hosp_TARN_age_65_74_gen_f", "p_death_hosp_TARN_age_75_plus_gen_f", 
-                              "p_death_hosp_TARN_cons", "p_MTC_ISS_o15_UK", "C_MTC_ISS_o8_u16", "C_MTC_ISS_o15", "C_bluntt_ISS_U10", "C_bluntt_ISS_U17_O_9", "C_bluntt_ISS_U26_O16", "C_bluntt_ISS_O25", "C_pent_ISS_O0_U10",
-                              "C_pent_ISS_O9_U16", "C_pent_ISS_O15_U25", "C_pent_ISS_O24_U34", "C_pent_ISS_O34", "C_disch_6m", "C_additional_ambulance", "Increase_lifetime_cost_ISS_o15", "Increase_lifetime_cost_ISS_u15", "TARN_old_Age_0_5", "TARN_old_Age_6_10", "TARN_old_Age_11_15",
-                              "TARN_old_Age_45_54", "TARN_old_Age_55_64", "TARN_old_Age_65_75", "TARN_old_Age_over_75", "TARN_old_GCS_9_12", "TARN_old_GCS_6_8", "TARN_old_GCS_4_5", "TARN_old_GCS_3", "TARN_old_GCS_intubated","TARN_old_ISS_SQRT", "TARN_old_ISS_LN", "TARN_old_female",
-                              "TARN_old_female_age_0_5", "TARN_old_female_age_6_10", "TARN_old_female_age_11_15", "TARN_old_female_age_45_54", "TARN_old_female_age_55_64", "TARN_old_female_age_65_75", "TARN_old_female_age_75_plus", "TARN_old_constant")
+  colnames(param_matrix) <- rownames(parameters)
   
-  #First parameter, which is the probability of being transfered to an MTC from a non MTC, if the patient's ISS >15 and they have a positive triage rule
-  #Step 1, record the name of the parameter in a temproary variable 
+  #First parameter, which is the probability of being transferred to an MTC from a non MTC, if the patient's ISS >15 and they have a positive triage rule
+  #Step 1, record the name of the parameter in a temporary variable 
   t <- "Transfer_nMTC_to_MTC_ISSo15_TP"
   #Step 2, record the value of the parameter in the simulation
   Transfer_nMTC_to_MTC_ISSo15_TP <-value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
   #Step 3, record the parameter value
   param_matrix[,t] <- Transfer_nMTC_to_MTC_ISSo15_TP
   
-  #Second parameter, which is the probability of being transfered to an MTC from a non MTC, if the patient's ISS >15 and they have a negative triage rule
+  #Second parameter, which is the probability of being transferred to an MTC from a non MTC, if the patient's ISS >15 and they have a negative triage rule
   t <- "Transfer_nMTC_to_MTC_ISSo15_TN"
   #Step 2, record the value of the parameter in the simulation
   Transfer_nMTC_to_MTC_ISSo15_TN <-value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
@@ -515,7 +469,6 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- U_genpop_cons
   
-  
   #Term for the effect of being male for determining age and gender matched utility
   t<- "U_genpop_male"
   #Step 2, record the value of the parameter in the simulation
@@ -537,14 +490,14 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- U_genpop_age_squared
   
-  #Utility score for someone with an ISS over 15, who is sent to a major trama centre
+  #Utility score for someone with an ISS over 15, who is sent to a major trauma center
   t<- "U_ISS_o15_MTC"
   #Step 2, record the value of the parameter in the simulation
   U_ISS_o15_MTC <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
   #Step 4, record the parameter value
   param_matrix[,t] <- U_ISS_o15_MTC
   
-  #Utility score for someone with an ISS over 15, who is sent to a non major trama centre
+  #Utility score for someone with an ISS over 15, who is sent to a non major trauma center
   t<- "U_ISS_o15_nMTC"
   #Step 2, record the value of the parameter in the simulation
   U_ISS_o15_nMTC <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
@@ -565,179 +518,332 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- Umult_ISS_u9
   
-  
-  #record TARN parameters
-  t<- "p_death_hosp_TARN_sqrt_ISS"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_sqrt_ISS <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_sqrt_ISS
-  
-  t<- "p_death_hosp_TARN_ln_ISS"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_ln_ISS <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_ln_ISS
-  
-  t<- "p_death_hosp_TARN_GCS_3"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_3 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_3
-  
-  t<- "p_death_hosp_TARN_GCS_4_5"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_4_5 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_4_5
-  
-  t<- "p_death_hosp_TARN_GCS_6_8"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_6_8 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_6_8
-  
-  t<- "p_death_hosp_TARN_GCS_9_12"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_9_12 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_9_12
-  
-  t<- "p_death_hosp_TARN_GCS_13_14"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_13_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_13_14
-  
-  t<- "p_death_hosp_TARN_GCS_intubated"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_GCS_intubated <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_GCS_intubated
-  
-  t<- "p_death_hosp_TARN_CCI_1_5"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_1_5 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_1_5
-  
-  t<- "p_death_hosp_TARN_CCI_6_10"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_6_10 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_6_10
-  
-  t<- "p_death_hosp_TARN_CCI_unknown"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_unknown <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_unknown
-  
-  t<- "p_death_hosp_TARN_CCI_o_10"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_CCI_o_10 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_CCI_o_10
-  
-  t<- "p_death_hosp_TARN_age_0_5"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_0_5 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_0_5
-  
-  t<- "p_death_hosp_TARN_age_6_10"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_6_10 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_6_10
-  
-  t<- "p_death_hosp_TARN_age_11_15"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_11_15 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_11_15
-  
-  t<- "p_death_hosp_TARN_age_45_54"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_45_54 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_45_54
-  
-  t<- "p_death_hosp_TARN_age_55_64"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_55_64 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_55_64
-  
-  t<- "p_death_hosp_TARN_age_65_74"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_65_74
-  
-  t<- "p_death_hosp_TARN_age_o_75"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_o_75 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_o_75
-  
-  t<- "p_death_hosp_TARN_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_gen_f
-  
-  t<- "p_death_hosp_TARN_age_0_5_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_0_5_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_0_5_gen_f
-  
-  t<- "p_death_hosp_TARN_age_6_10_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_6_10_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_6_10_gen_f
-  
-  t<- "p_death_hosp_TARN_age_11_15_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_11_15_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_11_15_gen_f
-  
-  t<- "p_death_hosp_TARN_age_45_54_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_45_54_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_45_54_gen_f
-  
-  t<- "p_death_hosp_TARN_age_55_64_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_55_64_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_55_64_gen_f
-  
-  t<- "p_death_hosp_TARN_age_65_74_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_65_74_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_65_74_gen_f
-  
-  t<- "p_death_hosp_TARN_age_75_plus_gen_f"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_age_75_plus_gen_f <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_age_75_plus_gen_f
-  
-  t<- "p_death_hosp_TARN_cons"
-  #Step 2, record the value of the parameter in the simulation
-  p_death_hosp_TARN_cons <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
-  #Step 3, record the parameter value
-  param_matrix[,t] <- p_death_hosp_TARN_cons
+    #Generate the parameters needed
+    if(PSA_switch==1){#parameters in a PSA
+    temp_param_TARN_22 <- MASS::mvrnorm(n=PSA_numb, mu = tarn_22_means$Coefficient, Sigma = tarn_22_vcov)
+    }else{#deterministic parameters
+      temp_param_TARN_22 <- as.matrix(tarn_22_means$Coefficient)
+    #transpose the matrix so the parameters are across the columns
+      temp_param_TARN_22 <- t(temp_param_TARN_22)
+    }
+    #Store the parameters into the right part of the param_matrix
+    
+    #record TARN parameters
+    t<- "p_death_hosp_TARN_sqrt_ISS"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_sqrt_ISS <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,1],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_sqrt_ISS
+    
+    t<- "p_death_hosp_TARN_ln_ISS"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_ln_ISS <- ifelse(TARN_22_params==T,
+                                       temp_param_TARN_22[,2],
+                                       value_selector(as.numeric(parameters[t,1]),
+                                                      as.numeric(parameters[t,2]),
+                                                      parameters[t,3],
+                                                      PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_ln_ISS
+    
+    t<- "p_death_hosp_TARN_GCS_3"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_GCS_3 <- ifelse(TARN_22_params==T,
+                                      temp_param_TARN_22[,3],
+                                      value_selector(as.numeric(parameters[t,1]),
+                                                     as.numeric(parameters[t,2]),
+                                                     parameters[t,3],
+                                                     PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_GCS_3
+    
+    t<- "p_death_hosp_TARN_GCS_4_5"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_GCS_4_5 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,4],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_GCS_4_5
+    
+    t<- "p_death_hosp_TARN_GCS_6_8"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_GCS_6_8 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,5],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_GCS_6_8
+    
+    t<- "p_death_hosp_TARN_GCS_9_12"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_GCS_9_12 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,6],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_GCS_9_12
+    
+    t<- "p_death_hosp_TARN_GCS_13_14"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_GCS_13_14 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,7],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_GCS_13_14
+    
+    t<- "p_death_hosp_TARN_GCS_intubated"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_GCS_intubated <- ifelse(TARN_22_params==T,
+                                              temp_param_TARN_22[,8],
+                                              value_selector(as.numeric(parameters[t,1]),
+                                                             as.numeric(parameters[t,2]),
+                                                             parameters[t,3],
+                                                             PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_GCS_intubated
+    
+    t<- "p_death_hosp_TARN_age_0_5"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_0_5 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,9],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_0_5
+    
+    t<- "p_death_hosp_TARN_age_6_10"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_6_10 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,10],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_6_10
+    
+    t<- "p_death_hosp_TARN_age_11_15"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_11_15 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,11],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_11_15
+    
+    t<- "p_death_hosp_TARN_age_45_54"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_45_54 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,12],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_45_54
+    
+    t<- "p_death_hosp_TARN_age_55_64"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_55_64 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,13],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_55_64
+    
+    t<- "p_death_hosp_TARN_age_65_74"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_65_74 <- ifelse(TARN_22_params==T,
+                                          temp_param_TARN_22[,14],
+                                          value_selector(as.numeric(parameters[t,1]),
+                                                         as.numeric(parameters[t,2]),
+                                                         parameters[t,3],
+                                                         PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_65_74
+    
+    t<- "p_death_hosp_TARN_age_o_75"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_o_75 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,15],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_o_75
+    
+    t<- "p_death_hosp_TARN_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_gen_f <- ifelse(TARN_22_params==T,
+                                      temp_param_TARN_22[,16],
+                                      value_selector(as.numeric(parameters[t,1]),
+                                                     as.numeric(parameters[t,2]),
+                                                     parameters[t,3],
+                                                     PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_gen_f
+    
+    t<- "p_death_hosp_TARN_age_0_5_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_0_5_gen_f <- ifelse(TARN_22_params==T,
+                                              temp_param_TARN_22[,17],
+                                              value_selector(as.numeric(parameters[t,1]),
+                                                             as.numeric(parameters[t,2]),
+                                                             parameters[t,3],
+                                                             PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_0_5_gen_f
+    
+    t<- "p_death_hosp_TARN_age_6_10_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_6_10_gen_f <- ifelse(TARN_22_params==T,
+                                               temp_param_TARN_22[,18],
+                                               value_selector(as.numeric(parameters[t,1]),
+                                                              as.numeric(parameters[t,2]),
+                                                              parameters[t,3],
+                                                              PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_6_10_gen_f
+    
+    t<- "p_death_hosp_TARN_age_11_15_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_11_15_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,19],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_11_15_gen_f
+    
+    t<- "p_death_hosp_TARN_age_45_54_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_45_54_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,20],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_45_54_gen_f
+    
+    t<- "p_death_hosp_TARN_age_55_64_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_55_64_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,21],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_55_64_gen_f
+    
+    t<- "p_death_hosp_TARN_age_65_74_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_65_74_gen_f <- ifelse(TARN_22_params==T,
+                                                temp_param_TARN_22[,22],
+                                                value_selector(as.numeric(parameters[t,1]),
+                                                               as.numeric(parameters[t,2]),
+                                                               parameters[t,3],
+                                                               PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_65_74_gen_f
+    
+    t<- "p_death_hosp_TARN_age_75_plus_gen_f"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_age_75_plus_gen_f <- ifelse(TARN_22_params==T,
+                                                  temp_param_TARN_22[,23],
+                                                  value_selector(as.numeric(parameters[t,1]),
+                                                                 as.numeric(parameters[t,2]),
+                                                                 parameters[t,3],
+                                                                 PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_age_75_plus_gen_f
+    
+    t<- "p_death_hosp_TARN_CCI_unknown"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_CCI_unknown <- ifelse(TARN_22_params==T,
+                                            temp_param_TARN_22[,24],
+                                            value_selector(as.numeric(parameters[t,1]),
+                                                           as.numeric(parameters[t,2]),
+                                                           parameters[t,3],
+                                                           PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_CCI_unknown
+    
+    t<- "p_death_hosp_TARN_CCI_1_5"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_CCI_1_5 <- ifelse(TARN_22_params==T,
+                                        temp_param_TARN_22[,25],
+                                        value_selector(as.numeric(parameters[t,1]),
+                                                       as.numeric(parameters[t,2]),
+                                                       parameters[t,3],
+                                                       PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_CCI_1_5
+    
+    t<- "p_death_hosp_TARN_CCI_6_10"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_CCI_6_10 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,26],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_CCI_6_10
+    
+    t<- "p_death_hosp_TARN_CCI_o_10"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_CCI_o_10 <- ifelse(TARN_22_params==T,
+                                         temp_param_TARN_22[,27],
+                                         value_selector(as.numeric(parameters[t,1]),
+                                                        as.numeric(parameters[t,2]),
+                                                        parameters[t,3],
+                                                        PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_CCI_o_10
+    
+    t<- "p_death_hosp_TARN_cons"
+    #Step 2, record the value of the parameter in the simulation
+    p_death_hosp_TARN_cons <- ifelse(TARN_22_params==T,
+                                     temp_param_TARN_22[,28],
+                                     value_selector(as.numeric(parameters[t,1]),
+                                                    as.numeric(parameters[t,2]),
+                                                    parameters[t,3],
+                                                    PSA_switch,PSA_numb))
+    #Step 3, record the parameter value
+    param_matrix[,t] <- p_death_hosp_TARN_cons
   
   t<- "p_MTC_ISS_o15_UK"
   #Step 2, record the value of the parameter in the simulation
-  p_MTC_ISS_o15_UK <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #If using the TARN 2022 parameters, use the most recent evidence on the number
+  #of UK patients with an ISS > 9 who go to an MTC at any point in their care
+  p_MTC_ISS_o15_UK <- ifelse(TARN_22_params==T,
+                             value_selector(as.numeric(parameters["p_MTC_ISS_o15_UK_17",1]),as.numeric(parameters["p_MTC_ISS_o15_UK_17",2]),parameters["p_MTC_ISS_o15_UK_17",3],PSA_switch,PSA_numb),
+                             value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb))
   #Step 3, record the parameter value
   param_matrix[,t] <- p_MTC_ISS_o15_UK
   
@@ -995,10 +1101,278 @@ gen_parameters <- function(PSA_switch,PSA_numb, parameters){
   #Step 3, record the parameter value
   param_matrix[,t] <- TARN_old_constant
 
-  return(param_matrix)
+  t<- "p_death_y1_ISSo15_MTC_age_65_74"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_65_74
   
+  t<- "p_death_y1_ISSo15_MTC_age_75_84"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_75_84 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_75_84
+  
+  t<- "p_death_y1_ISSo15_MTC_age_85_plus"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_85_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_85_plus
+  
+  t<- "p_death_y1_ISSu16_age_65_74"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSu16_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSu16_age_65_74
+  
+  t<- "p_death_y1_ISSu16_age_75_84"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSu16_age_75_84 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSu16_age_75_84
+  
+  t<- "p_death_y1_ISSu16_age_85_plus"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSu16_age_85_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSu16_age_85_plus
+  
+  t<- "RR_p_death_lm_ISSo15_age_65_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_lm_ISSo15_age_65_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_lm_ISSo15_age_65_plus
+  
+  t<- "RR_p_death_lm_ISSu15_age_65_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_lm_ISSu15_age_65_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_lm_ISSu15_age_65_plus
+  
+  t<- "RR_p_death_hosp_ISSo15_nMTC_age_65_74"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_65_74 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_65_74
+  
+  t<- "RR_p_death_hosp_ISSo15_nMTC_age_75_84"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_75_84 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_75_84
+  
+  t<- "RR_p_death_hosp_ISSo15_nMTC_age_85_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_85_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_85_plus
+  
+  t<- "RR_p_death_y1_nMTC_age_65_plus"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_y1_nMTC_age_65_plus <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_y1_nMTC_age_65_plus
+  
+  t<- "p_death_y1_ISSo15_MTC_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISSo15_MTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISSo15_MTC_age_under_14
+  
+  t <- "p_death_y1_ISS15_under_MTC_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  p_death_y1_ISS15_under_MTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- p_death_y1_ISS15_under_MTC_age_under_14
+  
+  t <- "RR_p_death_hosp_ISSo15_nMTC_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_hosp_ISSo15_nMTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_hosp_ISSo15_nMTC_age_under_14
+  
+  t <- "RR_p_death_y1_nMTC_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  RR_p_death_y1_nMTC_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- RR_p_death_y1_nMTC_age_under_14
+  
+  t <- "HR_p_death_lm_age_under_14"
+  #Step 2, record the value of the parameter in the simulation
+  HR_p_death_lm_age_under_14 <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- HR_p_death_lm_age_under_14
+  
+  t <- "Util_ISS_1_3_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_preinjury
+  
+  t <- "Util_ISS_1_3_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_1_week
+  
+  t <- "Util_ISS_1_3_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_1_month
+  
+  t <- "Util_ISS_1_3_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_3_months
+  
+  t <- "Util_ISS_1_3_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_6_months
+  
+  t <- "Util_ISS_1_3_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_12_months
+  
+  t <- "Util_ISS_1_3_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_1_3_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_1_3_24_months
+  
+  t <- "Util_ISS_4_8_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_preinjury
+  
+  t <- "Util_ISS_4_8_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_1_week
+  
+  t <- "Util_ISS_4_8_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_1_month
+  
+  t <- "Util_ISS_4_8_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_3_months
+  
+  t <- "Util_ISS_4_8_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_6_months
+  
+  t <- "Util_ISS_4_8_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_12_months
+  
+  t <- "Util_ISS_4_8_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_4_8_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_4_8_24_months
+  
+  t <- "Util_ISS_9_15_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_preinjury
+  
+  t <- "Util_ISS_9_15_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_1_week
+  
+  t <- "Util_ISS_9_15_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_1_month
+  
+  t <- "Util_ISS_9_15_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_3_months
+  
+  t <- "Util_ISS_9_15_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_6_months
+  
+  t <- "Util_ISS_9_15_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_12_months
+  
+  t <- "Util_ISS_9_15_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_9_15_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_9_15_24_months
+  
+  t <- "Util_ISS_16_plus_preinjury"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_preinjury <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_preinjury
+  
+  t <- "Util_ISS_16_plus_1_week"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_1_week <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_1_week
+  
+  t <- "Util_ISS_16_plus_1_month"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_1_month <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_1_month
+  
+  t <- "Util_ISS_16_plus_3_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_3_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_3_months
+  
+  t <- "Util_ISS_16_plus_6_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_6_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_6_months
+  
+  t <- "Util_ISS_16_plus_12_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_12_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_12_months
+  
+  t <- "Util_ISS_16_plus_24_months"
+  #Step 2, record the value of the parameter in the simulation
+  Util_ISS_16_plus_24_months <- value_selector(as.numeric(parameters[t,1]),as.numeric(parameters[t,2]),parameters[t,3],PSA_switch,PSA_numb)
+  #Step 3, record the parameter value
+  param_matrix[,t] <- Util_ISS_16_plus_24_months
+  
+  return(param_matrix)
 }
-
 
 TARN_mort_pred <- function(pat_chars, parameters, SOUR){
   GCS_3 <- pat_chars[,"GCS"]==3
@@ -1115,11 +1489,11 @@ final_dest <- function(strategy, pat_chars, sens, spec, ISS_cutoff_MTC_pos){
   }
 }
 
-outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensitivity, specificity){
+outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensitivity, specificity, random_numbs_LE){
   
   #determine triage rule status
   #code to be added, this will be specific to our decision rules
-  pat_chars <- triage_strategies(pat_chars,strat_name, sensitivity, specificity)
+  pat_chars <- triage_strategies(pat_chars,strat_name, sensitivity, specificity, SOUR)
   #determine initial transport site
   
   #create a vector of positive and negative triage rules
@@ -1133,26 +1507,23 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   
   #code here has been commented out, as we are applying sens and spec values
   
-  #generate a vector of probabilities of being sent to a major trauma centre (initally)
-  #Dummy values used, this is adherence to triage rule results and we currently dont know what we will do with this
-  #prob_MTC <- ifelse (triage_pos==TRUE & ISS_o15 ==TRUE, parameters[SOUR,"P_MTC_Tri_pos_ISS_o15"] ,ifelse (triage_pos==FALSE & ISS_o15 ==TRUE, parameters[SOUR,"P_MTC_Tri_neg_ISS_o15"], ifelse (triage_pos==TRUE & ISS_o15 ==FALSE, parameters[SOUR,"P_MTC_Tri_pos_ISS_u16"], parameters[SOUR,"P_MTC_Tri_neg_ISS_u16"])))
-  #Determine if there is an event
-  #create a vector of random numbers equal in length to the prob_MTC vector
-  #rand_vect <- runif(length(prob_MTC))
-  #pat_chars[,"MTC"] <- ifelse (rand_vect < prob_MTC,1,0)
   #do people receive a transfer to an MTC?
   MTC <- pat_chars[,"MTC"]==1
   #create a vector of people who went to an nMTC
   nMTC <- pat_chars[,"MTC"]==0
   #create a vector of probabilities of transfer, irrespective of the site they have been sent to
-  prob_transfer <- ifelse (triage_pos==TRUE & ISS_o15 ==TRUE, parameters[SOUR,"Transfer_nMTC_to_MTC_ISSo15_TP"] ,ifelse (triage_pos==FALSE & ISS_o15 ==TRUE, parameters[SOUR,"Transfer_nMTC_to_MTC_ISSo15_TN"], ifelse (triage_pos==TRUE & ISS_o15 ==FALSE, parameters[SOUR,"Transfer_nMTC_to_MTC_ISSu16_TP"], parameters[SOUR,"Transfer_nMTC_to_MTC_ISSu16_TN"])))
+  prob_transfer <- ifelse (triage_pos==TRUE & ISS_o15 ==TRUE, parameters[SOUR,"Transfer_nMTC_to_MTC_ISSo15_TP"] ,
+                           ifelse (triage_pos==FALSE & ISS_o15 ==TRUE, parameters[SOUR,"Transfer_nMTC_to_MTC_ISSo15_TN"], 
+                                   ifelse (triage_pos==TRUE & ISS_o15 ==FALSE, parameters[SOUR,"Transfer_nMTC_to_MTC_ISSu16_TP"], 
+                                           parameters[SOUR,"Transfer_nMTC_to_MTC_ISSu16_TN"])))
+  
   #create a vector of random numbers equal in length to the prob_transfer vector
-  rand_vect <- runif(length(prob_transfer))
+  rand_vect <- pat_chars[,"MTC_transfer"]
   #Determine whether they would have an event, regardless of MTC status
   trans_MTC <- ifelse (rand_vect < prob_transfer,1,0)
   #update the patient characteristics, for those patients who where sent to an nMTC
   pat_chars[,"MTC_transfer"] <- trans_MTC*nMTC
-  #update MTC characteristic for those patients who where transfered
+  #update MTC characteristic for those patients who where transferred
   pat_chars[,"MTC"] <- ifelse(pat_chars[,"MTC"]==0&pat_chars[,"MTC_transfer"]==1,1,pat_chars[,"MTC"])
   #Recalculate whether the patient went the MTC or nMTC
   MTC <- pat_chars[,"MTC"]==1
@@ -1168,15 +1539,44 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   p_death_TARN <- if(TARN_mort_eq == "Old"){
     TARN_old_mort_pred(pat_chars, parameters, SOUR)
   }else{TARN_mort_pred(pat_chars, parameters, SOUR)}
+  
+  #Use age specific RR for inhospital mortality if receiving MTC care & ISS >= 16
+  #There is functionality in the code to revert to Phase 1 and Phase 2 parameterisation
+  if(Eldery_specific_params==T & Pead_specific_params == F){
+  RR_MTC_indiv <- ifelse(pat_chars[,"Age"] < 65,
+                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"],
+                         ifelse(pat_chars[,"Age"]<75,
+                                parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_65_74"],
+                                ifelse(pat_chars[,"Age"]<85,
+                                       parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
+                                       parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"])))
+  }else if (Eldery_specific_params==T & Pead_specific_params == T){
+    RR_MTC_indiv <- ifelse(pat_chars[,"Age"]<15,
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                           ifelse(pat_chars[,"Age"] < 65,
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"],
+                           ifelse(pat_chars[,"Age"]<75,
+                                  parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_65_74"],
+                                  ifelse(pat_chars[,"Age"]<85,
+                                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_75_84"],
+                                         parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_85_plus"]))))
+  }else if (Eldery_specific_params==F & Pead_specific_params == T){
+    RR_MTC_indiv <- ifelse(pat_chars[,"Age"]<15,
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC_age_under_14"],
+                           parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
+  }else{
+    RR_MTC_indiv <- parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]
+  }
+  
   #Make sure these adjustments only happen if a composite risk score is used
   if(MTCs_in_mort_risk == "Yes"){
     #For patients with an ISS 16 or over
-    p_death_hosp_ISSo15_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
-    p_death_hosp_ISSo15_nMTC <- p_death_hosp_ISSo15_MTC * as.numeric(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"])
+    p_death_hosp_ISSo15_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*as.numeric(RR_MTC_indiv))
+    p_death_hosp_ISSo15_nMTC <- p_death_hosp_ISSo15_MTC * as.numeric(RR_MTC_indiv)
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
-    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
+    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(RR_MTC_indiv-1)))
     
     p_death_hosp_ISSo8_u16_MTC <- p_death_TARN/(parameters[SOUR,"p_MTC_ISS_o15_UK"]+(1-parameters[SOUR,"p_MTC_ISS_o15_UK"])*mod_RR_MTC_ISS_o8_u16)
     p_death_hosp_ISSo8_u16_nMTC <- p_death_hosp_ISSo8_u16_MTC * mod_RR_MTC_ISS_o8_u16
@@ -1184,13 +1584,13 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
     #For patients with an ISS 16 or over
     #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
     #create a vector of relative risks by transfer status, determine the benefit of MTCs
-    RR_MTC_v_NMTC <- ifelse(trans_MTC==0, 1/parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"], 1 /(1+(Proportion_RR_MTC_transfer_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1))))
+    RR_MTC_v_NMTC <- ifelse(trans_MTC==0, 1/RR_MTC_indiv, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(RR_MTC_indiv-1))))
     p_death_hosp_ISSo15_MTC <- p_death_TARN*RR_MTC_v_NMTC
     p_death_hosp_ISSo15_nMTC <- p_death_TARN
     
     #For patients with an ISS between 9 and 15 inclusive
     #Step 1: Calculate modfied RR (this will be 1 in the base case)
-    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(parameters[SOUR,"RR_p_death_hosp_ISSo15_nMTC"]-1)))
+    mod_RR_MTC_ISS_o8_u16 <- as.numeric(1 + (Proportion_RR_MTC_ISS_o8_u16_hosp*(RR_MTC_indiv-1)))
     RR_MTC_v_NMT_CISS_o8_u16 <- ifelse(trans_MTC==0, 1/mod_RR_MTC_ISS_o8_u16, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(mod_RR_MTC_ISS_o8_u16-1))) )
     
     #RR nMTC v MTV = 1/RR is for MTC v nMTC, 
@@ -1198,8 +1598,6 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
     p_death_hosp_ISSo8_u16_nMTC <- p_death_TARN
     
   }
-  
-  
   
   p_death_hosp_ISSu9 <- p_death_TARN
   
@@ -1210,41 +1608,144 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   pat_chars[,"p_death_hosp"] <- p_death_hosp
   
   #create a vector of random numbers, equal in length to the probability of dying in hospital
-  rand_vect <- runif(length(p_death_hosp))
+  rand_vect <- pat_chars[,"deathdisch_rand"]
   #determine if the patient has died in hospital
   death_hosp <- ifelse (rand_vect < p_death_hosp, 1,0)
   #record whether or not the patient has died in hospital 
   pat_chars[,"D_bl_disch"] <- death_hosp
   
-  
   #create a vector of people who survived their hospitilisation
   alive_disch <- pat_chars[,"D_bl_disch"] == 0
-  
-  
-  
+
   #record the probability of death 
   #step 1: estimate the probability of death between hospital discharge and one year post-hospitilisation using US data
+  if(Eldery_specific_params==T & Pead_specific_params == F){
+    p_death_disch_1yr_ISSo15_MTC<- ifelse(pat_chars[,"Age"] < 65,
+              parameters[SOUR,"p_death_y1_ISSo15_MTC"],
+              ifelse(pat_chars[,"Age"] < 75,
+                     parameters[SOUR,"p_death_y1_ISSo15_MTC_age_65_74"],
+                     ifelse(pat_chars[,"Age"] < 85,
+                            parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
+                            parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"])))
+  }else if(Eldery_specific_params==T & Pead_specific_params == T){
+    p_death_disch_1yr_ISSo15_MTC<- ifelse(pat_chars[,"Age"] < 15,
+                                          parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],              
+      ifelse(pat_chars[,"Age"] < 65,
+                                          parameters[SOUR,"p_death_y1_ISSo15_MTC"],
+                                          ifelse(pat_chars[,"Age"] < 75,
+                                                 parameters[SOUR,"p_death_y1_ISSo15_MTC_age_65_74"],
+                                                 ifelse(pat_chars[,"Age"] < 85,
+                                                        parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
+                                                        parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"]))))
+    } else if (Eldery_specific_params==F & Pead_specific_params == T){
+      p_death_disch_1yr_ISSo15_MTC<- ifelse(pat_chars[,"Age"] < 15,
+                                            parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],
+                                            parameters[SOUR,"p_death_y1_ISSo15_MTC"])
+    } else{
   p_death_disch_1yr_ISSo15_MTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"]
-  RR_nMTC_v_MTC_1yr <- ifelse(trans_MTC==0, parameters[SOUR,"RR_p_death_y1_nMTC"], 1 /(1+(Proportion_RR_MTC_transfer_hosp*(parameters[SOUR,"RR_p_death_y1_nMTC"]-1))))
-  p_death_disch_1yr_ISSo15_nMTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"] * RR_nMTC_v_MTC_1yr
+  }
+  
+  #set the RR for nMTC v MTC care 
+  if(Eldery_specific_params==T & Pead_specific_params==F){#Applies if different parameters for elderly but not peads population
+    RR_nMTC_v_MTC_1yr<- ifelse(pat_chars[,"Age"] < 65,
+                               parameters[SOUR,"RR_p_death_y1_nMTC"],
+                               parameters[SOUR,"RR_p_death_y1_nMTC_age_65_plus"])
+  }else if (Eldery_specific_params==F & Pead_specific_params==T) {#Applies if different parameters for peads but not eldery population
+    RR_nMTC_v_MTC_1yr <- ifelse(pat_chars[,"Age"] <= 14,
+                                parameters[SOUR,"RR_p_death_y1_nMTC_age_under_14"],
+                                parameters[SOUR,"RR_p_death_y1_nMTC"])
+  }else if (Eldery_specific_params==T & Pead_specific_params==T){#Applies if different parameters for both peads & eldery population
+    RR_nMTC_v_MTC_1yr<- ifelse(pat_chars[,"Age"] <= 14,
+                               parameters[SOUR,"RR_p_death_y1_nMTC_age_under_14"],
+                               ifelse(pat_chars[,"Age"] < 65,
+                                      parameters[SOUR,"RR_p_death_y1_nMTC"],
+                                      parameters[SOUR,"RR_p_death_y1_nMTC_age_65_plus"]))
+    }else{#Applies if the effect of MTCs is the same for everyone
+    RR_nMTC_v_MTC_1yr <- parameters[SOUR,"RR_p_death_y1_nMTC"]
+  } 
+  
+  #For scenario analyses give people who have been transferred a different RR
+  RR_nMTC_v_MTC_1yr <- ifelse(trans_MTC==0, RR_nMTC_v_MTC_1yr, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(RR_nMTC_v_MTC_1yr-1))))
+  
+  #Deaths between baseline and discharge, adjust for age if the model is set up that way
+  if(Eldery_specific_params==T & Pead_specific_params==F){#Applies if different parameters for elderly but not peads population
+    p_death_disch_1yr_ISSo15_MTC <- ifelse(pat_chars[,"Age"] < 65,
+                                           parameters[SOUR,"p_death_y1_ISSo15_MTC"],
+                                              ifelse(pat_chars[,"Age"]<75,
+                                                  parameters[SOUR,"p_death_y1_ISSo15_MTC_age_65_74"],
+                                                  ifelse(pat_chars[,"Age"]<85,
+                                                        parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
+                                                        parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"])))
+  }else if (Eldery_specific_params==F & Pead_specific_params==T){#Applies if different parameters for peads but not eldery population
+    p_death_disch_1yr_ISSo15_MTC <- ifelse(pat_chars[,"Age"] <= 14,
+                                           parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],
+                                           parameters[SOUR,"p_death_y1_ISSo15_MTC"])
+    }else if (Eldery_specific_params==T & Pead_specific_params==T){#Applies if different parameters for both peads & eldery population
+      p_death_disch_1yr_ISSo15_MTC <- ifelse(pat_chars[,"Age"] <= 14,
+                                             parameters[SOUR,"p_death_y1_ISSo15_MTC_age_under_14"],
+                                             ifelse(pat_chars[,"Age"]<65,
+                                                    parameters[SOUR,"p_death_y1_ISSo15_MTC"],       
+                                             ifelse(pat_chars[,"Age"]<75,
+                                                    parameters[SOUR,"p_death_y1_ISSo15_MTC_age_65_74"],
+                                                    ifelse(pat_chars[,"Age"]<85,
+                                                           parameters[SOUR,"p_death_y1_ISSo15_MTC_age_75_84"],
+                                                           parameters[SOUR,"p_death_y1_ISSo15_MTC_age_85_plus"]))))
+    }else{
+    p_death_disch_1yr_ISSo15_MTC <- parameters[SOUR,"p_death_y1_ISSo15_MTC"]
+  }
+  
+  
+  p_death_disch_1yr_ISSo15_nMTC <- p_death_disch_1yr_ISSo15_MTC * RR_nMTC_v_MTC_1yr
   
   #alter the relative risk by global proportion in the model
-  mod_RR_MTC_ISS_o8_u16 <- 1 + (Proportion_RR_MTC_ISS_o8_u16_1yr*(parameters[SOUR,"RR_p_death_y1_nMTC"]-1))
-  RR_nMTC_v_MTC_1yr_ISS_o8_u16 <- ifelse(trans_MTC==0, mod_RR_MTC_ISS_o8_u16, 1 /(1+(Proportion_RR_MTC_transfer_hosp*(mod_RR_MTC_ISS_o8_u16-1))))
+  mod_RR_MTC_ISS_o8_u16 <- 1 + (Proportion_RR_MTC_ISS_o8_u16_1yr*(RR_nMTC_v_MTC_1yr-1))
   
-  p_death_disch_1yr_ISSo8_u16_MTC <- parameters[SOUR,"p_death_y1_ISSu16"]
-  p_death_disch_1yr_ISSo8_u16_nMTC <- parameters[SOUR,"p_death_y1_ISSu16"] * RR_nMTC_v_MTC_1yr_ISS_o8_u16
+  if(Eldery_specific_params==T & Pead_specific_params==F){
+    p_death_disch_1yr_ISSo8_u16_MTC <- ifelse(pat_chars[,"Age"] < 65,
+                                              parameters[SOUR,"p_death_y1_ISSu16"],
+                                           ifelse(pat_chars[,"Age"]<75,
+                                                  parameters[SOUR,"p_death_y1_ISSu16_age_65_74"],
+                                                  ifelse(pat_chars[,"Age"]<85,
+                                                         parameters[SOUR,"p_death_y1_ISSu16_age_75_84"],
+                                                         parameters[SOUR,"p_death_y1_ISSu16_age_85_plus"])))
+  }else if (Eldery_specific_params==T & Pead_specific_params==T){
+    p_death_disch_1yr_ISSo8_u16_MTC <- ifelse(pat_chars[,"Age"] < 15,
+                                              parameters[SOUR, "p_death_y1_ISS15_under_MTC_age_under_14"],
+                                              ifelse(pat_chars[,"Age"] < 65,
+                                              parameters[SOUR,"p_death_y1_ISSu16"],
+                                              ifelse(pat_chars[,"Age"]<75,
+                                                     parameters[SOUR,"p_death_y1_ISSu16_age_65_74"],
+                                                     ifelse(pat_chars[,"Age"]<85,
+                                                            parameters[SOUR,"p_death_y1_ISSu16_age_75_84"],
+                                                            parameters[SOUR,"p_death_y1_ISSu16_age_85_plus"]))))
+    }else if (Eldery_specific_params==F & Pead_specific_params==T){
+      p_death_disch_1yr_ISSo8_u16_MTC <- ifelse(pat_chars[,"Age"] < 15,
+                                                parameters[SOUR, "p_death_y1_ISS15_under_MTC_age_under_14"],
+                                                parameters[SOUR,"p_death_y1_ISSu16"])
+      }else{
+    p_death_disch_1yr_ISSo8_u16_MTC <- parameters[SOUR,"p_death_y1_ISSu16"]
+  }
+   
+  p_death_disch_1yr_ISSo8_u16_nMTC <- p_death_disch_1yr_ISSo8_u16_MTC * mod_RR_MTC_ISS_o8_u16
   
-  p_death_disch_1yr_ISSu9 <- parameters[SOUR,"p_death_y1_ISSu16"]
+  p_death_disch_1yr_ISSu9 <- p_death_disch_1yr_ISSo8_u16_MTC
   
   #create a vector of the values 
-  p_death_disch_1yr <- alive_disch*ifelse ((ISS_o15==TRUE & MTC == TRUE), p_death_disch_1yr_ISSo15_MTC, ifelse ((ISS_o15==TRUE & MTC == FALSE), p_death_disch_1yr_ISSo15_nMTC,ifelse ((ISS_u16_o8==TRUE & MTC == TRUE), p_death_disch_1yr_ISSo8_u16_MTC, ifelse ((ISS_u16_o8==TRUE & MTC == FALSE), p_death_disch_1yr_ISSo8_u16_nMTC,p_death_disch_1yr_ISSu9))))
+  p_death_disch_1yr <- alive_disch*ifelse((ISS_o15==TRUE & MTC == TRUE), 
+                                          p_death_disch_1yr_ISSo15_MTC, 
+                                          ifelse ((ISS_o15==TRUE & MTC == FALSE), 
+                                                  p_death_disch_1yr_ISSo15_nMTC,
+                                                  ifelse ((ISS_u16_o8==TRUE & MTC == TRUE), 
+                                                          p_death_disch_1yr_ISSo8_u16_MTC, 
+                                                          ifelse ((ISS_u16_o8==TRUE & MTC == FALSE), 
+                                                                  p_death_disch_1yr_ISSo8_u16_nMTC,
+                                                                  p_death_disch_1yr_ISSu9))))
   
   #record these probabilities
   pat_chars[,"p_death_disch_1yr"] <- p_death_disch_1yr
   
   #create a random vector, which is the length of the probability of dying between discharge and year 1
-  rand_vect <- runif(length(p_death_disch_1yr))
+  rand_vect <- pat_chars[,"death1year_rand"]
   #Compare the random numbers to the probability of dying between discharge and death
   death_disch_1yr <- ifelse(rand_vect < p_death_disch_1yr ,1,0)
   #Store these results in the patient characteristics matrix
@@ -1257,46 +1758,119 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
   rates_m <- -log(1-life_tables[,2])/1
   rates_f <- -log(1-life_tables[,3])/1
   
-  #Step 2: apply a hazard ratio to calculate the instanteneous rates, for the population with an ISS > 15
-  rates_m_ISS_o_15 <- rates_m *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
-  rates_f_ISS_o_15 <- rates_f *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
+  #Step 2: apply a hazard ratio to calculate the instantaneous rates, for the population with an ISS > 15
+  rates_m_ISS_o_15 <- rates_m*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
+  rates_f_ISS_o_15 <- rates_f*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSo15"])
   
   #Step3: create a new life table, based on these instantaneous rates
   Life_table_ISS_o_15 <- life_tables
   Life_table_ISS_o_15[,2] <- 1 - exp(-rates_m_ISS_o_15*1)
   Life_table_ISS_o_15[,3] <- 1 - exp(-rates_f_ISS_o_15*1)
   
-  #Step 4: apply a hazard ratio to calculate the instanteneous rates, for the population with an ISS < 15
-  rates_m_ISS_u_16 <- rates_m *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
-  rates_f_ISS_u_16 <- rates_f *as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
+  #Step 4: apply a hazard ratio to calculate the instantaneous rates, for the population with an ISS < 15
+  rates_m_ISS_u_16 <- rates_m*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
+  rates_f_ISS_u_16 <- rates_f*as.numeric(parameters[SOUR,"HR_p_death_lm_ISSu15"])
   
   #Step5: create a new life table, based on these instantaneous rates
   Life_table_ISS_u_16 <- life_tables
   Life_table_ISS_u_16[,2] <- 1 - exp(-rates_m_ISS_u_16*1)
   Life_table_ISS_u_16[,3] <- 1 - exp(-rates_f_ISS_u_16*1)
   
-  #Finsihed producing the life tables
+  #Apply different adjustments to the lifetables if applying different 
+  #long term risks in the elderly
+  if(Eldery_specific_params==T){
+    #Replace the life table probability of death for Males aged 65 or over 
+    #with an ISS of 16 or more
+    Life_table_ISS_o_15[66:101,2] <- 
+      life_tables[66:101,2]*parameters[SOUR, "RR_p_death_lm_ISSo15_age_65_plus"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_o_15[66:101,2] <- ifelse(Life_table_ISS_o_15[66:101,2]>1,
+                                            1,
+                                            Life_table_ISS_o_15[66:101,2])
+    
+    #Same for women
+    Life_table_ISS_o_15[66:101,3] <- 
+      life_tables[66:101,3]*parameters[SOUR, "RR_p_death_lm_ISSo15_age_65_plus"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_o_15[66:101,3] <- ifelse(Life_table_ISS_o_15[66:101,3]>1,
+                                            1,
+                                            Life_table_ISS_o_15[66:101,3])
+    
+    #Replace the life table probability of death for Males aged 65 or over
+    #with an ISS of 15 or less
+    Life_table_ISS_u_16[66:101,2] <- 
+      life_tables[66:101,2]*parameters[SOUR, "RR_p_death_lm_ISSu15_age_65_plus"]
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_u_16[66:101,2] <- ifelse(Life_table_ISS_u_16[66:101,2]>1,
+                                            1,
+                                            Life_table_ISS_u_16[66:101,2])
+    #Same for women
+    Life_table_ISS_u_16[66:101,3] <- 
+      life_tables[66:101,3]*parameters[SOUR, "RR_p_death_lm_ISSu15_age_65_plus"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_u_16[66:101,3] <- ifelse(Life_table_ISS_u_16[66:101,3]>1,
+                                            1,
+                                            Life_table_ISS_u_16[66:101,3])
+  }
+  if(Pead_specific_params==T){#Apply different LT long term risks if peadatric specific parameters are used
+    #Replace the life table probability of death for Males aged 65 or over 
+    #with an ISS of 16 or more
+    Life_table_ISS_o_15[1:15,2] <- 
+      life_tables[1:15,2]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_o_15[1:15,2] <- ifelse(Life_table_ISS_o_15[1:15,2]>1,
+                                            1,
+                                          Life_table_ISS_o_15[1:15,2])
+    
+    #Same for women
+    Life_table_ISS_o_15[1:15,3] <- 
+      life_tables[1:15,3]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_o_15[1:15,3] <- ifelse(Life_table_ISS_o_15[1:15,3]>1,
+                                          1,
+                                          Life_table_ISS_o_15[1:15,3])
+    
+    #Replace the life table probability of death for Males aged 65 or over
+    #with an ISS of 15 or less
+    Life_table_ISS_u_16[1:15,2] <- 
+      life_tables[1:15,2]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_u_16[1:15,2] <- ifelse(Life_table_ISS_u_16[1:15,2]>1,
+                                            1,
+                                            Life_table_ISS_u_16[1:15,2])
+    #Same for women
+    Life_table_ISS_u_16[1:15,3] <- 
+      life_tables[1:15,3]*parameters[SOUR, "HR_p_death_lm_age_under_14"]
+    
+    #Constrain any probs greater than 1 to 1
+    Life_table_ISS_u_16[1:15,3] <- ifelse(Life_table_ISS_u_16[1:15,3]>1,
+                                            1,
+                                            Life_table_ISS_u_16[1:15,3])
+  }
+  
+  #Finished producing the life tables
   
   #Step 1: produce a logical vector for patients who are alive after one year
   alive_1yr <- pat_chars[,"D_bl_disch"]==0 & pat_chars[,"D_disch_1yr"]==0
   
   #estimate the time of death for each patient, as though their ISS is over 15
   #Note this is plus one, because their characteristic is age at baseline and these patients have survived to one year
-  if(efficent_life_expectancy =="No"){
-    Age_at_death_ISS_o15 <-  life_expectancy_ONS(pat_chars[,"Age"]+1,pat_chars[,"Gender"], Life_table_ISS_o_15)
+
+    Age_at_death_ISS_o15 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_o_15, random_numbs_LE)
     #estimate the time of death for each patient, as though their ISS is under 16
-    Age_at_death_ISS_u16 <-  life_expectancy_ONS(pat_chars[,"Age"]+1,pat_chars[,"Gender"], Life_table_ISS_u_16)
-  } else{
-    Age_at_death_ISS_o15 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_o_15)
-    #estimate the time of death for each patient, as though their ISS is under 16
-    Age_at_death_ISS_u16 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_u_16)
-  }
+    Age_at_death_ISS_u16 <-  life_expectancy_ONS2(pat_chars, Life_table_ISS_u_16, random_numbs_LE)
+
   #Note is age +1 in these calculations, as they must be alive one year after their major trauma to have their long term
   #life expectancy estimated
   
   pat_chars[,"D_1yr_plus"] <- ISS_o15*alive_1yr*Age_at_death_ISS_o15 + ISS_u16*alive_1yr*Age_at_death_ISS_u16
   
-  pat_chars[,"Age_death"] <- ifelse(pat_chars[,"D_bl_disch"]==1, pat_chars[,"Age"]+((days_to_discharge*runif(1))/days_in_year), ifelse(pat_chars[,"D_disch_1yr"]==1, pat_chars[,"Age"]+((days_to_discharge+(days_in_year -days_to_discharge)*runif(1))/days_in_year), pat_chars[,"D_1yr_plus"]))
+  pat_chars[,"Age_death"] <- ifelse(pat_chars[,"D_bl_disch"]==1, pat_chars[,"Age"]+((days_to_discharge*pat_chars[,"timedeathdisch_rand"])/days_in_year), ifelse(pat_chars[,"D_disch_1yr"]==1, pat_chars[,"Age"]+((days_to_discharge+(days_in_year -days_to_discharge)*pat_chars[,"timedeath1year_rand"])/days_in_year), pat_chars[,"D_1yr_plus"]))
   pat_chars[,"Life_years"] <- pat_chars[,"Age_death"] - pat_chars[,"Age"]
   
   
@@ -1306,11 +1880,12 @@ outcomes <- function(pat_chars, parameters, life_tables, SOUR, strat_name, sensi
 
 apply_utils <- function (pat_chars,parameters, SOUR){
   
-  #Apply trauma specific utilties
-  
-  Util_gen_pop_mean_age <- parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*mean(pat_chars[,"Gender"]*(91/154)) + 
-    parameters[SOUR, "U_genpop_age"]*(61)+parameters[SOUR, "U_genpop_age_squared"]*(61)^2
-  #Calculate raw multipliers
+  if(Util_source == "Ahmed"){#if using Ahmed et al utilties calcualte the multipliers as below
+    #calculate the matched general population utility for Ahmed et al
+    Util_gen_pop_mean_age <- parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*mean(pat_chars[,"Gender"]*(91/154)) + 
+      parameters[SOUR, "U_genpop_age"]*(61)+parameters[SOUR, "U_genpop_age_squared"]*(61)^2
+    
+    #Calculate raw multipliers
   Util_mutl_ISS_o15_MTC <- parameters[SOUR,"U_ISS_o15_MTC"]/Util_gen_pop_mean_age
   Util_mutl_ISS_o15_nMTC <- parameters[SOUR,"U_ISS_o15_nMTC"]/Util_gen_pop_mean_age
   Util_mutl_ISS_u16_o8 <- parameters[SOUR,"U_ISS_u16_o8"]/Util_gen_pop_mean_age
@@ -1320,7 +1895,7 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   Util_mutl_ISS_o15_nMTC <- ifelse(Util_mutl_ISS_o15_nMTC>1,1,Util_mutl_ISS_o15_nMTC)
   Util_mutl_ISS_u16 <- ifelse(Util_mutl_ISS_u16_o8>1,1,Util_mutl_ISS_u16_o8)
   
-  #create a vector of multpliers relevant to each patient
+  #create a vector of multipliers relevant to each patient
   #Step 1: create a vector of whether ISS >= 16 or not
   ISS_o15 <- ifelse(pat_chars[,"ISS"]>15,1,0)
   #create a vector of whether ISS >= 9 or not
@@ -1330,6 +1905,7 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   #Step 3: determine the appropiate multiplier by the previous vector
   mults <- ifelse(ISS_o15==0,ifelse(ISS_o9==1,Util_mutl_ISS_u16_o8,Util_mult_ISS_u9), ifelse(MTC==0,Util_mutl_ISS_o15_nMTC,Util_mutl_ISS_o15_MTC))
   
+    
   #Calculate the discounted QALYs
   #The formula for applying continuous discounting to life years is:
   #disc_LY <- exp(-at)
@@ -1354,20 +1930,20 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   d <- pat_chars[,"Age"]
   f <- as.numeric(parameters[SOUR, "U_genpop_age_squared"])
   
-  #Calculate the indefinate integral at the time the patient dies (without the constant)
+  #Calculate the indefinite integral at the time the patient dies (without the constant)
   t <- t_end
   #Discounted QALYs
   temp_1 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
   #Undiscounted QALYs
   temp_3 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
-  #Calculate the indeinate integral at the time the patient enters the model (again without the constant)
+  #Calculate the indefinite integral at the time the patient enters the model (again without the constant)
   t <- t_start
   #Discounted QALYs
   temp_2 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
   #Undiscounted QALYs
   temp_4 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
   
-  #Calculate the definate integral between the time that the patient dies and when they entered the model
+  #Calculate the definite integral between the time that the patient dies and when they entered the model
   disc_QALYs <- (temp_1 - temp_2)
   undisc_QALYs <- (temp_3 - temp_4)
   
@@ -1379,7 +1955,205 @@ apply_utils <- function (pat_chars,parameters, SOUR){
   pat_chars[,"dQALYS"] <- disc_QALYs
   pat_chars[,"QALYS"] <- undisc_QALYs 
   
+  }else{#otherwise use the Kruithoff et al parameters
+    #ISS 1-3
+  Util_mult_disch_ISS_1_3 <- ((1/4)*parameters[SOUR,"Util_ISS_1_3_1_week"]+
+  (3/4)*parameters[SOUR,"Util_ISS_1_3_1_month"])/
+    parameters[SOUR,"Util_ISS_1_3_preinjury"]
+  
+  Util_mult_year1_ISS_1_3 <- ((1/11)*parameters[SOUR,"Util_ISS_1_3_1_month"]+
+    (1/11)*parameters[SOUR,"Util_ISS_1_3_3_months"]+
+      (3/11)*parameters[SOUR,"Util_ISS_1_3_6_months"]+
+      (6/11)*parameters[SOUR,"Util_ISS_1_3_12_months"])/
+    parameters[SOUR,"Util_ISS_1_3_preinjury"]
+  
+  Util_mult_ongoing_ISS_1_3 <- ((1/2)*parameters[SOUR,"Util_ISS_1_3_12_months"]+
+                                  (1/2)*parameters[SOUR,"Util_ISS_1_3_24_months"])/
+                                parameters[SOUR,"Util_ISS_1_3_preinjury"]
+  #ISS 4 - 8
+  Util_mult_disch_ISS_4_8 <- ((1/4)*parameters[SOUR,"Util_ISS_4_8_1_week"]+
+                                (3/4)*parameters[SOUR,"Util_ISS_4_8_1_month"])/
+                              parameters[SOUR,"Util_ISS_4_8_preinjury"]
+  
+  Util_mult_year1_ISS_4_8 <- ((1/11)*parameters[SOUR,"Util_ISS_4_8_1_month"]+
+                                (1/11)*parameters[SOUR,"Util_ISS_4_8_3_months"]+
+                                (3/11)*parameters[SOUR,"Util_ISS_4_8_6_months"]+
+                                (6/11)*parameters[SOUR,"Util_ISS_4_8_12_months"])/
+                              parameters[SOUR,"Util_ISS_4_8_preinjury"]
+  
+  Util_mult_ongoing_ISS_4_8 <- ((1/2)*parameters[SOUR,"Util_ISS_4_8_12_months"]+
+                                  (1/2)*parameters[SOUR,"Util_ISS_4_8_24_months"])/
+                                parameters[SOUR,"Util_ISS_4_8_preinjury"]
+  
+  #ISS 9 - 15
+  Util_mult_disch_ISS_9_15 <- ((1/4)*parameters[SOUR,"Util_ISS_9_15_1_week"]+
+                                (3/4)*parameters[SOUR,"Util_ISS_9_15_1_month"])/
+                                parameters[SOUR,"Util_ISS_9_15_preinjury"]
+  
+  Util_mult_year1_ISS_9_15 <- ((1/11)*parameters[SOUR,"Util_ISS_9_15_1_month"]+
+                                (1/11)*parameters[SOUR,"Util_ISS_9_15_3_months"]+
+                                (3/11)*parameters[SOUR,"Util_ISS_9_15_6_months"]+
+                                (6/11)*parameters[SOUR,"Util_ISS_9_15_12_months"])/
+                              parameters[SOUR,"Util_ISS_9_15_preinjury"]
+  
+  Util_mult_ongoing_ISS_9_15 <- ((1/2)*parameters[SOUR,"Util_ISS_9_15_12_months"]+
+                                  (1/2)*parameters[SOUR,"Util_ISS_9_15_24_months"])/
+                                parameters[SOUR,"Util_ISS_9_15_preinjury"]
+  
+  #ISS 16+
+  Util_mult_disch_ISS_16_plus <- ((1/4)*parameters[SOUR,"Util_ISS_16_plus_1_week"]+
+                                 (3/4)*parameters[SOUR,"Util_ISS_16_plus_1_month"])/
+                                  parameters[SOUR,"Util_ISS_16_plus_preinjury"]
+  
+  Util_mult_year1_ISS_16_plus <- ((1/11)*parameters[SOUR,"Util_ISS_16_plus_1_month"]+
+                                 (1/11)*parameters[SOUR,"Util_ISS_16_plus_3_months"]+
+                                 (3/11)*parameters[SOUR,"Util_ISS_16_plus_6_months"]+
+                                 (6/11)*parameters[SOUR,"Util_ISS_16_plus_12_months"])/
+                                  parameters[SOUR,"Util_ISS_16_plus_preinjury"]
+  
+  Util_mult_ongoing_ISS_16_plus <- ((1/2)*parameters[SOUR,"Util_ISS_16_plus_12_months"]+
+                                   (1/2)*parameters[SOUR,"Util_ISS_16_plus_24_months"])/
+                                    parameters[SOUR,"Util_ISS_16_plus_preinjury"]
+  
+  #Calculate a vector of multipliers for each patient
+  mults_disch <- ifelse(pat_chars[,"ISS"] <= 3,
+                        Util_mult_disch_ISS_1_3,
+                        ifelse(pat_chars[,"ISS"] <= 8,
+                               Util_mult_disch_ISS_4_8,
+                               ifelse(pat_chars[,"ISS"] <=15,
+                                      Util_mult_disch_ISS_9_15,
+                                      Util_mult_disch_ISS_16_plus)))
+  
+  mults_1year <- ifelse(pat_chars[,"ISS"] <= 3,
+                        Util_mult_year1_ISS_1_3,
+                        ifelse(pat_chars[,"ISS"] <= 8,
+                               Util_mult_year1_ISS_4_8,
+                               ifelse(pat_chars[,"ISS"] <=15,
+                                      Util_mult_year1_ISS_9_15,
+                                      Util_mult_year1_ISS_16_plus)))
+  
+  mults_ongoing <- ifelse(pat_chars[,"ISS"] <= 3,
+                        Util_mult_ongoing_ISS_1_3,
+                        ifelse(pat_chars[,"ISS"] <= 8,
+                               Util_mult_ongoing_ISS_4_8,
+                               ifelse(pat_chars[,"ISS"] <=15,
+                                      Util_mult_ongoing_ISS_9_15,
+                                      Util_mult_ongoing_ISS_16_plus)))
+  #Constrain multipliers to 1 to prevent health improvements from major trauma
+  mults_disch <- ifelse(mults_disch>1,1,mults_disch)
+  mults_1year <- ifelse(mults_1year>1,1,mults_1year)
+  mults_ongoing <- ifelse(mults_disch>1,1,mults_ongoing)
+  
+  #sense check, if any multipliers are missing stop the simulation with an error
+  if(sum(is.na(mults_disch))+sum(is.na(mults_disch))+sum(is.na(mults_ongoing)) > 0){
+    stop("impossible values for multipliers have been generated", call. =FALSE)
+  }
+  
+  #accrue utilities in the initial hospitilisation for all patients
+  #get time spent in hospital
+  t_hosp <- ifelse(pat_chars[,"Age_death"] - pat_chars[,"Age"] < (days_to_discharge/days_in_year), 
+                   pat_chars[,"Age_death"] - pat_chars[,"Age"] ,
+                   (days_to_discharge/days_in_year))
+  #Create a sequence of TRUES for all patients
+  All_pats <- pat_chars[,"Age"] > -1
+  #Undiscounted QALYs
+  pat_chars[, "QALYS"] <- cont_undisc_QALYs(parameters, pat_chars,All_pats ,rep(0,length(t_hosp)),t_hosp, mults_disch, SOUR)
+  #Discounted QALYs
+  pat_chars[, "dQALYS"] <- cont_disc_QALYs(parameters, pat_chars,All_pats,rep(0,length(t_hosp)),t_hosp, mults_disch, SOUR)
+  
+  #accrue utilities between discharge and one year post-injury
+  #get a TRUE/FALSE statement for people surviving discharge
+  discharged <- pat_chars[,"D_bl_disch"]==0
+  #calculate time to death or end of the year
+  t_death_year1 <- ifelse(pat_chars[,"Age_death"] - pat_chars[,"Age"] < 1, 
+                          pat_chars[,"Age_death"] - pat_chars[,"Age"] ,
+                          1)
+  #Reset to an obviously incorrect value if the patient did not get discharged
+  t_death_year1 <- ifelse(discharged == F, 
+                          -99,
+                          t_death_year1)
+  #add a check, that no deaths happen at or before the time to discharge global varaible
+  if(sum(t_death_year1 < 0 & t_death_year1!= -99)){
+    stop("impossible values for the time of death for people dsicharged from hospital in the QALY calculations", call. =FALSE)
+  }
+  #Undiscounted
+  pat_chars[, "QALYS"][discharged] <-pat_chars[, "QALYS"][discharged] + 
+    cont_undisc_QALYs(parameters, pat_chars,discharged,t_hosp,t_death_year1, mults_1year, SOUR)
+  #Discounted
+  pat_chars[, "dQALYS"][discharged] <- pat_chars[, "dQALYS"][discharged]+
+    cont_disc_QALYs(parameters, pat_chars, discharged,t_hosp,t_death_year1, mults_1year, SOUR)
+  
+  #accrue utilities between discharge and after one-year post injury
+  one_yr_survivors <- pat_chars[,"D_bl_disch"]==0 & pat_chars[,"D_disch_1yr"]==0
+  
+  #calculate time to after year 1
+  #if they don't survive to 1 year post-injury, set the numbers so it will produce 
+  #an obviously wrong value
+  t_death_ongoing <- ifelse(pat_chars[,"Age_death"] - pat_chars[,"Age"] > 1, 
+                          pat_chars[,"Age_death"] - pat_chars[,"Age"],
+                          -99)
+  #check, if any NAs (impossible values) stop the simulation with an error message
+  if(sum(t_death_ongoing < 0 & t_death_ongoing!= -99)){
+   stop("impossible values for the time of death for one year suvivors in the QALY calculations", call. =FALSE) 
+  }
+  #Undiscounted
+  pat_chars[, "QALYS"][one_yr_survivors] <-pat_chars[, "QALYS"][one_yr_survivors] + 
+    cont_undisc_QALYs(parameters, pat_chars, one_yr_survivors,t_death_year1,t_death_ongoing, mults_ongoing, SOUR)
+  #Discounted
+  pat_chars[, "dQALYS"][one_yr_survivors] <- pat_chars[, "dQALYS"][one_yr_survivors]+
+    cont_disc_QALYs(parameters, pat_chars, one_yr_survivors,t_death_year1,t_death_ongoing, mults_ongoing, SOUR)
+  }
+  
+  
   return(pat_chars)
+}
+
+cont_disc_QALYs <- function(parameters, pat_chars, subset, t_start, t_end, mults, SOUR){
+  a <- log(1+discount_rate_QALYs)
+  b <- as.numeric(parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*pat_chars[,"Gender"][subset])
+  c <- as.numeric(parameters[SOUR,"U_genpop_age"])
+  d <- as.numeric(pat_chars[,"Age"][subset])
+  f <- as.numeric(parameters[SOUR, "U_genpop_age_squared"])
+  
+  #Calculate the indefinite integral at the time the patient dies (without the constant)
+  t <- t_end[subset]
+  #Discounted QALYs
+  temp_1 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
+  
+  #Calculate the indefinite integral at the time the patient enters the model (again without the constant)
+  t <- t_start[subset]
+  #Discounted QALYs
+  temp_2 <- -(exp(-a*t)*(a^2*b + a^2*c*d + a^2*c*t + a^2*d^2*f + 2*a^2*d*f*t + a^2*f*t^2 + a*c + 2*a*d*f + 2*a*f*t + 2*f))/a^3
+  
+  #Calculate the definite integral between the time that the patient dies and when they entered the model
+  disc_QALYs <- (temp_1 - temp_2)
+  #apply patient level multipliers
+  disc_QALYs <- disc_QALYs*mults[subset]
+  
+  return(disc_QALYs)
+}
+
+cont_undisc_QALYs <- function(parameters, pat_chars, subset, t_start, t_end, mults, SOUR){
+  a <- log(1+discount_rate_QALYs)
+  b <- as.numeric(parameters[SOUR,"U_genpop_cons"] + parameters[SOUR,"U_genpop_male"]*pat_chars[,"Gender"][subset])
+  c <- as.numeric(parameters[SOUR,"U_genpop_age"])
+  d <- as.numeric(pat_chars[,"Age"][subset])
+  f <- as.numeric(parameters[SOUR, "U_genpop_age_squared"])
+  
+  #Calculate the indefinite integral at the time the patient dies (without the constant)
+  t <- t_end[subset]
+  #Undiscounted QALYs
+  temp_3 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
+  #Calculate the indefinite integral at the time the patient enters the model (again without the constant)
+  t <- t_start[subset]
+  #Undiscounted QALYs
+  temp_4 <- b*t + 0.5*(t^2)*(c+2*d*f)+d*t*(c+d*f)+(f*t^3)/3
+  #Calculate the definite integral between the time that the patient dies and when they entered the model
+  undisc_QALYs <- (temp_3 - temp_4)
+  #apply patient level multipliers
+  undisc_QALYs <- undisc_QALYs*mults[subset]
+  #Return the undiscounted QALYs
+  return(undisc_QALYs)
 }
 
 apply_costs <- function(pat_chars, parameters, SOUR){
@@ -1489,13 +2263,13 @@ apply_costs <- function(pat_chars, parameters, SOUR){
 }
 
 ### Function to apply triage strategies in the model
-triage_strategies <- function(pat_chars, name, sens, spec){
+triage_strategies <- function(pat_chars, name, sens, spec, SOUR){
   #Apply the manual strategy, where the sensitivity and specficity of the rule are user
   #defined
   if(name=="manual"){
     major_trauma <- pat_chars[,"ISS"] > 15
     non_mt <- pat_chars[,"ISS"] < 16
-    rands <- runif(length(pat_chars[,"ISS"]))
+    rands <- pat_chars[,"rule_rand"]
     sens_spec <- ifelse(major_trauma==TRUE, sens, 1-spec)
     temp <- ifelse(rands[]<sens_spec, 1,0)
     pat_chars[,"Triage_rule"] <- temp
@@ -1503,16 +2277,248 @@ triage_strategies <- function(pat_chars, name, sens, spec){
     #not account for compliance
     pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
   }
+  else if (name == "Phase2_WMAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"WMAS_Sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"WMAS_Sens_Non_Elderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"WMAS_Spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"WMAS_Spec_Non_Elderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+    
+  }else if(name == "Phase2_LAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"LAS_Sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"LAS_Sens_Non_Elderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"LAS_Spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"LAS_Spec_Non_Elderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  } else if (name == "Phase2_SWAST"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"SWAST_Sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"SWAST_Sens_Non_Elderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"SWAST_Spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"SWAST_Spec_Non_Elderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  } else if (name == "Phase3_WMAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"WMAS_P3_Sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"WMAS_P3_Sens_Non_Elderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"WMAS_P3_Spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"WMAS_P3_WMAS_Spec_Non_Elderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  }else if (name == "Phase2_YAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"YAS_Sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"YAS_Sens_Non_Elderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"YAS_Spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"YAS_Spec_Non_Elderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  }else if (name == "Phase3_YAS"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"YAS_P3_Sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"YAS_P3_Sens_Non_Elderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"YAS_P3_Spec_Non_Elderly"],
+                                      1-triage_rules_params[rowlookup,"YAS_P3_Spec_Elderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]
+  }else if (name=="Phase2_LAS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"LAS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"LAS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"LAS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"LAS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"]  
+  }else if (name=="Phase2_MATTS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"MATTS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"MATTS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"MATTS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"MATTS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
+  }else if(name=="Phase2_WMAS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"WMAS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"WMAS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"WMAS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"WMAS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
+  } else if (name=="Phase2_YAS_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"YAS_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"YAS_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"YAS_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"YAS_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
+  } else if (name=="Phase2_SWAST_theory"){
+    major_trauma <- pat_chars[,"ISS"] > 15
+    non_mt <- pat_chars[,"ISS"] < 16
+    rands <- pat_chars[,"rule_rand"]
+    elderly <- pat_chars[,"Age"]>=65
+    
+    rowlookup <- ifelse(PSA_switch==1,SOUR+1,1)
+    
+    sens_spec <- ifelse(major_trauma==T&elderly==T,
+                        triage_rules_params[rowlookup,"SWAST_sens_Elderly"],
+                        ifelse(major_trauma==T&elderly==F,
+                               triage_rules_params[rowlookup,"SWAST_sens_nonElderly"],
+                               ifelse(major_trauma==F&elderly==T,
+                                      1-triage_rules_params[rowlookup,"SWAST_spec_Elderly"],
+                                      1-triage_rules_params[rowlookup,"SWAST_spec_nonElderly"])))
+    
+    temp <- ifelse(rands<sens_spec, 1,0)
+    pat_chars[,"Triage_rule"] <- temp
+    #For the manual rules are based on final destination as the outcome. Therefore, I do
+    #not account for compliance
+    pat_chars[,"MTC"] <- pat_chars[,"Triage_rule"] 
+  }
   #further strategies to be added at a later date
   return(pat_chars)
-}
+} 
 
-
-model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_name, sensitivity, specificity, pop_report){
+model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_name, sensitivity, specificity, pop_report, random_numbs_LE){
   
   #add in line of code to generate parameters here
   #estimate the clinical outcomes
-  pat_chars <- outcomes(pat_chars, parameters, life_tables, SOUR, strat_name, sensitivity, specificity)
+  pat_chars <- outcomes(pat_chars, parameters, life_tables, SOUR, strat_name, sensitivity, specificity,random_numbs_LE)
   #apply the utilities
   pat_chars <- apply_utils(pat_chars,parameters, SOUR)
   #apply the costs
@@ -1573,52 +2579,49 @@ model_single_run <- function(pat_chars, parameters, SOUR, life_tables, strat_nam
   }
 }
 
-
-run_simulation <- function(param_inputs, PSA_switch, PSA_numb, pat_numb, strat_name, sensitivity, specificity, pop_report){
+run_simulation <- function(pat_chars, parameters, PSA_numb, strat_name, sensitivity, specificity, pop_report,random_numbs_LE){
   
-  #set the random number seed
-  set.seed(26090100)
-  #Generate pat chars to be 
-  pat_chars <- gen_pat_chars(pat_numb, means, covariance, age_tab, gen_tab, ISS_tab, GCS_tab)
-  #set the random number seed for, if required. -99 value for the random number seed indicates that a change is not required. 
-  if(PSA_rand_no != -99){
-    set.seed(PSA_rand_no)
-  }
-  #generate the parameters
-  parameters <- gen_parameters(PSA_switch,PSA_numb, param_inputs)
-  #As the utility parameters for people with an ISS > 9 are all the same set all the utility samples to be the same 
+  
+  
+  pat_chars <- pat_chars
+  parameters <- parameters
+  
   parameters[,"U_ISS_o15_nMTC"] <- parameters[,"U_ISS_o15_MTC"]
   parameters[,"U_ISS_u16_o8"] <- parameters[,"U_ISS_o15_MTC"]
   
-  #export the parameters, if required (bug checking / SAVI)
-  if(Param_export==1){
-    write.csv(parameters, file = "parameter_outputs.csv")
-  }
-  
   #setup the matrix to store results
-  results <- matrix (nrow = ifelse(PSA_switch == 1,PSA_numb,1), ncol=12)
-  #create names for the results matrix
-  colnames(results) <- c("Sens_DR","Spec_DR", "Number_recieving_MTC_care","proportion_died_before_discharge","proportion_died_between_discharge_and_1_year", "Years_lived",
-                         "undiscounted_QALYs", "discounted_QALYs", "undiscounted_Costs", "discounted_Costs", "proportion_ISS_over_16", "proportion_ISS_over_8_under_16")
-  
-  #set SOUR to 1 to start the simulation
-  SOUR <- 1
-  #define the strategy
+  results <- matrix (nrow = ifelse(pop_report==0,length(pat_chars[,"ID"]), 
+                                   ifelse(PSA_switch == 1,PSA_numb,1)), 
+                     ncol=ifelse(pop_report==0,21,12))
   
   #run the simulation, calling the user defined function to run the model once
   if(pop_report==0){
-    test <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
-    return(test)
+    SOUR <- 1
+    results <- model_single_run(pat_chars, parameters, SOUR, life_tables,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
   }else if(PSA_switch==0){
-    results[SOUR,] <- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
+    SOUR <- 1
+    results[SOUR,] <- model_single_run(pat_chars, parameters, SOUR, life_tables,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
   }else{
-    for(SOUR in 1:PSA_numb){
-      results[SOUR,]<- model_single_run(pat_chars, parameters, SOUR, life_tabs,strat_name, sensitivity, specificity, pop_report)
-      #make some text appear indicating the current PSA run
-      print(SOUR)
-      #update the screen so you can see the model hasn't crashed during the PSA
-      flush.console()
+    SOUR <- seq(1,PSA_numb)
+      
+    model_run <- function(SOUR){
+    model_single_run(pat_chars, parameters, SOUR, life_tables,strat_name, sensitivity, specificity, pop_report,random_numbs_LE)
     }
+    cl <- makeCluster(numCores)
+    #Set a random number seed
+    clusterEvalQ(cl, set.seed(569))
+    
+    registerDoParallel(cl)
+    clusterExport(cl, ls(envir = .GlobalEnv))
+    
+    temp <- parLapply(cl = cl, SOUR, model_run)
+    stopCluster(cl)
+    
+    temp2 <- unlist(temp)
+    
+    results<- matrix(temp2, nrow = length(SOUR), byrow=TRUE)
+
+    
     return (results)
   } 
   
